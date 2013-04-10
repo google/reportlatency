@@ -1,0 +1,16 @@
+To install:
+  Copy each .pl file to a cgi-bin directory on your server, and rename as you
+  wish (strip .pl, rename to .cgi)
+
+  Copy the .pm file to a subdirectory ReportLatency/ in a local perl module
+  path.
+
+  Create a data directory alongside your cgi-bin directory, and make sure
+  www-data can access it. Create latency.sqlite3 in the data directory by
+  executing sqlite3 {path} <latency.sql
+
+  If you want to preserve data across schema updates, manually add new fields
+like this:
+
+	ALTER TABLE report ADD COLUMN final_name TEXT;
+        ...
