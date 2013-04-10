@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!--
+Copyright 2013 Google Inc. All Rights Reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<html>
+  <head>
+    <title>ReportLatency Options</title>
+  </head>
+
+  <body>
+    <h1>ReportLatency Options</h1>
+
+    <form>
+    Report to: <i id="default_report_to"></i>
+      <br>
+      <input type="url" id="report_to" name="report_to" size="80">
+    <br>
+
+      This is where the services and their latencies are sent.  See
+      the following options to determine how detailed the services are
+      broken down.  localhost sends them only to your local machine,
+      which would have to run it's own web service to capture them.
+
+      <p>
+
+    Report non-whitelisted URLs as:
+    <select id="default_as">
+      <option value=".">.</option>
+      <option value="domain">Organization domain name</option>
+    </select>
+    <br>
+
+	URLs are reduced to a service name to prevent security issues.
+	Selecting "." here is more private - it aggregates all
+	requests that are not otherwise whitelisted to ".",
+	representing the whole internet.  Examples of 2nd/3rd level
+	domain name are <tt>company.com</tt> or <tt>city.st.us</tt>
+	depending on the typical organization of each top level
+	domain.
+
+      <p>
+
+
+      <div id="service_groups">
+      </div>
+
+    Debug Mode
+    <input type="checkbox" id="debug_mode" name="debug_mode" value="true">
+	<br>
+	Send a lot more information to the Javascript console
+	(background page) for the extension.  This logs the beginning
+	and ending of each event and much of the data provided with
+	each event.  It does not log content or cookies of events, but
+	does log the full URLs that this extension sees.  Use only if
+	developing, debugging, or curious about how the extension
+	works.
+      <p>
+
+    <button type="button" id="save">Save</button>
+    <div id="status"></div>
+
+    </form>
+
+  <script src="options.js"></script>
+
+  </body>
+</html>

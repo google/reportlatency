@@ -1,0 +1,5 @@
+ReportLatency/manifest.json
+ReportLatency/icon128.png 
+ReportLatency/options.js
+ReportLatency/options.html
+ReportLatency/eventPage.js

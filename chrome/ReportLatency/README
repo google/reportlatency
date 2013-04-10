@@ -1,0 +1,31 @@
+   The Javascript for the extension is broken up into several files to
+allow local modification without changing the upstream files, and to
+allow unit testing.  The distributed and new files are simply
+concatenated in the correct order using the default Makefile target.
+
+In this directory:
+   make
+
+   You now have an unpacked extension that may be installed from 
+chrome:://extensions, tick Developer mode, and Load unpacked extension...
+Provide this directory in the file selector.
+
+
+   For distribution in your local domain's Chrome web store (don't make
+this globally available),
+
+   make ReportLatency.zip
+
+   For local use, you'll probably want to change the local reporting
+destination to a secure local service.  eg.
+
+global_example.js
+-----------------
+  optionDefault['report_to'] =
+    'https://reportlatency.example.com/latency/post';
+
+
+   You may also want to create more detailed service names, for your
+internal services that you need distinct latency results for.  An
+example of this is google_services.js and google_tests.js.
+
