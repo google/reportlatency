@@ -1,0 +1,36 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+#
+# Copyright 2013 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+%:
+	dh $@ 
+
+
+override_dh_auto_clean:
+	$(MAKE) -C batch clean
+	$(MAKE) -C cgi clean
+	$(MAKE) -C ReportLatency clean
+
+override_dh_auto_install:
+	cp ReportLatency/*.pm debian/reportlatency/usr/share/perl5/ReportLatency
+	cp batch/*.pl batch/*.sql debian/reportlatency/usr/share/reportlatency/
+	cp cgi/*.sql debian/reportlatency/usr/share/reportlatency/
+	for f in cgi/*.pl ; do cp $$f debian/reportlatency/usr/lib/cgi-bin/reportlatency/`basename $$f .pl` ; done
+	chmod ugo+rx debian/reportlatency/usr/lib/cgi-bin/reportlatency/*
+	chmod ugo+rx debian/reportlatency/usr/share/reportlatency/*.pl

@@ -1,0 +1,7 @@
+usr/share/perl5/ReportLatency
+usr/lib/cgi-bin/reportlatency
+usr/share/reportlatency
+var/lib/reportlatency
+var/lib/reportlatency/data
+var/lib/reportlatency/www
+var/lib/reportlatency/www/graphs

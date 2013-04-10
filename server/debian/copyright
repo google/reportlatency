@@ -1,0 +1,9 @@
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: ReportLatency
+Upstream-Contact: Drake Diedrich <dld@google.com>
+Source: https://code.google.com/p/reportlatency
+
+File: *
+Copyright: 2013 Google Inc.
+License: Apache-2.0
+

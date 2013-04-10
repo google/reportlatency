@@ -1,0 +1,5 @@
+reportlatency (0.9.0) unstable; urgency=low
+
+  * First opensource release
+
+ -- Drake Diedrich <dld@google.com>  Mon, 08 Apr 2013 13:48:16 -0700

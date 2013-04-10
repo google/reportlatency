@@ -1,0 +1,19 @@
+Source: reportlatency
+Section: admin
+Priority: extra
+Maintainer: Drake Diedrich <dld@google.com>
+Build-Depends: debhelper (>= 8.0.0)
+Standards-Version: 3.9.3
+Homepage: https://code.google.com/p/reportlatency
+
+Package: reportlatency
+Architecture: all
+Depends: ${misc:Depends}, ${perl:Depends},
+ libdate-calc-perl, libdbd-sqlite3-perl, libdbi-perl, libmath-round-perl,
+ libgd-gd2-perl, libregexp-common-perl, liburi-perl
+Description: Receive ReportLatency browser reports and generate summaries
+ CGI, batch, and SQL schema of a standalone service to receive latency posts
+ from a Chrome browser extension and generate graphs and tables of the
+ latencies and service dependencies.  For use in intranets, not for a
+ public-facing service.
+
