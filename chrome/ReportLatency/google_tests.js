@@ -29,6 +29,10 @@ test('googleName', function() {
              'www.google.com/calendar',
              'www.google.com/calendar');
        equal(googleName
+             ('www.google.com', '#hl=en'),
+             'www.google.com',
+             'www.google.com/#');
+       equal(googleName
              ('www.google.com', 'search?q=css image'),
              'www.google.com/search',
              'www.google.com/search');

@@ -125,7 +125,7 @@ function fullHostname(hostname) {
   return hostname;
 }
 
-var firstpathPatt = /^[^/?]+/;
+var firstpathPatt = /^[^/?#]+/;
 function hostFirstpath(host, path) {
   var service = firstpathPatt.exec(path);
   if (service) {
