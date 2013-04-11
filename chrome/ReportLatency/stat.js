@@ -22,6 +22,7 @@
  */
 
 
+
 /**
  * Class holding measurements that can reconstruct a range and average.
  * @constructor
@@ -30,6 +31,7 @@ function Stat() {
   this.count = 0;
   this.total = 0;
 }
+
 
 /**
  * Adds a new measurement to a Stat (statistical measurement).
@@ -58,6 +60,7 @@ Stat.prototype.add = function(delta) {
     this.low = delta;
   }
 };
+
 
 /**
  * Combine two measurements, zeroing one and transfering all counts to this

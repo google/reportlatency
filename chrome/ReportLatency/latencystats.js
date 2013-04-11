@@ -19,6 +19,8 @@
  * limitations under the License.
  */
 
+
+
 /**
  * Class containing of multiple types of latencies
  * @constructor
@@ -26,6 +28,7 @@
 function LatencyStats() {
   this.stat = {};
 }
+
 
 /**
  * Adds a new measurement
@@ -42,6 +45,7 @@ LatencyStats.prototype.add = function(latency, delta) {
   }
   this.stat[latency].add(delta);
 };
+
 
 /**
  * Combine two measurements, zeroing one and transfering all counts to this

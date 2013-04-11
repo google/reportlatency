@@ -62,8 +62,8 @@ function saveOptions() {
   var status = document.getElementById('status');
   status.innerHTML = 'Options Saved.';
   setTimeout(function() {
-               status.innerHTML = '';
-             }, 750);
+    status.innerHTML = '';
+  }, 750);
 }
 
 
@@ -102,9 +102,9 @@ function restoreServices() {
   var html = '';
   for (var id in services) {
     html = html + '\n' + id +
-      '<input type="checkbox" id="' + id + '" name="' + id +
-      '">' + '\n<br>\n\n' +
-      localStorage[id + '_description'] + '\n<p>\n';
+        '<input type="checkbox" id="' + id + '" name="' + id +
+        '">' + '\n<br>\n\n' +
+        localStorage[id + '_description'] + '\n<p>\n';
   }
   service_groups.innerHTML = html;
 

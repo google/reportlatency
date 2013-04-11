@@ -54,7 +54,7 @@ function postLatency(details) {
   if (best_final && best_original) {
     var req = new XMLHttpRequest();
     var params = 'name=' + best_original + '&final_name=' + best_final +
-      '&tz=' + timeZone(Date());
+        '&tz=' + timeZone(Date());
     params += serviceStats[best_final][best_original].params();
 
     console.log('  posting ' + params);
@@ -87,7 +87,7 @@ function tabUpdated(tabId, changeInfo, tab) {
   var d = new Date();
 
   debugLog('tabUpdated(tabId:' + tabId + ') updated at ' +
-            d.getTime() + ' (' + d + ')');
+      d.getTime() + ' (' + d + ')');
   debugLogObject('changeInfo', changeInfo);
   debugLogObject('tab', tab);
 
@@ -99,7 +99,7 @@ function tabUpdated(tabId, changeInfo, tab) {
     if (tabupdate[tabId]) {
       var delay = d.getTime() - tabupdate[tabId].start;
       debugLog('tab ' + tabId + ' (' + tab.url + ') updated in ' +
-                delay + 'ms' + ' at ' + d.getTime());
+          delay + 'ms' + ' at ' + d.getTime());
 
       if (navigation[tabId]) {
         if (navigation[tabId]['0']) {
@@ -117,7 +117,7 @@ function tabUpdated(tabId, changeInfo, tab) {
         delete tabupdate[tabId];
       } else {
         debugLog('unexpected tabupdate received by tab ' + tabId +
-                  ' (' + tab.url + ')');
+            ' (' + tab.url + ')');
       }
     }
   }
@@ -127,8 +127,8 @@ function tabCreated(tab) {
   if (!isWebUrl(tab.url)) { return; }
   var d = new Date();
   debugLog('tabCreated(tab:' + tab.id +
-            ' url:' + tab.url + ') updated at ' +
-            d.getTime() + ' (' + d + ')');
+      ' url:' + tab.url + ') updated at ' +
+      d.getTime() + ' (' + d + ')');
 }
 
 
@@ -161,15 +161,15 @@ function onBeforeNavigate(data) {
   navigation[data.tabId][data.frameId] = {};
 
   navigation[data.tabId][data.frameId]['original'] =
-    aggregateName(data.url);
+      aggregateName(data.url);
 
   if (data.parentFrameId >= 0) {
     navigation[data.tabId][data.frameId]['parent'] =
-      data.parentFrameId;
+        data.parentFrameId;
   }
 
   navigation[data.tabId][data.frameId]['start'] =
-    data.timeStamp;
+      data.timeStamp;
 
 
 }
@@ -191,7 +191,7 @@ function onCompletedNavigation(data) {
   } else {
     // top level frame
     var delay = data.timeStamp -
-      navigation[data.tabId][data.frameId]['start'];
+        navigation[data.tabId][data.frameId]['start'];
 
 
     var final_name = aggregateName(data.url);
@@ -218,20 +218,20 @@ function onCompletedNavigation(data) {
 function onErrorOccurred(data) {
   var d = new Date();
   debugLogObject('onErrorOccurred() received at ' +
-                   d.getTime(), data);
+      d.getTime(), data);
 }
 
 
 function onReferenceFragmentUpdated(data) {
   var d = new Date();
   debugLogObject('onReferenceFragmentUpdated(' + data.url +
-                   ') received at ' + d.getTime(), data);
+      ') received at ' + d.getTime(), data);
 }
 
 function onTabReplaced(data) {
   var d = new Date();
   debugLogObject('onTabReplaced(' + data.url +
-                   ') received at ' + d.getTime(), data);
+      ') received at ' + d.getTime(), data);
 }
 
 
@@ -249,14 +249,14 @@ function onBeforeRequest(data) {
 function onCompletedRequest(data) {
   if (data.fromCache) {
     debugLog('onCompletedRequest(' + data.url + ') took ' +
-              delay + 'ms at ' + data.timeStamp + ' fromCache');
+        delay + 'ms at ' + data.timeStamp + ' fromCache');
     return;
   }
 
   if (request[data.requestId]) {
     var delay = data.timeStamp - request[data.requestId].timeStamp;
     debugLogObject('onCompletedRequest() took ' +
-                     delay + 'ms at ' + data.timeStamp, data);
+        delay + 'ms at ' + data.timeStamp, data);
 
     if (navigation[data.tabId]) {
       if (navigation[data.tabId]['0']) {
@@ -295,13 +295,13 @@ chrome.webNavigation.onBeforeNavigate.addListener(onBeforeNavigate);
 chrome.webNavigation.onCompleted.addListener(onCompletedNavigation);
 //chrome.webNavigation.onErrorOccurred.addListener(onErrorOccurred);
 chrome.webNavigation.onReferenceFragmentUpdated.addListener(
-  onReferenceFragmentUpdated);
+    onReferenceFragmentUpdated);
 chrome.webNavigation.onTabReplaced.addListener(onTabReplaced);
 chrome.webRequest.onBeforeRequest.addListener(
-  onBeforeRequest, { urls: ['*://*/*'] });
+    onBeforeRequest, { urls: ['*://*/*'] });
 chrome.webRequest.onBeforeRedirect.addListener(
-  onCompletedRequest, { urls: ['*://*/*'] });
+    onCompletedRequest, { urls: ['*://*/*'] });
 chrome.webRequest.onCompleted.addListener(
-  onCompletedRequest, { urls: ['*://*/*'] });
+    onCompletedRequest, { urls: ['*://*/*'] });
 chrome.webRequest.onErrorOccurred.addListener(
-  onErrorOccurredRequest, { urls: ['*://*/*'] });
+    onErrorOccurredRequest, { urls: ['*://*/*'] });

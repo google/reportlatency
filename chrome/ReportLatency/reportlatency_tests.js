@@ -20,47 +20,47 @@
  */
 
 test('topLevelDomain', function() {
-       equal(topLevelDomain('mail.google.com'),
-             'com',
-             '.com');
-       equal(topLevelDomain('localhost'), null, 'localhost');
-       equal(topLevelDomain('.'), null, '.');
-     });
+  equal(topLevelDomain('mail.google.com'),
+      'com',
+      '.com');
+  equal(topLevelDomain('localhost'), null, 'localhost');
+  equal(topLevelDomain('.'), null, '.');
+});
 
 test('usDomain', function() {
-       equal(usDomain('www.ci.sanmateo.ca.us'),
-             'ci.sanmateo.ca.us', 'ci.sanmateo.ca.us');
-       equal(usDomain('co.sanmateo.ca.us'),
-             'co.sanmateo.ca.us', 'co.sanmateo.ca.us');
-       equal(usDomain('www.state.ak.us'),
-             'state.ak.us', 'state.ak.us');
-     });
+  equal(usDomain('www.ci.sanmateo.ca.us'),
+      'ci.sanmateo.ca.us', 'ci.sanmateo.ca.us');
+  equal(usDomain('co.sanmateo.ca.us'),
+      'co.sanmateo.ca.us', 'co.sanmateo.ca.us');
+  equal(usDomain('www.state.ak.us'),
+      'state.ak.us', 'state.ak.us');
+});
 
 
 test('defaultDomain', function() {
-       equal(defaultDomain('ci.boston.ma.us'),
-             'ci.boston.ma.us', 'ci.boston.ma.us');
-       equal(defaultDomain('www.google.co.uk'),
-             'google.co.uk', 'google.co.uk'),
-       equal(defaultDomain('www.w3c.org'), 'w3c.org', 'w3c.org');
-     });
+  equal(defaultDomain('ci.boston.ma.us'),
+      'ci.boston.ma.us', 'ci.boston.ma.us');
+  equal(defaultDomain('www.google.co.uk'),
+      'google.co.uk', 'google.co.uk'),
+  equal(defaultDomain('www.w3c.org'), 'w3c.org', 'w3c.org');
+});
 
 test('isWebUrl', function() {
-       equal(isWebUrl('chrome-extension://dogebkafemeemimlegokpipjpincehpi/' +
-                      'options.html'),
-             false, '!chrome-extension:');
-       equal(isWebUrl('https://www.google.com/calendar/hello'),
-             true, 'https:');
-       equal(isWebUrl('http://www.google.com'),
-             true, 'http:');
-     });
+  equal(isWebUrl('chrome-extension://dogebkafemeemimlegokpipjpincehpi/' +
+      'options.html'),
+      false, '!chrome-extension:');
+  equal(isWebUrl('https://www.google.com/calendar/hello'),
+      true, 'https:');
+  equal(isWebUrl('http://www.google.com'),
+      true, 'http:');
+});
 
 test('timeZone', function() {
-       equal(timeZone(Date()),
-             Date().match(/\(([A-Z]{1,5})\)/)[1],
-             'current timezone abbreviation');
-       equal(timeZone('Thu Mar 28 2013 15:02:56 GMT-0700 (PDT)'),
-             'PDT',
-             'PDT');
+  equal(timeZone(Date()),
+      Date().match(/\(([A-Z]{1,5})\)/)[1],
+      'current timezone abbreviation');
+  equal(timeZone('Thu Mar 28 2013 15:02:56 GMT-0700 (PDT)'),
+      'PDT',
+      'PDT');
 
-     });
+});

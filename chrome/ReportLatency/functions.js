@@ -42,7 +42,7 @@ function debugLogObject(str, o) {
 
 function registerService(id, description, callback) {
   debugLog('registerService(' + id + ',' +
-            description + ',' + callback + ')');
+           description + ',' + callback + ')');
 
   var o = { 'description': description,
             'callback': callback };
@@ -219,9 +219,9 @@ function reportToUrl() {
 // Eventually will become another shallow wrapper and disappear around
 // a larger object.
 function updateStats(finalName, originalName,
-                      fieldName, delta, stats) {
+                     fieldName, delta, stats) {
   debugLog('updateStats(' + finalName + ',' + originalName + ',' +
-            fieldName + ',' + delta + ',' + stats + ')');
+           fieldName + ',' + delta + ',' + stats + ')');
   if (!(finalName in stats)) {
     stats[finalName] = {};
   }

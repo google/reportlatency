@@ -88,8 +88,8 @@ function googleName(host, path) {
 }
 
 registerService('googleServices',
-                 'Breaks down URLs to public Google Services by the ' +
-                 'specific Google service.  For instance ' +
-                 '<tt>www.google.com/calendar</tt> or ' +
-                 '<tt>mail.google.com</tt>',
-                 googleName);
+    'Breaks down URLs to public Google Services by the ' +
+    'specific Google service.  For instance ' +
+    '<tt>www.google.com/calendar</tt> or ' +
+    '<tt>mail.google.com</tt>',
+    googleName);

@@ -19,43 +19,43 @@
  */
 
 test('LatencyStats.add', function() {
-       var s = new LatencyStats();
+  var s = new LatencyStats();
 
-       s.add('navigation', 5);
-       equal(s.stat['navigation'].count, 1, 'single count');
-       equal(s.stat['navigation'].total, 5, 'single total');
+  s.add('navigation', 5);
+  equal(s.stat['navigation'].count, 1, 'single count');
+  equal(s.stat['navigation'].total, 5, 'single total');
 
-       s.add('navigation', 9);
-       equal(s.stat['navigation'].count, 2, 'second count');
-       equal(s.stat['navigation'].total, 5 + 9, 'second total');
-     });
+  s.add('navigation', 9);
+  equal(s.stat['navigation'].count, 2, 'second count');
+  equal(s.stat['navigation'].total, 5 + 9, 'second total');
+});
 
 test('LatencyStats.transfer', function() {
-       var s = new LatencyStats();
-       var t = new LatencyStats();
+  var s = new LatencyStats();
+  var t = new LatencyStats();
 
-       s.add('navigation', 5);
-       s.add('request', 3);
-       t.add('request', 4);
-       t.add('tabupdate', 1);
-       t.transfer(s);
-       equal(s.stat['navigation'], undefined, 'zeroed navigation');
-       equal(s.stat['request'], undefined, 'zeroed request');
-       equal(t.stat['navigation'].total, 5, 'navigation total');
-       equal(t.stat['navigation'].count, 1, 'navigation count');
-       equal(t.stat['request'].total, 7, 'request total');
-       equal(t.stat['request'].count, 2, 'request count');
-       equal(t.stat['tabupdate'].total, 1, 'tabupdate total');
-       equal(t.stat['tabupdate'].count, 1, 'tabupdate count');
-     });
+  s.add('navigation', 5);
+  s.add('request', 3);
+  t.add('request', 4);
+  t.add('tabupdate', 1);
+  t.transfer(s);
+  equal(s.stat['navigation'], undefined, 'zeroed navigation');
+  equal(s.stat['request'], undefined, 'zeroed request');
+  equal(t.stat['navigation'].total, 5, 'navigation total');
+  equal(t.stat['navigation'].count, 1, 'navigation count');
+  equal(t.stat['request'].total, 7, 'request total');
+  equal(t.stat['request'].count, 2, 'request count');
+  equal(t.stat['tabupdate'].total, 1, 'tabupdate total');
+  equal(t.stat['tabupdate'].count, 1, 'tabupdate count');
+});
 
 test('LatencyStats.params', function() {
-       var s = new LatencyStats();
+  var s = new LatencyStats();
 
-       s.add('navigation', 5);
-       equal(s.params(),
-             '&navigation_count=1&navigation_total=5' +
-             '&navigation_high=5&navigation_low=5',
-             'values');
-     });
+  s.add('navigation', 5);
+  equal(s.params(),
+      '&navigation_count=1&navigation_total=5' +
+      '&navigation_high=5&navigation_low=5',
+      'values');
+});
 
