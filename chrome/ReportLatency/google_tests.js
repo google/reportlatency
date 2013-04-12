@@ -33,6 +33,10 @@ test('googleName', function() {
       'www.google.com',
       'www.google.com/#');
   equal(googleName
+      ('www.google.com', 'voice#inbox'),
+      'www.google.com/voice',
+      'www.google.com/voice#inbox');
+  equal(googleName
       ('www.google.com', 'search?q=css image'),
       'www.google.com/search',
       'www.google.com/search');
