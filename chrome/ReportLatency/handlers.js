@@ -63,7 +63,7 @@ function postLatency(details) {
                          'application/x-www-form-urlencoded');
     req.send(params);
     delete serviceStats[bestFinal][bestOriginal];
-    last_post_latency = new Date().getTime();
+    lastPostLatency = new Date().getTime();
     reportExtensionStats();
   }
 
@@ -73,10 +73,10 @@ function postLatency(details) {
 // can skip the name of the currently-being-processed service
 function postLatencyCheck(skipname) {
   var d = new Date();
-  post_latency_check_calls++;
-  if (d.getTime() - last_post_latency > 10000 ||
-      post_latency_check_calls > 10) {
-    post_latency_check_calls = 0;
+  postLatencyCheckCalls++;
+  if (d.getTime() - lastPostLatency > 10000 ||
+      postLatencyCheckCalls > 10) {
+    postLatencyCheckCalls = 0;
     postLatency({ 'skip': skipname });
   }
 }

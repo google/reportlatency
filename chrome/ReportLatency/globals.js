@@ -56,5 +56,5 @@ var requestStats = {};
 // tabStats{tabId}{URL_servicename} = LatencyStats
 var tabStats = {};
 
-var last_post_latency = 0;
-var post_latency_check_calls = 0;
+var lastPostLatency = 0;
+var postLatencyCheckCalls = 0;
