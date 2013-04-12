@@ -43,11 +43,18 @@ case "$1" in
     configure)
 	if [ ! -f  $DBFILE ] ; then
 	  sqlite3 $DBFILE <$PKGSHARE/latency.sql
-	  sqlite3 $DBFILE <$PKGSHARE/domain.sql
+	  for sql in $PKGSHARE/domain*.sql ; do
+	      sqlite3 $DBFILE <$sql
+	  done
 	  chown www-data:www-data $DBFILE
 	fi
 	chown www-data:www-data $DBDIR
 	chown -R www-data:www-data $GRAPHDIR
+	a2enmod expires
+	if [ ! -e /etc/apache2/conf.d/reportlatency ] ; then
+	  ln -s ../../reportlatency/apache2.conf /etc/apache2/conf.d/reportlatency
+	  invoke-rc.d apache2 restart 1>&2
+	fi
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

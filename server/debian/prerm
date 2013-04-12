@@ -1,0 +1,13 @@
+#!/bin/sh
+
+set -e
+
+if [ "X$1" = "Xremove" ] ; then
+	if [ -L /etc/apache2/conf.d/reportlatency ] ; then
+		rm /etc/apache2/conf.d/reportlatency
+	fi
+fi
+
+#DEBHELPER#
+
+exit 0

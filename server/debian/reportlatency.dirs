@@ -1,3 +1,4 @@
+etc/reportlatency
 usr/share/perl5/ReportLatency
 usr/lib/cgi-bin/reportlatency
 usr/share/reportlatency

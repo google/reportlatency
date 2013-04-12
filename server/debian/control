@@ -10,7 +10,8 @@ Package: reportlatency
 Architecture: all
 Depends: ${misc:Depends}, ${perl:Depends},
  libdate-calc-perl, libdbd-sqlite3-perl, libdbi-perl, libmath-round-perl,
- libgd-gd2-perl, libregexp-common-perl, liburi-perl
+ libgd-gd2-perl, libregexp-common-perl, liburi-perl, sqlite3,
+ apache2 | httpd
 Description: Receive ReportLatency browser reports and generate summaries
  CGI, batch, and SQL schema of a standalone service to receive latency posts
  from a Chrome browser extension and generate graphs and tables of the
