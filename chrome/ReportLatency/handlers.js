@@ -250,6 +250,9 @@ function onCompletedRequest(data) {
   if (data.fromCache) {
     debugLog('onCompletedRequest(' + data.url + ') took ' +
         delay + 'ms at ' + data.timeStamp + ' fromCache');
+    if (request[data.requestId]) {
+      delete request[data.requestId];
+    }
     return;
   }
 
