@@ -23,7 +23,7 @@
 'use strict';
 
 var optionDefault = {};
-optionDefault['report_to'] = 'http://localhost/latency/post';
+optionDefault['report_to'] = 'http://localhost/reportlatency/post';
 
 // service_group{id}{'name'}
 //            {'description'}
