@@ -1,3 +1,10 @@
+reportlatency (0.9.3) precise; urgency=low
+
+  * Direct insertion of exact hosts to tags table, rather than through
+    much slower domain match table
+
+ -- Drake Diedrich <dld@google.com>  Wed, 24 Apr 2013 12:29:04 -0700
+
 reportlatency (0.9.2) precise; urgency=low
 
   * sqlite3 dependency at install and cron maintenance times

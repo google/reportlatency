@@ -21,5 +21,5 @@ PATH=/usr/local/scripts:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/
 MAILTO=""
 0,30 * * * * www-data [ -x /usr/share/reportlatency/latencyspectrum.pl ] && cd /var/lib/reportlatency/www/graphs && /usr/share/reportlatency/latencyspectrum.pl >/dev/null 2>&1
 05 4 * * * www-data [ -x /usr/share/reportlatency/latencyspectrum.pl ] && cd /var/lib/reportlatency/www/graphs && /usr/share/reportlatency/latencyspectrum.pl -all >/dev/null 2>&1
-01 4 * * * www-data /usr/bin/sqlite3 /var/lib/reportlatency/data/latency.sqlite3 </usr/share/reportlatency/update-tag.sql >/dev/null 2>&1
+01 4 * * * www-data cat /etc/reportlatency/tag.d/*.sql /var/lib/reportlatency/tag.d/*.sql > /var/lib/reportlatency/data/tag.sql ; /usr/bin/sqlite3 /var/lib/reportlatency/data/latency.sqlite3 </usr/share/reportlatency/update-tag.sql >/dev/null 2>&1
 15,45 * * * * www-data (echo .mode insert ; echo 'select * from report;') | /usr/bin/sqlite3 /var/lib/reportlatency/data/latency.sqlite3 >/var/lib/reportlatency/data/report-new.sql && mv /var/lib/reportlatency/data/report-new.sql /var/lib/reportlatency/data/report.sql
