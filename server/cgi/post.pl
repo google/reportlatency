@@ -32,12 +32,6 @@ my @params = qw( name final_name tz
               );
 
 
-sub aggregate_remote_address($) {
-  my ($addr) = @_;
-  return $addr;
-}
-
-
 sub aggregate_user_agent($) {
   my ($browser) = @_;
 
