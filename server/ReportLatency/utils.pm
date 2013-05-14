@@ -19,7 +19,7 @@ use Regexp::Common;
 
 use base 'Exporter';
 our @EXPORT    = qw(sanitize_service service_path mynum myround average
-		    graphdir latency_dbh latency_summary_row);
+		    graphdir latency_dbh latency_summary_row net_class_c);
 
 sub graphdir { return '/var/lib/reportlatency/www/graph'; }
 
@@ -121,6 +121,14 @@ sub latency_summary_row {
   $html .= "   <td align=right> " . myround($row->{'navigation_latency'}) . " </td>";
   $html .= "  </tr>\n";
   return $html;
+}
+
+sub net_class_c($) {
+  my ($ip) = @_;
+  if ($ip =~ /^(\d+)\.(\d+)\.(\d+).(\d+)$/) {
+    return "$1.$2.$3.0";
+  }
+  return undef;
 }
 
 1;

@@ -17,8 +17,8 @@
 # limitations under the License.
 
 use strict;
-use Test::More tests => 19;
-use ReportLatency::utils;
+use Test::More tests => 25;
+BEGIN { unshift(@INC,'.'); use_ok( 'ReportLatency::utils' ); }
 
 foreach my $bad ( '<script>' ) {
   is(sanitize_service($bad),undef,"no $bad");
@@ -53,3 +53,9 @@ is(mynum(10), 10, "mynum 10");
 is(myround(undef), "", "myround undef");
 is(myround(10.6), 11, "myround 10.6");
 is(myround(10.6), 11, "myround 10.6");
+
+is(net_class_c('1.2.3.4'), '1.2.3.0', 'net_class_c(1.2.3.4) = 1.2.3.0');
+is(net_class_c('1.2.3'), undef, 'net_class_c(1.2.3) = undef');
+is(net_class_c('1.2.3.4.5'), undef, 'net_class_c(1.2.3.4.5) = undef');
+is(net_class_c(' 1.2.3.4'), undef, 'net_class_c( 1.2.3.4) = undef');
+is(net_class_c('1.2.3.4 '), undef, 'net_class_c( 1.2.3.4) = undef');
