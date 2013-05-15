@@ -33,9 +33,10 @@ sub new {
 
 sub aggregate_remote_address {
   my ($self,$remote_addr,$forwarded_for) = @_;
-  
+  my $dbh = $self->{dbh};
+
   $self->{location_select} =
-    $self->{dbh}->prepare('SELECT rdns,location from location where ip = ?')
+    $dbh->prepare('SELECT rdns,location from location where ip = ?')
       unless defined $self->{location_select};
   my $ip = $forwarded_for || $remote_addr;
   my $rc = $self->{location_select}->execute($ip);
@@ -47,8 +48,8 @@ sub aggregate_remote_address {
     my ($rdns,$location) = net_class_c($ip);  # temporary and fast
     
     $self->{location_insert} =
-    $self->{dbh}->prepare("INSERT INTO LOCATION (timestamp,ip,rdns,location)" .
-			  " VALUES(DATE('now'),?,?,?")
+      $dbh->prepare("INSERT INTO LOCATION (timestamp,ip,rdns,location)" .
+		    " VALUES(DATE('now'),?,?,?)")
       unless defined $self->{location_insert};
     $self->{location_insert}->execute($ip,$rdns,$location);
     $self->{location_insert}->finish;
