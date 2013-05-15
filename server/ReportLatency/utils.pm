@@ -15,11 +15,12 @@
 package ReportLatency::utils;
 use Math::Round;
 use Regexp::Common;
-
+use Net::DNS::Resolver;
 
 use base 'Exporter';
 our @EXPORT    = qw(sanitize_service service_path mynum myround average
-		    graphdir latency_dbh latency_summary_row net_class_c);
+		    graphdir latency_dbh latency_summary_row net_class_c
+		    reverse_dns );
 
 sub graphdir { return '/var/lib/reportlatency/www/graph'; }
 
@@ -131,5 +132,25 @@ sub net_class_c($) {
   return undef;
 }
 
+
+sub ip_to_arpa {
+  my ($ip) = @_;
+  my $arpa = join('.', reverse split(/\./, $ip)) . ".in-addr.arpa";
+  return $arpa;
+}
+
+sub reverse_dns {
+  my ($ip) = @_;
+  my $arpa = ip_to_arpa($ip);
+  my $res = new Net::DNS::Resolver;
+  my $query = $res->query($arpa, 'PTR');
+  if ($query) {
+    foreach my $rr ($query->answer) {
+      next unless $rr->type eq 'PTR';
+      return $rr->rdatastr;
+    }
+  }
+  undef;
+}
 
 1;
