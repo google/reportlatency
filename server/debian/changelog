@@ -1,3 +1,11 @@
+reportlatency (0.10.0) precise; urgency=low
+
+  * Put reverse DNS subdomain in remote_addr field for each report if
+    available, else the class C
+  * Add location latency to summary page
+
+ -- Drake Diedrich <dld@google.com>  Wed, 15 May 2013 14:43:51 -0700
+
 reportlatency (0.9.3) precise; urgency=low
 
   * Direct insertion of exact hosts to tags table, rather than through

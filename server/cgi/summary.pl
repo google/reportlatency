@@ -62,6 +62,24 @@ sub main {
 		  'ORDER BY tag;')
       or die "prepare failed";
 
+  my $location_sth =
+    $dbh->prepare('SELECT remote_addr,' .
+                  'count(distinct final_name) AS services,' .
+                  'sum(tabupdate_count) AS tabupdate_count,' .
+                  'sum(tabupdate_total)/sum(tabupdate_count)' .
+                  ' AS tabupdate_latency,' .
+                  'sum(request_count) AS request_count,' .
+                  'sum(request_total)/sum(request_count)' .
+                  ' AS request_latency,' .
+                  'sum(navigation_count) AS navigation_count,' .
+                  'sum(navigation_total)/sum(navigation_count)' .
+                  ' AS navigation_latency ' .
+                  'FROM report ' .
+                  'WHERE timestamp >= ? AND timestamp <= ? ' .
+                  'GROUP BY remote_addr ' .
+		  'ORDER BY remote_addr;')
+      or die "prepare failed";
+
   my $other_sth =
     $dbh->prepare('SELECT ' .
                   'count(distinct final_name) AS services,' .
@@ -117,13 +135,14 @@ EOF
 </head>
 <body>
 
-<h1> Latency Summary By Tag </h1>
-
+<h1> ReportLatency Summary
 <p align=center>
 <img src="graphs/latency-spectrum.png" width="80%"
  alt="latency spectrum">
 </img>
 </p>
+
+<h2> Latency By Tag </h1>
 
 <table class="alternate">
 $tag_header
@@ -147,16 +166,54 @@ EOF
   print latency_summary_row('untagged','untagged',$other->{'services'},$other);
   $other_sth->finish;
 
-  $dbh->rollback;  # there shouldn't be changes
-
-  $dbh->disconnect;
-
   print $tag_header;
 
   print latency_summary_row('total', '', $meta->{'services'}, $meta);
 
   print <<EOF;
 </tr>
+</table>
+
+EOF
+
+  my $location_header = <<EOF;
+<tr>
+ <th colspan=2> Location </th>
+ <th colspan=2> Request </th>
+ <th colspan=2> Tab Update </th>
+ <th colspan=2> Navigation </th>
+</tr>
+<tr>
+ <th>Name</th> <th>Services</th>
+ <th>Count</th> <th>Latency (ms)</th>
+ <th>Count</th> <th>Latency (ms)</th>
+ <th>Count</th> <th>Latency (ms)</th>
+</tr>
+EOF
+
+  print <<EOF;
+<h2> Latency By Location </h2>
+
+<table class="alternate">
+$location_header
+<hl>
+EOF
+  $rc = $location_sth->execute($meta->{'min_timestamp'},
+			       $meta->{'max_timestamp'});
+
+  while (my $location = $location_sth->fetchrow_hashref) {
+    my $name = $location->{remote_addr};
+    my $url = "location?name=$name";
+    my $count = $location->{'services'};
+    print latency_summary_row($name,$url,$count,$location);
+  }
+  $location_sth->finish;
+
+  $dbh->rollback;  # there shouldn't be changes
+
+  $dbh->disconnect;
+
+print <<EOF;
 </table>
 
 <p>
