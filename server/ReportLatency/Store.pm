@@ -26,7 +26,7 @@ sub new {
 
   my $self  = bless {}, $class;
 
-  $self->{dbh} = (defined $p{dbh} ? latency_dbh() : $p{dbh} );
+  $self->{dbh} = (defined $p{dbh} ? $p{dbh} : latency_dbh() );
 
   return $self;
 }
@@ -45,15 +45,22 @@ sub aggregate_remote_address {
   if (defined $row) {
     return $row->{location} || $row->{rdns};
   } else {
-    my ($rdns,$location) = net_class_c($ip);  # temporary and fast
-    
+    my $location = net_class_c($ip);
+    my $rdns = reverse_dns($ip);
+    if ($rdns) {
+      my $subdomain = $rdns;
+      $subdomain =~ s/^[^.]+\.//;
+      if ($subdomain) {
+	$location = $subdomain;
+      }
+    }
     $self->{location_insert} =
       $dbh->prepare("INSERT INTO LOCATION (timestamp,ip,rdns,location)" .
 		    " VALUES(DATE('now'),?,?,?)")
       unless defined $self->{location_insert};
     $self->{location_insert}->execute($ip,$rdns,$location);
     $self->{location_insert}->finish;
-    return $rdns;
+    return $location;
   }
 }
 

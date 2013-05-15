@@ -19,7 +19,7 @@
 use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
-use Test::More tests => 3;
+use Test::More tests => 7;
 
 BEGIN { unshift(@INC,'.'); use_ok( 'ReportLatency::Store' ); }
 
@@ -44,3 +44,13 @@ $dbh = DBI->connect("dbi:SQLite:dbname=$dbfile",
 my $store = new ReportLatency::Store(dbh => $dbh);
 
 isa_ok($store, 'ReportLatency::Store');
+
+is($store->{dbh}, $dbh, "dbh");
+
+is($store->aggregate_remote_address('8.8.8.8'),'google.com.',
+   'aggregate_remote_address(8.8.8.8)');
+is($store->aggregate_remote_address('8.8.8.8'),'google.com.',
+   '2nd aggregate_remote_address(8.8.8.8)');
+is($store->aggregate_remote_address('0.0.0.1'),'0.0.0.0',
+   'aggregate_remote_address(0.0.0.1)');
+
