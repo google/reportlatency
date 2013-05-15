@@ -17,7 +17,7 @@
 # limitations under the License.
 
 use strict;
-use Test::More tests => 26;
+use Test::More tests => 27;
 BEGIN { unshift(@INC,'.'); use_ok( 'ReportLatency::utils' ); }
 
 foreach my $bad ( '<script>' ) {
@@ -60,4 +60,5 @@ is(net_class_c('1.2.3.4.5'), undef, 'net_class_c(1.2.3.4.5) = undef');
 is(net_class_c(' 1.2.3.4'), undef, 'net_class_c( 1.2.3.4) = undef');
 is(net_class_c('1.2.3.4 '), undef, 'net_class_c( 1.2.3.4) = undef');
 
-is(reverse_dns('8.8.8.8'),'google-public-dns-a.google.com.','reserve_dns()');
+is(reverse_dns('8.8.8.8'), 'google-public-dns-a.google.com.', 'reserve_dns()');
+is(reverse_dns('0.0.0.0.0'), undef,'reserve_dns(0.0.0.0.0)==undef');
