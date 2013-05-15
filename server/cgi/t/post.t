@@ -18,9 +18,10 @@
 
 use strict;
 use Test::More tests => 2;
-push(@INC,'.');
-
-require_ok('./post.pl');
+BEGIN {
+  unshift(@INC,'.');
+  require_ok( './post.pl' );
+}
 
 is(insert_command('name','value'),
    'INSERT INTO report (remote_addr,user_agent,name,value) VALUES(?,?,?,?);',

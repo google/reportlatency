@@ -16,6 +16,7 @@ package ReportLatency::Store;
 
 use strict;
 use vars qw($VERSION);
+use ReportLatency::utils;
 
 $VERSION     = 0.1;
 
@@ -25,9 +26,35 @@ sub new {
 
   my $self  = bless {}, $class;
 
+  $self->{dbh} = (defined $p{dbh} ? latency_dbh() : $p{dbh} );
+
   return $self;
 }
 
+sub aggregate_remote_address {
+  my ($self,$remote_addr,$forwarded_for) = @_;
+  
+  $self->{location_select} =
+    $self->{dbh}->prepare('SELECT rdns,location from location where ip = ?')
+      unless defined $self->{location_select};
+  my $ip = $forwarded_for || $remote_addr;
+  my $rc = $self->{location_select}->execute($ip);
+  my $row = $self->{location_select}->fetchrow_hashref;
+  $self->{location_select}->finish;
+  if (defined $row) {
+    return $row->{location} || $row->{rdns};
+  } else {
+    my ($rdns,$location) = net_class_c($ip);  # temporary and fast
+    
+    $self->{location_insert} =
+    $self->{dbh}->prepare("INSERT INTO LOCATION (timestamp,ip,rdns,location)" .
+			  " VALUES(DATE('now'),?,?,?")
+      unless defined $self->{location_insert};
+    $self->{location_insert}->execute($ip,$rdns,$location);
+    $self->{location_insert}->finish;
+    return $rdns;
+  }
+}
 
 1;
 
