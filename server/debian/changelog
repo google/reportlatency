@@ -1,3 +1,9 @@
+reportlatency (0.10.1) precise; urgency=low
+
+  * Report aggregate latency by location in service page
+
+ -- Drake Diedrich <dld@google.com>  Thu, 16 May 2013 13:00:58 -0700
+
 reportlatency (0.10.0) precise; urgency=low
 
   * Put reverse DNS subdomain in remote_addr field for each report if
