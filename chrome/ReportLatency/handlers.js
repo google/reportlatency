@@ -21,8 +21,13 @@
  */
 
 
-// post Latency summaries to central server
-// post just one summary at a time for interactivity
+/**
+ * Post Latency summaries to central server.
+ * Post just one summary at a time for interactivity.  Choose a good one.
+ * The details object is used in this selection.
+
+ * @param {Object} details has some recent state of the extension.
+ **/
 function postLatency(details) {
   debugLogObject('postLatency()', details);
 
@@ -69,8 +74,13 @@ function postLatency(details) {
 
 }
 
-// postLatency() if enough data is collected or time has passed
-// can skip the name of the currently-being-processed service
+/**
+ * Call postLatency() to post a latency report if either enough time has
+ * passed or many calls to this have already been made.  This reduces load
+ * on the server and can be tuned as needed.
+
+ * @param {string} skipname has a service name to skip over.
+ **/
 function postLatencyCheck(skipname) {
   var d = new Date();
   postLatencyCheckCalls++;
@@ -81,7 +91,13 @@ function postLatencyCheck(skipname) {
   }
 }
 
-
+/**
+ * tabUpdated() is a callback for when a Chrome tab has been updated.
+ *
+ * @param {number} tabId is the tab ID number in Chrome.
+ * @param {object} changeInfo is an object with just the tab changes.
+ * @param {object} tab is the full tab object available in Chrome.
+ **/
 function tabUpdated(tabId, changeInfo, tab) {
   if (!isWebUrl(tab.url)) { return; }
   var d = new Date();
@@ -123,6 +139,11 @@ function tabUpdated(tabId, changeInfo, tab) {
   }
 }
 
+/**
+ * tabCreated() is a callback for when a Chrome tab has been created.
+ *
+ * @param {object} tab is the full tab object available in Chrome.
+ **/
 function tabCreated(tab) {
   if (!isWebUrl(tab.url)) { return; }
   var d = new Date();
@@ -135,6 +156,11 @@ function tabCreated(tab) {
 // webNavigation requests.  Might be true start of a request.
 // regular page lifecycle
 
+/**
+ * onBeforeNavigate() is a callback for when a Navigation event starts.
+ *
+ * @param {object} data holds all information about the navigation request.
+ **/
 function onBeforeNavigate(data) {
   if (!isWebUrl(data.url)) {
     debugLog('onBeforeNavigate(' + data.url + ') not web');
@@ -174,6 +200,11 @@ function onBeforeNavigate(data) {
 
 }
 
+/**
+ * onBeforeNavigate() is a callback for when a Navigation event starts.
+ *
+ * @param {object} data holds all information about the navigation event.
+ **/
 function onCompletedNavigation(data) {
   if (!isWebUrl(data.url)) {
     debugLog('onCompletedNavigation(' + data.url + ') not web');
@@ -213,8 +244,11 @@ function onCompletedNavigation(data) {
 
 
 
-// Exceptions to regular page lifecycle
-
+/**
+ * onErrorOccurred() is a callback for when a failed Navigation event.
+ *
+ * @param {object} data holds all information about the navigation event.
+ **/
 function onErrorOccurred(data) {
   var d = new Date();
   debugLogObject('onErrorOccurred() received at ' +
@@ -222,12 +256,22 @@ function onErrorOccurred(data) {
 }
 
 
+/**
+ * onReferenceFragmentUpdated() is a callback for when an in-page navigation.
+ *
+ * @param {object} data holds all information about the navigation event.
+ **/
 function onReferenceFragmentUpdated(data) {
   var d = new Date();
   debugLogObject('onReferenceFragmentUpdated(' + data.url +
       ') received at ' + d.getTime(), data);
 }
 
+/**
+ * onTabReplaced() is a callback for a Chrome Tab that is replaced.
+ *
+ * @param {object} data holds all information about the tabupdate event.
+ **/
 function onTabReplaced(data) {
   var d = new Date();
   debugLogObject('onTabReplaced(' + data.url +
@@ -235,10 +279,11 @@ function onTabReplaced(data) {
 }
 
 
-//
-// webRequest events
-//
-
+/**
+ * onBeforeRequest() is a callback before every webRequest.
+ *
+ * @param {object} data holds all information about the request.
+ **/
 function onBeforeRequest(data) {
   debugLogObject('onBeforeRequest()', data);
 
@@ -246,6 +291,11 @@ function onBeforeRequest(data) {
 }
 
 
+/**
+ * onCompletedRequest() is a callback on completion of successful web requests.
+ *
+ * @param {object} data holds all information about the request.
+ **/
 function onCompletedRequest(data) {
   if (data.fromCache) {
     debugLog('onCompletedRequest(' + data.url + ') took ' +
@@ -286,6 +336,11 @@ function onCompletedRequest(data) {
 }
 
 
+/**
+ * onErrorOccurredRequest() is a callback on failed web requests.
+ *
+ * @param {object} data holds all information about the request.
+ **/
 function onErrorOccurredRequest(data) {
   debugLogObject('onErrorOccurredRequest()', data);
   delete request[data.requestId];
