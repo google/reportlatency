@@ -70,4 +70,32 @@ ServiceStats.prototype.service = function(service) {
   return this.stat[service];
 };
 
+/**
+ * @param {string} last service name in use
+ * @returns {string} name of service with most navitations that isn't busy
+ */
+ServiceStats.prototype.best = function(last) {
+  var navigations = 0;
+  var requests = 0;
+  var b;
+  for (var s in this.stat) {
+    if (s != last) {
+      var nc = this.stat[s].count('navigation');
+      if (nc > navigations) {
+	navigations = nc;
+	requests = this.stat[s].count('request');
+	b = s;
+      } else if (nc == navigations) {
+	var nr = this.stat[s].count('request');
+	if (nr > requests) {
+	  requests = nr;
+	  b = s;
+	}
+      }
+    }
+  }
+
+  return b;
+};
+
 

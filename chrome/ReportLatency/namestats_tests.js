@@ -59,3 +59,12 @@ test('NameStats.transfer', function() {
 	'server2 request count');
 });
 
+test('NameStats.count', function() {
+  var s = new NameStats();
+
+  s.add('server', 'navigation', 5);
+  s.add('server', 'navigation', 9);
+  s.add('redirector', 'navigation', 9);
+  equal(s.count('navigation'), 3, '3 navigations added');
+});
+

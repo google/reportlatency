@@ -61,4 +61,17 @@ NameStats.prototype.transfer = function(stats) {
   }
 };
 
+/**
+ *
+ * @param {string} measurement to aggregate.
+ * @returns {number} the total number of measurement reports.
+ */
+NameStats.prototype.count = function(measurement) {
+  var c = 0;
+  for (var s in this.stat) {
+    c += this.stat[s].count(measurement);
+  }
+  return c;
+};
+
 
