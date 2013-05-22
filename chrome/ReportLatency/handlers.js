@@ -120,14 +120,18 @@ function tabUpdated(tabId, changeInfo, tab) {
       if (navigation[tabId]) {
         if (navigation[tabId]['0']) {
           if (navigation[tabId]['0']['final']) {
-            updateStats(navigation[tabId]['0']['final'],
-                        aggregateName(tab.url),
-                        'tabupdate', delay, serviceStats);
-            transferStats(tabStats[tabId],
-                          serviceStats[navigation[tabId]['0']['final']]);
+	    var final_name = navigation[tabId]['0']['final'];
+	    if (!(final_name in serviceStats)) {
+	      serviceStats[final_name] = new NameStats();
+	    }
+	    serviceStats[final_name].add(aggregateName(tab.url),
+					 'tabupdate', delay);
           } else {
-            updateStats(tabId, aggregateName(tab.url),
-                        'tabupdate', delay, tabStats);
+	    if (!(tabId in tabStats)) {
+	      tabStats[tabId] = new NameStats();
+	    }
+            tabStats[tabId].add(aggregateName(tab.url),
+				'tabupdate', delay);
           }
         }
         delete tabupdate[tabId];
@@ -201,7 +205,7 @@ function onBeforeNavigate(data) {
 }
 
 /**
- * onBeforeNavigate() is a callback for when a Navigation event starts.
+ * onCompletedNavigation() is a callback for when a Navigation event completes.
  *
  * @param {object} data holds all information about the navigation event.
  **/
@@ -228,16 +232,10 @@ function onCompletedNavigation(data) {
     var final_name = aggregateName(data.url);
     navigation[data.tabId][data.frameId]['final'] = final_name;
 
-    updateStats(final_name,
-                navigation[data.tabId][data.frameId]['original'],
-                'navigation', delay, serviceStats);
+    var original_name = navigation[data.tabId][data.frameId]['original'];
+    serviceStats[final_name].add(original_name, 'navigation', delay);
 
-    transferStats(requestStats[data.tabId],
-                  serviceStats[final_name]);
-    delete requestStats[data.tabId];
-
-    transferStats(tabStats[data.tabId],
-                  serviceStats[final_name]);
+    serviceStats[final_name].transfer(tabStats[data.tabId]);
     delete tabStats[data.tabId];
   }
 }
@@ -314,14 +312,12 @@ function onCompletedRequest(data) {
     if (navigation[data.tabId]) {
       if (navigation[data.tabId]['0']) {
         if (navigation[data.tabId]['0']['final']) {
-          updateStats(navigation[data.tabId]['0']['final'],
-                      aggregateName(data.url),
-                      'request', delay, serviceStats);
-          transferStats(requestStats[data.tabId],
-                        serviceStats[navigation[data.tabId]['0']['final']]);
+          var final_name = navigation[data.tabId]['0']['final'];
+	  serviceStats[final_name].add(aggregateName(data.url),
+				       'request', delay);
         } else {
-          updateStats(data.tabId, aggregateName(data.url),
-                      'request', delay, requestStats);
+	  tabStats[data.tabId].add(aggregateName(data.url),
+				   'request');
         }
       }
     } else {

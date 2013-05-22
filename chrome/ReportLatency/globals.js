@@ -43,17 +43,17 @@ var request = {};
 // report when tab is placed in status 'complete'
 var tabupdate = {};
 
-// LatencyStats by final and original servicename
-// requests only populated once final service name is known
-// serviceStats{final_service}{original_service} = LatencyStats;
+// NameStats by final servicename, known only once a navigation completes.
+// navigation stats are logged directly here, tabupdate and request stats
+// may be logged here if the navigation is already complete, or transfered
+// here once it is complete.
+// serviceStats{final_service} = NameStats;
 var serviceStats = {};
 
-// LatencyStats by tabID and current request URL
-// requestStats{tabId}{URL_servicename} = LatencyStats
-var requestStats = {};
-
-// LatencyStats by tabID and current request URL
-// tabStats{tabId}{URL_servicename} = LatencyStats
+// NameStats by tabID
+// request and tabupdate stats are placed here if the final service name
+// is not yet known
+// tabStats{tabId} = NameStats
 var tabStats = {};
 
 var lastPostLatency = 0;

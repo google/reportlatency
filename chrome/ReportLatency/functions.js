@@ -112,13 +112,7 @@ function reportExtensionStats() {
   console.log('ReportLatency');
   var services = '';
   for (var n in serviceStats) {
-    var c = Object.keys(serviceStats[n]).length;
-    if (c == 0) {
-      delete serviceStats[n];
-    } else {
-      services = services.concat(' ' + n + '(' +
-                                 Object.keys(serviceStats[n]).length + ')');
-    }
+    services = services.concat(' ' + n );
   }
   console.log('  ' + Object.keys(navigation).length +
               ' outstanding navigations');
@@ -287,45 +281,6 @@ function reportToUrl() {
     }
   }
   return optionDefault['report_to'];
-}
-
-/**
- * reduced wrapper used for per-originalname/finalname LatencyStats.
- * Eventually will become another shallow wrapper and disappear around
- * a larger object.
- **/
-function updateStats(finalName, originalName,
-                     fieldName, delta, stats) {
-  debugLog('updateStats(' + finalName + ',' + originalName + ',' +
-           fieldName + ',' + delta + ',' + stats + ')');
-  if (!(finalName in stats)) {
-    stats[finalName] = {};
-  }
-  var sf = stats[finalName];
-  if (!(originalName in sf)) {
-    stats[finalName][originalName] = new LatencyStats();
-  }
-
-  stats[finalName][originalName].add(fieldName, delta);
-}
-
-/**
- * reduced wrapper used for per-originalname LatencyStats.  Eventually
- * will become another shallow wrapper and disappear around a larger object.
- **/
-function transferStats(tmpStats, serviceStats) {
-  if (tmpStats && serviceStats) {
-    for (var s in tmpStats) {
-      if (serviceStats[s]) {
-        debugLog('transferStats(' + s + ') accumlate');
-        serviceStats[s].transfer(tmpStats[s]);
-      } else {
-        debugLog('transferStats(' + s + ') copy');
-        serviceStats[s] = tmpStats[s];
-      }
-      delete tmpStats[s];
-    }
-  }
 }
 
 /**

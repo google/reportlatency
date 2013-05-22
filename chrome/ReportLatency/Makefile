@@ -24,7 +24,7 @@ TEST_SOURCE:=$(shell ls -1 *_tests.js 2>/dev/null)
 
 GLOBAL_DEFAULTS:=$(shell ls -1 global_*.js 2>/dev/null)
 
-SOURCE=functions.js stat.js latencystats.js namestats.js 
+SOURCE=functions.js stat.js latencystats.js namestats.js tabstats.js servicestats.js
 
 all: $(TARGETS)
 
