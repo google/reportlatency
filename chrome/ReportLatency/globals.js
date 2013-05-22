@@ -47,14 +47,12 @@ var tabupdate = {};
 // navigation stats are logged directly here, tabupdate and request stats
 // may be logged here if the navigation is already complete, or transfered
 // here once it is complete.
-// serviceStats{final_service} = NameStats;
-var serviceStats = {};
+var serviceStats = new ServiceStats;
 
 // NameStats by tabID
 // request and tabupdate stats are placed here if the final service name
 // is not yet known
-// tabStats{tabId} = NameStats
-var tabStats = {};
+var tabStats = new TabStats;
 
 var lastPostLatency = 0;
 var postLatencyCheckCalls = 0;

@@ -32,13 +32,18 @@ function postLatency(details) {
   debugLogObject('postLatency()', details);
 
   var bestFinal = serviceStats.best(details.skip);
-  var bestOriginal = serviceStats.stat[bestFinal].best(details.skip);
+  if (!bestFinal) {
+    return;
+  }
+  console.log("bestFinal = " + bestFinal);
+  var bestService = serviceStats.service(bestFinal);
+  var bestOriginal = bestService.best(details.skip);
 
   if (bestFinal && bestOriginal) {
     var req = new XMLHttpRequest();
     var params = 'name=' + bestOriginal + '&final_name=' + bestFinal +
         '&tz=' + timeZone(Date());
-    params += serviceStats.stat[bestFinal].stat[bestOriginal].params();
+    params += bestService.stat[bestOriginal].params();
 
     console.log('  posting ' + params);
     req.open('POST', reportToUrl(), true);
@@ -197,7 +202,7 @@ function onCompletedNavigation(data) {
   var s = 'onCompletedNavigation(' + data.url +
       ') in ' + delay + ' ms at ' + d.getTime();
   debugLogObject(s, data);
-
+  console.log(s);
 
   if (navigation[data.tabId][data.frameId].hasOwnProperty('parent')) {
     // Meh.  Don't care about subframe navigation events.
@@ -211,10 +216,9 @@ function onCompletedNavigation(data) {
     navigation[data.tabId][data.frameId]['final'] = final_name;
 
     var original_name = navigation[data.tabId][data.frameId]['original'];
-    serviceStats[final_name].add(original_name, 'navigation', delay);
+    serviceStats.add(final_name, original_name, 'navigation', delay);
 
-    serviceStats[final_name].transfer(tabStats[data.tabId]);
-    delete tabStats[data.tabId];
+    serviceStats.transfer(final_name, data.tabId, tabStats);
   }
 }
 
@@ -291,7 +295,7 @@ function onCompletedRequest(data) {
       if (navigation[data.tabId]['0']) {
         if (navigation[data.tabId]['0']['final']) {
           var final_name = navigation[data.tabId]['0']['final'];
-	  serviceStats[final_name].add(aggregateName(data.url),
+	  serviceStats.service(final_name).add(aggregateName(data.url),
 				       'request', delay);
         } else {
 	  tabStats[data.tabId].add(aggregateName(data.url),
