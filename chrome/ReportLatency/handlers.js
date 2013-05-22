@@ -31,43 +31,21 @@
 function postLatency(details) {
   debugLogObject('postLatency()', details);
 
-  var bestFinal, bestOriginal;
-
-  for (var final in serviceStats) {
-    if (details.skip == final) {
-      continue; // current service, wait
-    }
-
-    for (var original in serviceStats[final]) {
-      if (details.skip == original) {
-        continue; // current service, wait
-      }
-
-      // pick a good entry with navigations, if available
-      if (bestFinal && bestOriginal) {
-        if (serviceStats[final][original].navigation) {
-          bestFinal = final;
-          bestOriginal = original;
-        }
-      } else {
-        bestFinal = final;
-        bestOriginal = original;
-      }
-    }
-  }
+  var bestFinal = serviceStats.best(details.skip);
+  var bestOriginal = serviceStats.stat[bestFinal].best(details.skip);
 
   if (bestFinal && bestOriginal) {
     var req = new XMLHttpRequest();
     var params = 'name=' + bestOriginal + '&final_name=' + bestFinal +
         '&tz=' + timeZone(Date());
-    params += serviceStats[bestFinal][bestOriginal].params();
+    params += serviceStats.stat[bestFinal].stat[bestOriginal].params();
 
     console.log('  posting ' + params);
     req.open('POST', reportToUrl(), true);
     req.setRequestHeader('Content-type',
                          'application/x-www-form-urlencoded');
     req.send(params);
-    delete serviceStats[bestFinal][bestOriginal];
+    serviceStats.delete(bestFinal,bestOriginal);
     lastPostLatency = new Date().getTime();
     reportExtensionStats();
   }

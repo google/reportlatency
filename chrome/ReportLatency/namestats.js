@@ -75,3 +75,21 @@ NameStats.prototype.count = function(measurement) {
 };
 
 
+/**
+ * @returns {boolean} true if this entire object is empty.
+ */
+NameStats.prototype.empty = function() {
+  for (var s in this.stat) {
+    return false;
+  }
+  return true;
+};
+
+/**
+ * @param {string} name of the data set to delete.
+ */
+NameStats.prototype.delete = function(name) {
+  delete this.stat[name];
+};
+
+

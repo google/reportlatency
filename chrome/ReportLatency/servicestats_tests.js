@@ -42,3 +42,18 @@ test('ServiceStats.best', function() {
 	'service that isn\'t in use with most navigations chosen');
 });
 
+test('ServiceStats.delete', function() {
+  var s = new ServiceStats();
+
+  s.add('service', 'server', 'navigation', 5);
+  s.add('service', 'redirector', 'navigation', 10);
+  
+  s.delete('service','server');
+  ok('service' in s.stat,'service still present');
+  ok('redirector' in s.stat['service'].stat, 'redirector present');
+  ok(! ('server' in s.stat['service'].stat), 'server deleted');
+
+  s.delete('service', 'redirector');
+  ok(!('service' in s.stat),'service deleted');
+});
+
