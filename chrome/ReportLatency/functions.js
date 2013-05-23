@@ -111,7 +111,7 @@ function threeLevelDomain(hostname) {
 function reportExtensionStats() {
   console.log('ReportLatency');
   var services = '';
-  for (var n in serviceStats) {
+  for (var n in serviceStats.stat) {
     services = services.concat(' ' + n );
   }
   console.log('  ' + Object.keys(navigation).length +
@@ -120,7 +120,7 @@ function reportExtensionStats() {
               ' outstanding requests');
   console.log('  ' + Object.keys(tabupdate).length +
               ' outstanding tabupdates');
-  console.log('  ' + Object.keys(serviceStats).length +
+  console.log('  ' + Object.keys(serviceStats.stat).length +
               ' pending service reports:' + services);
 }
 
