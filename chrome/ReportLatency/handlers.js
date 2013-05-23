@@ -202,7 +202,6 @@ function onCompletedNavigation(data) {
   var s = 'onCompletedNavigation(' + data.url +
       ') in ' + delay + ' ms at ' + d.getTime();
   debugLogObject(s, data);
-  console.log(s);
 
   if (navigation[data.tabId][data.frameId].hasOwnProperty('parent')) {
     // Meh.  Don't care about subframe navigation events.

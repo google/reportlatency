@@ -54,12 +54,16 @@ ServiceStats.prototype.add = function(service, name, latency, delta) {
  * @param {Object} tabStats is the source TabStats object.
  */
 ServiceStats.prototype.transfer = function(name, tabId, tabStats) {
-  if (name in this.stat) {
-    this.stat[name].transfer(tabStats.stat[tabId]);
+  if (tabId in tabStats.stat) {
+    if (name in this.stat) {
+      this.stat[name].transfer(tabStats.stat[tabId]);
+    } else {
+      this.stat[name] = tabStats.stat[tabId];
+    }
+    tabStats.delete(tabId);
   } else {
-    this.stat[name] = tabStats.stat[tabId];
+    console.log(tabId + ' not in tabStats.stat[]');
   }
-  tabStats.delete(tabId);
 };
 
 
