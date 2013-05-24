@@ -32,36 +32,54 @@ function LatencyData() {
 
 
 /**
- * Records a new beginning of a web request.
+ * Records a start of a web request.
  *
  * @param {object} data is the callback data for Chrome's onBeforeRequest()
  *
  */
-LatencyData.prototype.beforeRequest = function(data) {
+LatencyData.prototype.startRequest = function(data) {
   if ('tabId' in data) {
     if (!(data.tabId in this.tab)) {
       this.tab[data.tabId] = new TabData();
     }
-    this.tab[data.tabId].beforeRequest(data);
+    this.tab[data.tabId].startRequest(data);
   } else {
-    console.log('malformed data in beforeRequest - no tabId');
+    console.log('malformed data in startRequest - no tabId');
   }
 };
 
 /**
  * Records end of a web request.
  *
- * @param {object} data is the callback data for Chrome's onBeforeRequest()
+ * @param {object} data is the callback data for Chrome's onCompletedRequest()
  *
  */
-LatencyData.prototype.completedRequest = function(data) {
+LatencyData.prototype.endRequest = function(data) {
   if ('tabId' in data) {
     if (data.tabId in this.tab) {
-      this.tab[data.tabId].completedRequest(data);
+      this.tab[data.tabId].endRequest(data);
     } else {
-      console.log(data.tabId + ' tabId not found in completedRequest');
+      console.log(data.tabId + ' tabId not found in endRequest');
     }
   } else {
-    console.log('malformed data in beforeRequest - no tabId');
+    console.log('malformed data in endRequest - no tabId');
+  }
+};
+
+/**
+ * Records end of a web request.
+ *
+ * @param {object} data is the callback data for Chrome's onErrorRequest()
+ *
+ */
+LatencyData.prototype.deleteRequest = function(data) {
+  if ('tabId' in data) {
+    if (data.tabId in this.tab) {
+      this.tab[data.tabId].deleteRequest(data);
+    } else {
+      console.log(data.tabId + ' tabId not found in deleteRequest');
+    }
+  } else {
+    console.log('malformed data in deleteRequest - no tabId');
   }
 };

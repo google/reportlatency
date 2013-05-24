@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-test('LatencyData.request', function() {
+test('LatencyData.*Request', function() {
   var ld = new LatencyData();
   var data = {
     url: 'http://server/path',
@@ -29,10 +29,10 @@ test('LatencyData.request', function() {
     timeStamp: 1000
   };
 
-  ld.beforeRequest(data);
+  ld.startRequest(data);
 
   data.timeStamp = 2000;
-  ld.completedRequest(data);
+  ld.endRequest(data);
 
   var ts = ld.tab[1].stat;
   equal(ts.count('request'), 1, '1 request for tab 1');

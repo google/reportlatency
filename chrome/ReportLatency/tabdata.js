@@ -39,11 +39,11 @@ function TabData() {
  * @param {object} data about the request from Chrome onBeforeRequest().
  *
  */
-TabData.prototype.beforeRequest = function(data) {
+TabData.prototype.startRequest = function(data) {
   if ('requestId' in data) {
     this.request[data.requestId] = data;
   } else {
-    console.log('missing requestId in beforeRequest() data');
+    console.log('missing requestId in startRequest() data');
   }
 };
 
@@ -53,7 +53,7 @@ TabData.prototype.beforeRequest = function(data) {
  * @param {object} data about the request from Chrome onCompletedRequest().
  *
  */
-TabData.prototype.completedRequest = function(data) {
+TabData.prototype.endRequest = function(data) {
   if ('requestId' in data) {
     if (data.requestId in this.request) {
       if ('url' in data) {
@@ -64,53 +64,36 @@ TabData.prototype.completedRequest = function(data) {
 	  delete this.request[data.requestId];
 	} else {
 	  console.log('no service name from ' + data.url +
-		      ' in completedRequest()');
+		      ' in endRequest()');
 	}
       } else {
-	console.log('missing data.url in completedRequest()');
+	console.log('missing data.url in endRequest()');
       }
     } else {
-      console.log('requestId ' + data.requestId + ' not found');
+      console.log('requestId ' + data.requestId + ' not found in endRequest');
     }
   } else {
-    console.log('missing requestId in completedRequest() data');
+    console.log('missing requestId in endRequest() data');
   }
 };
 
-
 /**
- * Adds a new measurement
+ * Delete a request (due to an error).
  *
- * @param {number} tabId is the Id number of the tab to record this stat for
- * @param {string} name is the original request name this stat is for
- * @param {string} latency is the type of latency.
- * @param {number} delta is the new measurement to incorporate in the stat.
+ * @param {object} data about the request from Chrome onErrorRequest().
  *
  */
-TabData.prototype.add = function(tabId, name, latency, delta) {
-  if (!this.stat[tabId]) {
-    this.stat[tabId] = new NameStats();
+TabData.prototype.deleteRequest = function(data) {
+  if ('requestId' in data) {
+    if (data.requestId in this.request) {
+      delete this.request[data.requestId];
+    } else {
+      console.log('requestId ' + data.requestId +
+		  ' not found in deleteRequest()');
+    }
+  } else {
+    console.log('missing requestId in deleteRequest() data');
   }
-  this.stat[tabId].add(name, latency,  delta);
 };
 
-/**
- * Delete all records for a tabId
- *
- * @param {number} tabId is the Id number of the tab.
- *
- */
-TabData.prototype.delete = function(tabId) {
-  delete this.stat[tabId];
-};
-
-/**
- *
- * @param {number} tabId is the Id number of the tab.
- * @returns {Object} then NameStats for tabId.
- *
- */
-TabData.prototype.nameStats = function(tabId) {
-  return this.stat[tabId];
-};
 

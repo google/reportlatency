@@ -339,11 +339,11 @@ chrome.webNavigation.onCompleted.addListener(onCompletedNavigation);
 chrome.webNavigation.onReferenceFragmentUpdated.addListener(
     onReferenceFragmentUpdated);
 chrome.webNavigation.onTabReplaced.addListener(onTabReplaced);
-chrome.webRequest.onBeforeRequest.addListener(
-    onBeforeRequest, { urls: ['*://*/*'] });
-chrome.webRequest.onBeforeRedirect.addListener(
-    onCompletedRequest, { urls: ['*://*/*'] });
-chrome.webRequest.onCompleted.addListener(
-    onCompletedRequest, { urls: ['*://*/*'] });
-chrome.webRequest.onErrorOccurred.addListener(
-    onErrorOccurredRequest, { urls: ['*://*/*'] });
+chrome.webRequest.onBeforeRequest.addListener( ld.startRequest,
+					       { urls: ['*://*/*'] });
+chrome.webRequest.onBeforeRedirect.addListener( ld.endRequest,
+						{ urls: ['*://*/*'] });
+chrome.webRequest.onCompleted.addListener( ld.endRequest,
+					   { urls: ['*://*/*'] });
+chrome.webRequest.onErrorOccurred.addListener( ld.deleteRequest,
+					       { urls: ['*://*/*'] });

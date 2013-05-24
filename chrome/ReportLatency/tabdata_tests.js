@@ -18,14 +18,24 @@
  * limitations under the License.
  */
 
-test('TabData.add', function() {
-  var s = new TabData();
+test('TabData.deleteRequest', function() {
+  var t = new TabData();
 
-  s.add(1, 'name', 'navigation', 5);
-  equal(s.stat[1].stat['name'].stat['navigation'].count, 1, 'single count');
-  equal(s.stat[1].stat['name'].stat['navigation'].total, 5, 'single total');
+  var data = { requestId:1, timestamp:1000, url: 'http://host/' };
+  t.startRequest(data);
+  data.timestamp = 1001;
+  t.deleteRequest(data);
 
-  s.add(1, 'name', 'navigation', 9);
-  equal(s.stat[1].stat['name'].stat['navigation'].count, 2, 'second count');
-  equal(s.stat[1].stat['name'].stat['navigation'].total, 5 + 9, 'second total');
+  equal(t.stat.count('request'), 0, 'deleteRequest left 0 recorded requests');
+});
+
+test('TabData.endRequest', function() {
+  var t = new TabData();
+
+  var data = { requestId:1, timestamp:1000, url: 'http://host/' };
+  t.startRequest(data);
+  data.timestamp = 1001;
+  t.endRequest(data);
+
+  equal(t.stat.count('request'), 1, 'endRequest left 1 recorded requests');
 });
