@@ -39,3 +39,14 @@ test('TabData.endRequest', function() {
 
   equal(t.stat.count('request'), 1, 'endRequest left 1 recorded requests');
 });
+
+test('TabData.tabUpdated', function() {
+  var t = new TabData();
+
+  var data = { status: 'loading' };
+  t.tabUpdated(data);
+  data.status = 'complete';
+  t.endRequest(data);
+
+  equal(t.stat.count('tabupdate'), 1, 'tabUpdated left 1 recorded tabupdate');
+});
