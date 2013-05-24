@@ -21,6 +21,8 @@
  */
 
 
+var latencyData = new LatencyData();
+
 /**
  * Post Latency summaries to central server.
  * Post just one summary at a time for interactivity.  Choose a good one.
@@ -285,8 +287,10 @@ function onCompletedRequest(data) {
     return;
   }
 
-  if (request[data.requestId]) {
+  if (data.requestId in request) {
     var delay = data.timeStamp - request[data.requestId].timeStamp;
+    console.log('onCompletedRequest(' + data.requestId + ',' + data.url +
+		') took ' + delay + 'ms at ' + data.timeStamp);
     debugLogObject('onCompletedRequest() took ' +
         delay + 'ms at ' + data.timeStamp, data);
 
@@ -294,21 +298,24 @@ function onCompletedRequest(data) {
       if (navigation[data.tabId]['0']) {
         if (navigation[data.tabId]['0']['final']) {
           var final_name = navigation[data.tabId]['0']['final'];
-	  serviceStats.service(final_name).add(aggregateName(data.url),
-				       'request', delay);
+	  var ns = serviceStats.service(final_name);
+	  ns.add(aggregateName(data.url), 'request', delay);
         } else {
-	  tabStats[data.tabId].add(aggregateName(data.url),
-				   'request');
+	  var ns = tabStats.nameStats(data.tabId);
+	  ns.add(aggregateName(data.url), 'request', delay);
         }
       }
     } else {
       // arrived after webNavigationCompleted(), nowhere to log
       debugLog('  requestId ' + data.requestId + ' (' + data.url +
                ') not in request[]');
+      console.log('  requestId ' + data.requestId + ' (' + data.url +
+               ') not in request[]');
     }
     delete request[data.requestId];
   } else {
     debugLogObject('onCompletedRequest() start not recorded', data);
+    console.log('onCompletedRequest() start not recorded');
   }
 }
 

@@ -1,6 +1,6 @@
 
 /**
- * @fileoverview TabStats is a container for all temporary stats by tabId,
+ * @fileoverview TabData is a container for all temporary stats by tabId,
  *   until the final service name is known and they are transfered to
  *   a ServiceStats object.
  * @author dld@google.com (DrakeDiedrich)
@@ -26,9 +26,56 @@
  * Class containing of multiple types of latencies
  * @constructor
  */
-function TabStats() {
-  this.stat = {};
+function TabData() {
+  this.stat = new NameStats();
+  this.request = {};
+  this.tabupdate = {};
+  this.navigation = {};
 }
+
+/**
+ * Adds a new measurement
+ *
+ * @param {object} data about the request from Chrome onBeforeRequest().
+ *
+ */
+TabData.prototype.beforeRequest = function(data) {
+  if ('requestId' in data) {
+    this.request[data.requestId] = data;
+  } else {
+    console.log('missing requestId in beforeRequest() data');
+  }
+};
+
+/**
+ * Adds a new measurement
+ *
+ * @param {object} data about the request from Chrome onCompletedRequest().
+ *
+ */
+TabData.prototype.completedRequest = function(data) {
+  if ('requestId' in data) {
+    if (data.requestId in this.request) {
+      if ('url' in data) {
+	var name = aggregateName(data.url);
+	if (name) {
+	  var delay = data.timestamp - this.request[data.requestId].timestamp;
+	  this.stat.add(name, 'request', delay);
+	  delete this.request[data.requestId];
+	} else {
+	  console.log('no service name from ' + data.url +
+		      ' in completedRequest()');
+	}
+      } else {
+	console.log('missing data.url in completedRequest()');
+      }
+    } else {
+      console.log('requestId ' + data.requestId + ' not found');
+    }
+  } else {
+    console.log('missing requestId in completedRequest() data');
+  }
+};
 
 
 /**
@@ -40,7 +87,7 @@ function TabStats() {
  * @param {number} delta is the new measurement to incorporate in the stat.
  *
  */
-TabStats.prototype.add = function(tabId, name, latency, delta) {
+TabData.prototype.add = function(tabId, name, latency, delta) {
   if (!this.stat[tabId]) {
     this.stat[tabId] = new NameStats();
   }
@@ -53,7 +100,7 @@ TabStats.prototype.add = function(tabId, name, latency, delta) {
  * @param {number} tabId is the Id number of the tab.
  *
  */
-TabStats.prototype.delete = function(tabId) {
+TabData.prototype.delete = function(tabId) {
   delete this.stat[tabId];
 };
 
@@ -63,7 +110,7 @@ TabStats.prototype.delete = function(tabId) {
  * @returns {Object} then NameStats for tabId.
  *
  */
-TabStats.prototype.nameStats = function(tabId) {
+TabData.prototype.nameStats = function(tabId) {
   return this.stat[tabId];
 };
 

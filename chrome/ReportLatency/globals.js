@@ -30,29 +30,7 @@ optionDefault['report_to'] = 'http://localhost/reportlatency/post';
 //            {'function'}
 var serviceGroup = {};
 
-// navigation{tabId}{frameId}{'url'}
-// 'start', 'parent', 'children', ...
-var navigation = {};
-
-//  request{reqId}{'start'}
-//    'url', 'redirect'
-var request = {};
-
-// tabupdate[tabId] = data
-// store when tab is placed in status 'loading'
-// report when tab is placed in status 'complete'
-var tabupdate = {};
-
-// NameStats by final servicename, known only once a navigation completes.
-// navigation stats are logged directly here, tabupdate and request stats
-// may be logged here if the navigation is already complete, or transfered
-// here once it is complete.
-var serviceStats = new ServiceStats;
-
-// NameStats by tabID
-// request and tabupdate stats are placed here if the final service name
-// is not yet known
-var tabStats = new TabStats;
 
 var lastPostLatency = 0;
 var postLatencyCheckCalls = 0;
+

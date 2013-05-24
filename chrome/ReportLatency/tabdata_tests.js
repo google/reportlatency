@@ -1,6 +1,6 @@
 
 /**
- * @fileoverview This file contains QUnit tests for the TabStats object.
+ * @fileoverview This file contains QUnit tests for a TabData object.
  * @author dld@google.com (DrakeDiedrich)
  *
  * Copyright 2013 Google Inc. All Rights Reserved.
@@ -18,8 +18,8 @@
  * limitations under the License.
  */
 
-test('TabStats.add', function() {
-  var s = new TabStats();
+test('TabData.add', function() {
+  var s = new TabData();
 
   s.add(1, 'name', 'navigation', 5);
   equal(s.stat[1].stat['name'].stat['navigation'].count, 1, 'single count');
