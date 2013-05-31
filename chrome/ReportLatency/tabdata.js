@@ -96,4 +96,29 @@ TabData.prototype.deleteRequest = function(data) {
   }
 };
 
+/**
+ * Delete a request (due to an error).
+ *
+ * @param {object} data about the request from Chrome onErrorRequest().
+ *
+ */
+TabData.prototype.tabUpdated = function(changeInfo, tab) {
+  if (!isWebUrl(tab.url)) { return; }
+  var d = new Date();
+
+  if (tab.status == 'loading') {
+    this.tabupdate = {};
+    this.tabupdate.changeInfo = changeInfo;
+    this.tabupdate.start = d.getTime();
+  } else if (tab.status == 'complete') {
+    if ('start' in this.tabupdate) {
+      var delay = d.getTime() - this.tabupdate.start;
+      debugLog('tab ' + tab.tabId + ' (' + tab.url + ') updated in ' +
+          delay + 'ms' + ' at ' + d.getTime());
+      var name = aggregateName(tab.url);
+      this.stat.add(name, 'tabupdate', delay);
+    }
+  }
+};
+
 

@@ -331,7 +331,7 @@ function onErrorOccurredRequest(data) {
 }
 
 
-chrome.tabs.onUpdated.addListener(tabUpdated);
+chrome.tabs.onUpdated.addListener(ld.tabUpdated);
 chrome.tabs.onCreated.addListener(tabCreated);
 chrome.webNavigation.onBeforeNavigate.addListener(onBeforeNavigate);
 chrome.webNavigation.onCompleted.addListener(onCompletedNavigation);

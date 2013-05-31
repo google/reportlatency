@@ -83,3 +83,10 @@ LatencyData.prototype.deleteRequest = function(data) {
     console.log('malformed data in deleteRequest - no tabId');
   }
 };
+
+LatencyData.prototype.tabUpdated = function(tabId, changeInfo, tab) {
+  if (!(tabId in this.tab)) {
+    this.tab[tabId] = new TabData();
+  }
+  this.tab[tabId].tabUpdated(changeInfo, tab);
+}

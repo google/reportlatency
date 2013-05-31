@@ -37,3 +37,19 @@ test('LatencyData.*Request', function() {
   var ts = ld.tab[1].stat;
   equal(ts.count('request'), 1, '1 request for tab 1');
 });
+
+test('LatencyData.tabUpdated', function() {
+  var ld = new LatencyData();
+  var tab = {
+    status: 'loading',
+    url: 'http://server/path',
+    tabId: 1,
+  };
+  var changeInfo = {};
+  ld.tabUpdated(1, changeInfo, tab);
+  tab.status = 'complete';
+  ld.tabUpdated(1, changeInfo, tab);
+
+  var ts = ld.tab[1].stat;
+  equal(ts.count('tabupdate'), 1, '1 tabupdate for tab 1');
+});

@@ -43,10 +43,15 @@ test('TabData.endRequest', function() {
 test('TabData.tabUpdated', function() {
   var t = new TabData();
 
-  var data = { status: 'loading' };
-  t.tabUpdated(data);
-  data.status = 'complete';
-  t.endRequest(data);
+  var tab = {
+    status: 'loading',
+    url: 'http://server/path',
+    tabId: 1,
+  };
+  var changeInfo = {};
+  t.tabUpdated(changeInfo, tab);
+  tab.status = 'complete';
+  t.tabUpdated(changeInfo, tab);
 
   equal(t.stat.count('tabupdate'), 1, 'tabUpdated left 1 recorded tabupdate');
 });
