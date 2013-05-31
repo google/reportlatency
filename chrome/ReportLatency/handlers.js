@@ -76,57 +76,6 @@ function postLatencyCheck(skipname) {
   }
 }
 
-/**
- * tabUpdated() is a callback for when a Chrome tab has been updated.
- *
- * @param {number} tabId is the tab ID number in Chrome.
- * @param {object} changeInfo is an object with just the tab changes.
- * @param {object} tab is the full tab object available in Chrome.
- **/
-function tabUpdated(tabId, changeInfo, tab) {
-  if (!isWebUrl(tab.url)) { return; }
-  var d = new Date();
-
-  debugLog('tabUpdated(tabId:' + tabId + ') updated at ' +
-      d.getTime() + ' (' + d + ')');
-  debugLogObject('changeInfo', changeInfo);
-  debugLogObject('tab', tab);
-
-  if (tab.status == 'loading') {
-    tabupdate[tabId] = {};
-    tabupdate[tabId].changeInfo = changeInfo;
-    tabupdate[tabId].start = d.getTime();
-  } else if (tab.status == 'complete') {
-    if (tabupdate[tabId]) {
-      var delay = d.getTime() - tabupdate[tabId].start;
-      debugLog('tab ' + tabId + ' (' + tab.url + ') updated in ' +
-          delay + 'ms' + ' at ' + d.getTime());
-
-      if (navigation[tabId]) {
-        if (navigation[tabId]['0']) {
-          if (navigation[tabId]['0']['final']) {
-	    var final_name = navigation[tabId]['0']['final'];
-	    if (!(final_name in serviceStats)) {
-	      serviceStats[final_name] = new NameStats();
-	    }
-	    serviceStats[final_name].add(aggregateName(tab.url),
-					 'tabupdate', delay);
-          } else {
-	    if (!(tabId in tabStats)) {
-	      tabStats[tabId] = new NameStats();
-	    }
-            tabStats[tabId].add(aggregateName(tab.url),
-				'tabupdate', delay);
-          }
-        }
-        delete tabupdate[tabId];
-      } else {
-        debugLog('unexpected tabupdate received by tab ' + tabId +
-            ' (' + tab.url + ')');
-      }
-    }
-  }
-}
 
 /**
  * tabCreated() is a callback for when a Chrome tab has been created.
