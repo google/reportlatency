@@ -24,12 +24,14 @@ TEST_SOURCE:=$(shell ls -1 *_tests.js 2>/dev/null)
 
 GLOBAL_DEFAULTS:=$(shell ls -1 global_*.js 2>/dev/null)
 
+SOURCE=functions.js stat.js latencystats.js namestats.js servicestats.js tabdata.js latencydata.js
+
 all: $(TARGETS)
 
-eventPage.js: globals.js $(GLOBAL_DEFAULTS) functions.js stat.js latencystats.js $(SERVICE_SOURCE) handlers.js
+eventPage.js: globals.js $(GLOBAL_DEFAULTS) $(SOURCE) $(SERVICE_SOURCE) handlers.js
 	cat $^ >$@
 
-testable.js: globals.js functions.js stat.js latencystats.js $(SERVICE_SOURCE)
+testable.js: globals.js $(SOURCE) $(SERVICE_SOURCE)
 	cat $^ >$@
 
 tests.js: $(TEST_SOURCE)

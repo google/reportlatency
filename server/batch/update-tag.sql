@@ -43,4 +43,6 @@ INSERT INTO tag
     LEFT JOIN tag t2 ON t2.name = report.final_name 
     WHERE t2.name IS NULL AND report.final_name NOT LIKE domain.notmatch; 
 
+.read /var/lib/reportlatency/data/tag.sql
+
 END;

@@ -59,3 +59,14 @@ test('LatencyStats.params', function() {
       'values');
 });
 
+test('LatencyStats.count', function() {
+  var s = new LatencyStats();
+
+  s.add('navigation', 5);
+  s.add('navigation', 10);
+  s.add('request', 2);
+  equal(s.count('navigation'), 2, '2 navigations added');
+  equal(s.count('request'), 1, '1 request added');
+  equal(s.count('tabupdates'), 0, '0 tabupdates');
+});
+

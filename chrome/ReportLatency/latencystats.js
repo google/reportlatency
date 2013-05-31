@@ -77,3 +77,14 @@ LatencyStats.prototype.params = function(name) {
   }
   return params;
 };
+
+/**
+ * @param {string} measurement is the name to aggregate.
+ * @returns {number} the count field for the requested measurement Stat
+ */
+LatencyStats.prototype.count = function(measurement) {
+  if (measurement in this.stat) {
+    return this.stat[measurement].count;
+  }
+  return 0;
+};

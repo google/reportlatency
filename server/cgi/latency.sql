@@ -65,12 +65,19 @@ CREATE TABLE tag (
 CREATE INDEX idx14 on tag(name);
 CREATE INDEX idx15 on tag(tag);
 
--- allow grouping of remote_addresses by broader location tags
+-- For speed cache reverse DNS lookups on REMOTE_ADDR or HTTP_X_FORWARDED_FOR.
+-- Location defaults to the class C or subdomain if available,
+-- but may be overridden by local office names, etc.
+-- Purge old entries periodically, to pull fresh reverse DNS entries.
 CREATE TABLE location (
-  remote_addr_prefix	TEXT,
+  timestamp DATE,
+  ip	TEXT,
+  rdns	TEXT,
   location TEXT
 );
 CREATE INDEX idx11 ON location(location);
+CREATE INDEX idx16 ON location(timestamp);
+CREATE INDEX idx17 ON location(ip);
 
 
 CREATE TABLE domain (

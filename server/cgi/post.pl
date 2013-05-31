@@ -17,6 +17,7 @@
 use DBI;
 use CGI;
 use ReportLatency::utils;
+use ReportLatency::Store;
 use strict;
 
 # process these form parameters and insert into same table columns
@@ -30,12 +31,6 @@ my @params = qw( name final_name tz
                  navigation_committed_total navigation_committed_count
                  navigation_committed_high
               );
-
-
-sub aggregate_remote_address($) {
-  my ($addr) = @_;
-  return $addr;
-}
 
 
 sub aggregate_user_agent($) {
@@ -71,13 +66,16 @@ sub insert_command {
 
 sub main {
   my $dbh = latency_dbh();
+  my $store = new ReportLatency::Store(dbh => $dbh);
 
   my $cmd = insert_command(@params);
   my $insert = $dbh->prepare($cmd);
 
   my $q = CGI->new;
                                                                 
-  my $remote_addr = aggregate_remote_address($ENV{'REMOTE_ADDR'});
+  my $remote_addr =
+    $store->aggregate_remote_address($ENV{'REMOTE_ADDR'},
+				     $ENV{'HTTP_X_FORWARDED_FOR'});
   my $user_agent = aggregate_user_agent($ENV{'HTTP_USER_AGENT'});
   my @insert_values;
 

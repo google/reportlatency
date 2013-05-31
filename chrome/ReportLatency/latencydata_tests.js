@@ -1,9 +1,9 @@
 
 /**
- * @fileoverview globals.js has the initialization for the global statistics
- *   structures used by the Chrome extension, its unit tests, and the options
- *   configuration page.
- * @author dld@google.com (Drake Diedrich)
+
+ * @fileoverview This file contains QUnit tests for the LatencyData
+ * object - the top data object used in ReportLatency.
+ * @author dld@google.com (DrakeDiedrich)
  *
  * Copyright 2013 Google Inc. All Rights Reserved.
  *
@@ -20,17 +20,20 @@
  * limitations under the License.
  */
 
-'use strict';
+test('LatencyData.*Request', function() {
+  var ld = new LatencyData();
+  var data = {
+    url: 'http://server/path',
+    tabId: 1,
+    requestId: 20,
+    timeStamp: 1000
+  };
 
-var optionDefault = {};
-optionDefault['report_to'] = 'http://localhost/reportlatency/post';
+  ld.startRequest(data);
 
-// service_group{id}{'name'}
-//            {'description'}
-//            {'function'}
-var serviceGroup = {};
+  data.timeStamp = 2000;
+  ld.endRequest(data);
 
-
-var lastPostLatency = 0;
-var postLatencyCheckCalls = 0;
-
+  var ts = ld.tab[1].stat;
+  equal(ts.count('request'), 1, '1 request for tab 1');
+});

@@ -31,6 +31,7 @@ override_dh_auto_install:
 	cp ReportLatency/*.pm debian/reportlatency/usr/share/perl5/ReportLatency
 	cp batch/*.pl batch/*.sql debian/reportlatency/usr/share/reportlatency/
 	cp cgi/*.sql debian/reportlatency/usr/share/reportlatency/
+	cp tag/*.sql debian/reportlatency/etc/reportlatency/tag.d/
 	cp debian/apache2.conf debian/reportlatency/etc/reportlatency/
 	for f in cgi/*.pl ; do cp $$f debian/reportlatency/usr/lib/cgi-bin/reportlatency/`basename $$f .pl` ; done
 	chmod ugo+rx debian/reportlatency/usr/lib/cgi-bin/reportlatency/*
