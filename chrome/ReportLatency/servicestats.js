@@ -50,19 +50,13 @@ ServiceStats.prototype.add = function(service, name, latency, delta) {
  * Combine two measurements, zeroing one and transfering all counts to this
  *
  * @param {string} name is the service name to transfer tabId.
- * @param {number} tabId is the tab ID number to transfer into this.
  * @param {Object} tabStats is the source TabStats object.
  */
-ServiceStats.prototype.transfer = function(name, tabId, tabStats) {
-  if (tabId in tabStats.stat) {
-    if (name in this.stat) {
-      this.stat[name].transfer(tabStats.stat[tabId]);
-    } else {
-      this.stat[name] = tabStats.stat[tabId];
-    }
-    tabStats.delete(tabId);
+ServiceStats.prototype.transfer = function(name, tabStats) {
+  if (name in this.stat) {
+    this.stat[name].transfer(tabStats);
   } else {
-    console.log(tabId + ' not in tabStats.stat[]');
+    this.stat[name] = tabStats;
   }
 };
 

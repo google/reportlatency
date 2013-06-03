@@ -26,7 +26,7 @@
  */
 function LatencyData() {
   this.tab = {};
-  this.serviceData = new ServiceData();
+  this.stats = new ServiceStats();
 }
 
 
@@ -134,14 +134,16 @@ LatencyData.prototype.startNavigation = function(data) {
 
 /**
  * Records end of a navigation.
+ * Handles tasks postponed until service name was known.
  *
- * @param {object} data is the callback data for Chrome's onCompletedNavigation()
+ * @param {object} data is the callback data for onCompletedNavigation()
  *
  */
 LatencyData.prototype.endNavigation = function(data) {
   if ('tabId' in data) {
     if (data.tabId in this.tab) {
       this.tab[data.tabId].endNavigation(data);
+      this.stats.transfer(this.tab[data.tabId].stat);
     } else {
       console.log(data.tabId + ' tabId not found in endNavigation');
     }

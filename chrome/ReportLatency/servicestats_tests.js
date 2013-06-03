@@ -28,6 +28,28 @@ test('ServiceStats.add', function() {
 	5, 'single total');
 });
 
+test('ServiceStats.transfer', function() {
+  var s = new ServiceStats();
+  var n = new NameStats();
+
+  n.add('name', 'navigation', 3);
+  s.transfer('service', n);
+  equal(n.empty(), false, 'NameStats not empty');
+  equal(s.stat['service'].stat['name'].stat['navigation'].count, 1,
+	'1 navigations added');
+
+  n.add('name', 'request', 2);
+  equal(s.stat['service'].stat['name'].stat['request'].count, 1,
+	'1 request passed through');
+
+  n = new NameStats();
+  n.add('name', 'navigation', 5);
+  s.transfer('service', n);
+  equal(n.empty(), true, 'NameStats now empty');
+  equal(s.stat['service'].stat['name'].stat['navigation'].count, 2,
+	'2 navigations added');
+});
+
 test('ServiceStats.best', function() {
   var s = new ServiceStats();
 
