@@ -77,78 +77,52 @@ function postLatencyCheck(skipname) {
 }
 
 
-/**
- * tabCreated() is a callback for when a Chrome tab has been created.
- *
- * @param {object} tab is the full tab object available in Chrome.
- **/
-function tabCreated(tab) {
-  if (!isWebUrl(tab.url)) { return; }
-  var d = new Date();
-  debugLog('tabCreated(tab:' + tab.id +
-      ' url:' + tab.url + ') updated at ' +
-      d.getTime() + ' (' + d + ')');
-}
 
-
-// webNavigation requests.  Might be true start of a request.
-// regular page lifecycle
-
-/**
- * onBeforeNavigate() is a callback for when a Navigation event starts.
- *
- * @param {object} data holds all information about the navigation request.
- **/
 function onBeforeNavigate(data) {
-  if (!isWebUrl(data.url)) {
-    debugLog('onBeforeNavigate(' + data.url + ') not web');
-    return;
-  }
-
-  var d = new Date();
-  var s = 'onBeforeNavigate() fired at ' + d.getTime();
-  debugLogObject(s, data);
-
-  postLatencyCheck(aggregateName(data.url));
-
-  // the parent isn't finished until all subframes complete,
-  // so they have to be linked up at launch so the completed time
-  // can be delayed
-
-  if (!navigation[data.tabId]) {
-    navigation[data.tabId] = {};
-  }
-
-  // TODO - make sure any data left is sent out before wipe
-
-  // wipe out any pre-existing frame here - it's gone
-  navigation[data.tabId][data.frameId] = {};
-
-  navigation[data.tabId][data.frameId]['original'] =
-      aggregateName(data.url);
-
-  if (data.parentFrameId >= 0) {
-    navigation[data.tabId][data.frameId]['parent'] =
-        data.parentFrameId;
-  }
-
-  navigation[data.tabId][data.frameId]['start'] =
-      data.timeStamp;
-
-
+  latencyData.startNavigation(data);
 }
+chrome.webNavigation.onBeforeNavigate.addListener(onBeforeNavigate);
+
+function onCompletedNavigation(data) {
+  latencyData.endNavigation(data);
+}
+chrome.webNavigation.onCompleted.addListener(onCompletedNavigation);
+
+function onNavigationError(data) {
+  latencyData.deleteNavigation(data);
+}
+chrome.webNavigation.onErrorOccurred.addListener(onNavigationError);
 
 
-chrome.tabs.onUpdated.addListener(latencyData.tabUpdated);
-chrome.tabs.onRemoved.addListener(latencyData.tabRemoved);
-chrome.webNavigation.onBeforeNavigate.addListener(latencyData.startNavigation);
-chrome.webNavigation.onCompleted.addListener(latencyData.endNavigation);
-chrome.webNavigation.onErrorOccurred.addListener(latencyData.deleteNavigation);
-chrome.webRequest.onBeforeRequest.addListener( latencyData.startRequest,
+
+function onTabUpdated(tabId, changeInfo, tab) {
+  latencyData.tabUpdated(tabId, changeInfo, tab);
+}
+chrome.tabs.onUpdated.addListener(onTabUpdated);
+
+function onTabRemoved(tabId, removeInfo) {
+  latencyData.tabRemoved(tabId, removeInfo);
+}
+chrome.tabs.onRemoved.addListener(onTabRemoved);
+
+
+function onBeforeRequest(data) {
+  latencyData.startRequest(data);
+}
+chrome.webRequest.onBeforeRequest.addListener( onBeforeRequest,
 					       { urls: ['*://*/*'] });
-chrome.webRequest.onBeforeRedirect.addListener( latencyData.endRequest,
+chrome.webRequest.onBeforeRedirect.addListener( onBeforeRequest,
 						{ urls: ['*://*/*'] });
-chrome.webRequest.onCompleted.addListener( latencyData.endRequest,
+
+
+function onCompletedRequest(data) {
+  latencyData.endRequest(data);
+}
+chrome.webRequest.onCompleted.addListener( onCompletedRequest,
 					   { urls: ['*://*/*'] });
-chrome.webRequest.onErrorOccurred.addListener( latencyData.deleteRequest,
+
+function onRequestError(data) {
+  latencyData.deleteRequest(data);
+}
+chrome.webRequest.onErrorOccurred.addListener( onRequestError,
 					       { urls: ['*://*/*'] });

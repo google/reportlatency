@@ -25,8 +25,7 @@
  * @constructor
  */
 function LatencyData() {
-  console.log('new LatencyData()');
-  this.tab = {}
+  this.tab = {};
 }
 
 
@@ -91,6 +90,8 @@ LatencyData.prototype.deleteRequest = function(data) {
  *
  */
 LatencyData.prototype.tabUpdated = function(tabId, changeInfo, tab) {
+  console.log('LatencyData.tabUpdated(' + tabId + ',...');
+  debugLogObject('this', this);
   if (!(tabId in this.tab)) {
     this.tab[tabId] = new TabData();
   }
@@ -116,7 +117,7 @@ LatencyData.prototype.tabRemoved = function(tabId, removeInfo) {
 /**
  * Records a start of a navigation.
  *
- * @param {object} data is the callback data for Chrome's onBeforeRequest()
+ * @param {object} data is the callback data for Chrome's onBeforeNavigate()
  *
  */
 LatencyData.prototype.startNavigation = function(data) {
@@ -133,7 +134,7 @@ LatencyData.prototype.startNavigation = function(data) {
 /**
  * Records end of a navigation.
  *
- * @param {object} data is the callback data for Chrome's onCompletedRequest()
+ * @param {object} data is the callback data for Chrome's onCompletedNavigation()
  *
  */
 LatencyData.prototype.endNavigation = function(data) {
