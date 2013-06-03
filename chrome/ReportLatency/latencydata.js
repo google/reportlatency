@@ -26,6 +26,7 @@
  */
 function LatencyData() {
   this.tab = {};
+  this.serviceData = new ServiceData();
 }
 
 
@@ -159,6 +160,7 @@ LatencyData.prototype.deleteNavigation = function(data) {
   if ('tabId' in data) {
     if (data.tabId in this.tab) {
       this.tab[data.tabId].deleteNavigation(data);
+      delete this.tab[data.tabId];
     } else {
       console.log(data.tabId + ' tabId not found in deleteNavigation()');
     }
