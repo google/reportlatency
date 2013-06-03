@@ -143,7 +143,10 @@ LatencyData.prototype.endNavigation = function(data) {
   if ('tabId' in data) {
     if (data.tabId in this.tab) {
       this.tab[data.tabId].endNavigation(data);
-      this.stats.transfer(this.tab[data.tabId].stat);
+      if ('service' in this.tab[data.tabId]) {
+	var service = this.tab[data.tabId].service;
+	this.stats.transfer(service, this.tab[data.tabId].stat);
+      }
     } else {
       console.log(data.tabId + ' tabId not found in endNavigation');
     }
