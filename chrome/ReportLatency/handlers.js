@@ -281,13 +281,13 @@ function onErrorOccurredRequest(data) {
 
 
 chrome.tabs.onUpdated.addListener(ld.tabUpdated);
-chrome.tabs.onCreated.addListener(tabCreated);
-chrome.webNavigation.onBeforeNavigate.addListener(onBeforeNavigate);
-chrome.webNavigation.onCompleted.addListener(onCompletedNavigation);
+//chrome.tabs.onCreated.addListener(tabCreated);
+chrome.webNavigation.onBeforeNavigate.addListener(ld.startNavigation);
+chrome.webNavigation.onCompleted.addListener(ld.endNavigation);
 //chrome.webNavigation.onErrorOccurred.addListener(onErrorOccurred);
-chrome.webNavigation.onReferenceFragmentUpdated.addListener(
-    onReferenceFragmentUpdated);
-chrome.webNavigation.onTabReplaced.addListener(onTabReplaced);
+//chrome.webNavigation.onReferenceFragmentUpdated.addListener(
+//    onReferenceFragmentUpdated);
+//chrome.webNavigation.onTabReplaced.addListener(onTabReplaced);
 chrome.webRequest.onBeforeRequest.addListener( ld.startRequest,
 					       { urls: ['*://*/*'] });
 chrome.webRequest.onBeforeRedirect.addListener( ld.endRequest,

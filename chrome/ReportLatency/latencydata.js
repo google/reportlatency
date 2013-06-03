@@ -84,9 +84,52 @@ LatencyData.prototype.deleteRequest = function(data) {
   }
 };
 
+/**
+ * Forward starts and completions of tabupdates to the appropriate
+ * TabData object.
+ *
+ * @param {object} data is the callback data for Chrome's onBeforeRequest()
+ *
+ */
 LatencyData.prototype.tabUpdated = function(tabId, changeInfo, tab) {
   if (!(tabId in this.tab)) {
     this.tab[tabId] = new TabData();
   }
   this.tab[tabId].tabUpdated(changeInfo, tab);
 }
+
+/**
+ * Records a start of a navigation.
+ *
+ * @param {object} data is the callback data for Chrome's onBeforeRequest()
+ *
+ */
+LatencyData.prototype.startNavigation = function(data) {
+  if ('tabId' in data) {
+    if (!(data.tabId in this.tab)) {
+      this.tab[data.tabId] = new TabData();
+    }
+    this.tab[data.tabId].startNavigation(data);
+  } else {
+    console.log('malformed data in startNavigation - no tabId');
+  }
+};
+
+/**
+ * Records end of a navigation.
+ *
+ * @param {object} data is the callback data for Chrome's onCompletedRequest()
+ *
+ */
+LatencyData.prototype.endNavigation = function(data) {
+  if ('tabId' in data) {
+    if (data.tabId in this.tab) {
+      this.tab[data.tabId].endNavigation(data);
+    } else {
+      console.log(data.tabId + ' tabId not found in endNavigation');
+    }
+  } else {
+    console.log('malformed data in endNavigation - no tabId');
+  }
+};
+

@@ -55,3 +55,29 @@ test('TabData.tabUpdated', function() {
 
   equal(t.stat.count('tabupdate'), 1, 'tabUpdated left 1 recorded tabupdate');
 });
+
+
+test('TabData.startNavigation', function() {
+  var t = new TabData();
+
+  var data = { frameId:0, parentFrameId:-1, processId:2999, tabId:30,
+	       timeStamp:1000, url:'http://host/' };
+  t.startNavigation(data);
+
+  equal(t.navigation.frameId, 0, 'frameId');
+});
+
+test('TabData.endNavigation', function() {
+  var t = new TabData();
+
+  var data = { frameId:0, parentFrameId:-1, processId:2999, tabId:30,
+	       timeStamp:1000, url:'http://host/' };
+  t.startNavigation(data);
+  delete data['parentFrameId'];
+  data.timestamp = 1001;
+  t.endNavigation(data);
+
+  equal(t.stat.count('navigation'), 1, 'endNavigation left 1 recorded requests');
+  equal(t.service, '.', "TabData.service == '.'");
+});
+

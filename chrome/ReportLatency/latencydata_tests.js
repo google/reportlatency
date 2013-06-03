@@ -53,3 +53,17 @@ test('LatencyData.tabUpdated', function() {
   var ts = ld.tab[1].stat;
   equal(ts.count('tabupdate'), 1, '1 tabupdate for tab 1');
 });
+
+test('LatencyData.*Navigation', function() {
+  var ld = new LatencyData();
+  var data = { frameId:0, parentFrameId:-1, processId:2999, tabId:30,
+	       timeStamp:1000, url:'http://host/' };
+
+  ld.startNavigation(data);
+
+  data.timeStamp = 2000;
+  ld.endNavigation(data);
+
+  var ts = ld.tab[30].stat;
+  equal(ts.count('navigation'), 1, '1 navigation for tab 30');
+});
