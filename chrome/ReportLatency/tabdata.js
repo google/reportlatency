@@ -186,3 +186,15 @@ TabData.prototype.endNavigation = function(data) {
     // Meh.  Don't care about subframe navigation events.
   }
 };
+
+/**
+ * endNavigation() is a callback for when a Navigation event completes.
+ *
+ * @param {object} data about the navigation from Chrome onCompletedNavigation().
+ *
+ */
+TabData.prototype.deleteNavigation = function(data) {
+  if ('navigation' in this) {
+    delete this['navigation'];
+  }
+};

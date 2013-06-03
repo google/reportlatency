@@ -27,7 +27,6 @@
 function LatencyData() {
   console.log('new LatencyData()');
   this.tab = {}
-  this.service = {};
 }
 
 
@@ -99,6 +98,22 @@ LatencyData.prototype.tabUpdated = function(tabId, changeInfo, tab) {
 }
 
 /**
+ * Delete the appropriate TabData object when tab is removed.
+ *
+ * @param {number} tabId is the callback data for Chrome's onRemoved()
+ * @param {object} removeInfo is the callback data for Chrome's onRemoved()
+ *
+ */
+LatencyData.prototype.tabRemoved = function(tabId, removeInfo) {
+  if (tabId in this.tab) {
+    delete this.tab[tabId];
+  } else {
+    console.log('delete for missing tabId ' + tabId + 
+		' received in tabRemoved()');
+  }
+}
+
+/**
  * Records a start of a navigation.
  *
  * @param {object} data is the callback data for Chrome's onBeforeRequest()
@@ -130,6 +145,24 @@ LatencyData.prototype.endNavigation = function(data) {
     }
   } else {
     console.log('malformed data in endNavigation - no tabId');
+  }
+};
+
+/**
+ * Records end of a web navigation..
+ *
+ * @param {object} data is the callback data for Chrome's onErrorOccurred()
+ *
+ */
+LatencyData.prototype.deleteNavigation = function(data) {
+  if ('tabId' in data) {
+    if (data.tabId in this.tab) {
+      this.tab[data.tabId].deleteNavigation(data);
+    } else {
+      console.log(data.tabId + ' tabId not found in deleteNavigation()');
+    }
+  } else {
+    console.log('malformed data in deleteNavigation() - no tabId');
   }
 };
 

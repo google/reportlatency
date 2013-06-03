@@ -138,161 +138,17 @@ function onBeforeNavigate(data) {
 
 }
 
-/**
- * onCompletedNavigation() is a callback for when a Navigation event completes.
- *
- * @param {object} data holds all information about the navigation event.
- **/
-function onCompletedNavigation(data) {
-  if (!isWebUrl(data.url)) {
-    debugLog('onCompletedNavigation(' + data.url + ') not web');
-    return;
-  }
 
-  var d = new Date();
-  var s = 'onCompletedNavigation(' + data.url +
-      ') in ' + delay + ' ms at ' + d.getTime();
-  debugLogObject(s, data);
-
-  if (navigation[data.tabId][data.frameId].hasOwnProperty('parent')) {
-    // Meh.  Don't care about subframe navigation events.
-  } else {
-    // top level frame
-    var delay = data.timeStamp -
-        navigation[data.tabId][data.frameId]['start'];
-
-
-    var final_name = aggregateName(data.url);
-    navigation[data.tabId][data.frameId]['final'] = final_name;
-
-    var original_name = navigation[data.tabId][data.frameId]['original'];
-    serviceStats.add(final_name, original_name, 'navigation', delay);
-
-    serviceStats.transfer(final_name, data.tabId, tabStats);
-  }
-}
-
-
-
-/**
- * onErrorOccurred() is a callback for when a failed Navigation event.
- *
- * @param {object} data holds all information about the navigation event.
- **/
-function onErrorOccurred(data) {
-  var d = new Date();
-  debugLogObject('onErrorOccurred() received at ' +
-      d.getTime(), data);
-}
-
-
-/**
- * onReferenceFragmentUpdated() is a callback for when an in-page navigation.
- *
- * @param {object} data holds all information about the navigation event.
- **/
-function onReferenceFragmentUpdated(data) {
-  var d = new Date();
-  debugLogObject('onReferenceFragmentUpdated(' + data.url +
-      ') received at ' + d.getTime(), data);
-}
-
-/**
- * onTabReplaced() is a callback for a Chrome Tab that is replaced.
- *
- * @param {object} data holds all information about the tabupdate event.
- **/
-function onTabReplaced(data) {
-  var d = new Date();
-  debugLogObject('onTabReplaced(' + data.url +
-      ') received at ' + d.getTime(), data);
-}
-
-
-/**
- * onBeforeRequest() is a callback before every webRequest.
- *
- * @param {object} data holds all information about the request.
- **/
-function onBeforeRequest(data) {
-  debugLogObject('onBeforeRequest()', data);
-
-  request[data.requestId] = data;
-}
-
-
-/**
- * onCompletedRequest() is a callback on completion of successful web requests.
- *
- * @param {object} data holds all information about the request.
- **/
-function onCompletedRequest(data) {
-  if (data.fromCache) {
-    debugLog('onCompletedRequest(' + data.url + ') took ' +
-        delay + 'ms at ' + data.timeStamp + ' fromCache');
-    if (request[data.requestId]) {
-      delete request[data.requestId];
-    }
-    return;
-  }
-
-  if (data.requestId in request) {
-    var delay = data.timeStamp - request[data.requestId].timeStamp;
-    console.log('onCompletedRequest(' + data.requestId + ',' + data.url +
-		') took ' + delay + 'ms at ' + data.timeStamp);
-    debugLogObject('onCompletedRequest() took ' +
-        delay + 'ms at ' + data.timeStamp, data);
-
-    if (navigation[data.tabId]) {
-      if (navigation[data.tabId]['0']) {
-        if (navigation[data.tabId]['0']['final']) {
-          var final_name = navigation[data.tabId]['0']['final'];
-	  var ns = serviceStats.service(final_name);
-	  ns.add(aggregateName(data.url), 'request', delay);
-        } else {
-	  var ns = tabStats.nameStats(data.tabId);
-	  ns.add(aggregateName(data.url), 'request', delay);
-        }
-      }
-    } else {
-      // arrived after webNavigationCompleted(), nowhere to log
-      debugLog('  requestId ' + data.requestId + ' (' + data.url +
-               ') not in request[]');
-      console.log('  requestId ' + data.requestId + ' (' + data.url +
-               ') not in request[]');
-    }
-    delete request[data.requestId];
-  } else {
-    debugLogObject('onCompletedRequest() start not recorded', data);
-    console.log('onCompletedRequest() start not recorded');
-  }
-}
-
-
-/**
- * onErrorOccurredRequest() is a callback on failed web requests.
- *
- * @param {object} data holds all information about the request.
- **/
-function onErrorOccurredRequest(data) {
-  debugLogObject('onErrorOccurredRequest()', data);
-  delete request[data.requestId];
-}
-
-
-chrome.tabs.onUpdated.addListener(ld.tabUpdated);
-//chrome.tabs.onCreated.addListener(tabCreated);
-chrome.webNavigation.onBeforeNavigate.addListener(ld.startNavigation);
-chrome.webNavigation.onCompleted.addListener(ld.endNavigation);
-//chrome.webNavigation.onErrorOccurred.addListener(onErrorOccurred);
-//chrome.webNavigation.onReferenceFragmentUpdated.addListener(
-//    onReferenceFragmentUpdated);
-//chrome.webNavigation.onTabReplaced.addListener(onTabReplaced);
-chrome.webRequest.onBeforeRequest.addListener( ld.startRequest,
+chrome.tabs.onUpdated.addListener(latencyData.tabUpdated);
+chrome.tabs.onRemoved.addListener(latencyData.tabRemoved);
+chrome.webNavigation.onBeforeNavigate.addListener(latencyData.startNavigation);
+chrome.webNavigation.onCompleted.addListener(latencyData.endNavigation);
+chrome.webNavigation.onErrorOccurred.addListener(latencyData.deleteNavigation);
+chrome.webRequest.onBeforeRequest.addListener( latencyData.startRequest,
 					       { urls: ['*://*/*'] });
-chrome.webRequest.onBeforeRedirect.addListener( ld.endRequest,
+chrome.webRequest.onBeforeRedirect.addListener( latencyData.endRequest,
 						{ urls: ['*://*/*'] });
-chrome.webRequest.onCompleted.addListener( ld.endRequest,
+chrome.webRequest.onCompleted.addListener( latencyData.endRequest,
 					   { urls: ['*://*/*'] });
-chrome.webRequest.onErrorOccurred.addListener( ld.deleteRequest,
+chrome.webRequest.onErrorOccurred.addListener( latencyData.deleteRequest,
 					       { urls: ['*://*/*'] });
