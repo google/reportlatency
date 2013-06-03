@@ -91,8 +91,6 @@ LatencyData.prototype.deleteRequest = function(data) {
  *
  */
 LatencyData.prototype.tabUpdated = function(tabId, changeInfo, tab) {
-  console.log('LatencyData.tabUpdated(' + tabId + ',...');
-  debugLogObject('this', this);
   if (!(tabId in this.tab)) {
     this.tab[tabId] = new TabData();
   }
@@ -165,7 +163,6 @@ LatencyData.prototype.deleteNavigation = function(data) {
   if ('tabId' in data) {
     if (data.tabId in this.tab) {
       this.tab[data.tabId].deleteNavigation(data);
-      delete this.tab[data.tabId];
     } else {
       console.log(data.tabId + ' tabId not found in deleteNavigation()');
     }
