@@ -144,6 +144,7 @@ LatencyData.prototype.endNavigation = function(data) {
       if ('service' in this.tab[data.tabId]) {
 	var service = this.tab[data.tabId].service;
 	this.stats.transfer(service, this.tab[data.tabId].stat);
+	this.postLatency(service);
       }
     } else {
       console.log(data.tabId + ' tabId not found in endNavigation');
@@ -170,4 +171,62 @@ LatencyData.prototype.deleteNavigation = function(data) {
     console.log('malformed data in deleteNavigation() - no tabId');
   }
 };
+
+/**
+ * Post Latency summaries to central server.
+ * Post just one summary at a time for interactivity.  Choose a good one.
+ * The details object is used in this selection.
+
+ * @param {string} skip is a servicename to skip reports for
+ **/
+LatencyData.prototype.postLatency = function(skip) {
+  console.log('postLatency()');
+
+  var bestFinal = this.stats.best(skip);
+  if (!bestFinal) {
+    return;
+  }
+  console.log("bestFinal = " + bestFinal);
+  var bestService = this.stats.service(bestFinal);
+  var bestOriginal = bestService.best(skip);
+
+  if (bestFinal && bestOriginal) {
+    var req = new XMLHttpRequest();
+    var params = 'name=' + bestOriginal + '&final_name=' + bestFinal +
+        '&tz=' + timeZone(Date());
+    params += bestService.stat[bestOriginal].params();
+
+    console.log('  posting ' + params);
+    req.open('POST', reportToUrl(), true);
+    req.setRequestHeader('Content-type',
+                         'application/x-www-form-urlencoded');
+    req.send(params);
+    this.stats.delete(bestFinal,bestOriginal);
+    this.reportExtensionStats();
+  }
+
+}
+
+/**
+ * reportExtensionStats() writes some stats about the pending and
+ * completed events the extension has seen to the console.
+ *
+ **/
+LatencyData.prototype.reportExtensionStats = function() {
+  console.log('ReportLatency');
+  var services = '';
+  for (var n in this.stats.stat) {
+    services = services.concat(' ' + n );
+  }
+  /*
+  console.log('  ' + Object.keys(navigation).length +
+              ' outstanding navigations');
+  console.log('  ' + Object.keys(request).length +
+              ' outstanding requests');
+  console.log('  ' + Object.keys(tabupdate).length +
+              ' outstanding tabupdates');
+  */
+  console.log('  ' + Object.keys(this.stats.stat).length +
+              ' pending service reports:' + services);
+}
 

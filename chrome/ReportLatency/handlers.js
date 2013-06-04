@@ -23,61 +23,6 @@
 
 var latencyData = new LatencyData();
 
-/**
- * Post Latency summaries to central server.
- * Post just one summary at a time for interactivity.  Choose a good one.
- * The details object is used in this selection.
-
- * @param {Object} details has some recent state of the extension.
- **/
-function postLatency(details) {
-  debugLogObject('postLatency()', details);
-
-  var bestFinal = serviceStats.best(details.skip);
-  if (!bestFinal) {
-    return;
-  }
-  console.log("bestFinal = " + bestFinal);
-  var bestService = serviceStats.service(bestFinal);
-  var bestOriginal = bestService.best(details.skip);
-
-  if (bestFinal && bestOriginal) {
-    var req = new XMLHttpRequest();
-    var params = 'name=' + bestOriginal + '&final_name=' + bestFinal +
-        '&tz=' + timeZone(Date());
-    params += bestService.stat[bestOriginal].params();
-
-    console.log('  posting ' + params);
-    req.open('POST', reportToUrl(), true);
-    req.setRequestHeader('Content-type',
-                         'application/x-www-form-urlencoded');
-    req.send(params);
-    serviceStats.delete(bestFinal,bestOriginal);
-    lastPostLatency = new Date().getTime();
-    reportExtensionStats();
-  }
-
-}
-
-/**
- * Call postLatency() to post a latency report if either enough time has
- * passed or many calls to this have already been made.  This reduces load
- * on the server and can be tuned as needed.
-
- * @param {string} skipname has a service name to skip over.
- **/
-function postLatencyCheck(skipname) {
-  var d = new Date();
-  postLatencyCheckCalls++;
-  if (d.getTime() - lastPostLatency > 10000 ||
-      postLatencyCheckCalls > 10) {
-    postLatencyCheckCalls = 0;
-    postLatency({ 'skip': skipname });
-  }
-}
-
-
-
 function onBeforeNavigate(data) {
   latencyData.startNavigation(data);
 }

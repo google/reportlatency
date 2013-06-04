@@ -103,27 +103,6 @@ function threeLevelDomain(hostname) {
   }
 }
 
-/**
- * reportExtensionStats() writes some stats about the pending and
- * completed events the extension has seen to the console.
- *
- **/
-function reportExtensionStats() {
-  console.log('ReportLatency');
-  var services = '';
-  for (var n in serviceStats.stat) {
-    services = services.concat(' ' + n );
-  }
-  console.log('  ' + Object.keys(navigation).length +
-              ' outstanding navigations');
-  console.log('  ' + Object.keys(request).length +
-              ' outstanding requests');
-  console.log('  ' + Object.keys(tabupdate).length +
-              ' outstanding tabupdates');
-  console.log('  ' + Object.keys(serviceStats.stat).length +
-              ' pending service reports:' + services);
-}
-
 
 /**
  * @param {string} hostname is the full hostname.
