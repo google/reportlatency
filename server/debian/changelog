@@ -1,3 +1,9 @@
+reportlatency (1.0.0) precise; urgency=low
+
+  * Add JSON-RPC protocol for larger reports
+
+ -- Drake Diedrich <dld@google.com>  Tue, 04 Jun 2013 12:47:36 -0700
+
 reportlatency (0.10.1) precise; urgency=low
 
   * Report aggregate latency by location in service page

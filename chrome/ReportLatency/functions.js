@@ -44,10 +44,21 @@ function debugLog(str) {
  **/
 function debugLogObject(str, o) {
   if (localStorage['debug_mode'] == 'true') {
-    console.log(str);
-    for (var b in o) {
-      console.log('  ' + b + ':' + o[b]);
-    }
+    logObject(str, o);
+  }
+}
+
+/**
+ * logObject() write object fields as strings to a function (typically
+ * Javascript's console).
+ *
+ * @param {string} str is the string to put in the Javascript console.
+ * @param {object} o is an object to write to the Javascript console.
+ **/
+function logObject(str, o) {
+  console.log(str);
+  for (var b in o) {
+    console.log('  ' + b + ':' + o[b]);
   }
 }
 

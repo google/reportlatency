@@ -157,6 +157,7 @@ TabData.prototype.startNavigation = function(data) {
  *
  */
 TabData.prototype.endNavigation = function(data) {
+  debugLogObject('TabData.endNavigation data', data);
   if ('navigation' in this) {
     if (('frameId' in data)) {
       if (data.frameId == this.navigation.frameId) {
@@ -177,13 +178,15 @@ TabData.prototype.endNavigation = function(data) {
 	  console.log('no url found in endNavigation() data');
 	}
       } else {
-	console.log('missing frameId in endNavigation() data');
+	// Meh. Don't care about subframes again
+	// console.log('data.frameId ' + data.frameId + 
+	//	    ' != this.navigation.frameId ' + this.navigation.frameId);
       }
     } else {
-      // Meh.  Don't care about subframe navigation events.
+      console.log('no frameId found');
     }
   } else {
-    // Meh.  Don't care about subframe navigation events.
+    console.log('no existing navigation');
   }
 };
 
