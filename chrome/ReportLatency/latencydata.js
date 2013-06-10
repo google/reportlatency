@@ -105,6 +105,8 @@ LatencyData.prototype.tabUpdated = function(tabId, changeInfo, tab) {
  *
  */
 LatencyData.prototype.tabRemoved = function(tabId, removeInfo) {
+  debugLogObject('LatencyData.tabRemoved(' + tabId + ',removeInfo)',
+		 removeInfo);
   if (tabId in this.tab) {
     delete this.tab[tabId];
   } else {
@@ -180,13 +182,13 @@ LatencyData.prototype.deleteNavigation = function(data) {
  * @param {string} skip is a servicename to skip reports for
  **/
 LatencyData.prototype.postLatency = function(skip) {
-  console.log('postLatency()');
+  debugLog('postLatency(! ' + skip + ')');
 
   var bestFinal = this.stats.best(skip);
   if (!bestFinal) {
     return;
   }
-  console.log("bestFinal = " + bestFinal);
+  debugLog("bestFinal = " + bestFinal);
   var bestService = this.stats.service(bestFinal);
   var bestOriginal = bestService.best(skip);
 

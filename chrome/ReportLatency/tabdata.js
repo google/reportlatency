@@ -39,6 +39,7 @@ function TabData() {
  *
  */
 TabData.prototype.startRequest = function(data) {
+  debugLogObject('TabData.startRequest(data)', data);
   if ('requestId' in data) {
     this.request[data.requestId] = data;
   } else {
@@ -53,6 +54,7 @@ TabData.prototype.startRequest = function(data) {
  *
  */
 TabData.prototype.endRequest = function(data) {
+  debugLogObject('TabData.endRequest(data)', data);
   if ('requestId' in data) {
     if (data.requestId in this.request) {
       if ('url' in data) {
@@ -83,6 +85,7 @@ TabData.prototype.endRequest = function(data) {
  *
  */
 TabData.prototype.deleteRequest = function(data) {
+  debugLogObject('TabData.deleteRequest(data)', data);
   if ('requestId' in data) {
     if (data.requestId in this.request) {
       delete this.request[data.requestId];
@@ -102,6 +105,8 @@ TabData.prototype.deleteRequest = function(data) {
  *
  */
 TabData.prototype.tabUpdated = function(changeInfo, tab) {
+  debugLogObject('TabData.tabUpdated(changeInfo)', changeInfo);
+  debugLogObject('TabData.tabUpdated(tab)', tab);
   if (!isWebUrl(tab.url)) { return; }
   var d = new Date();
 
@@ -128,6 +133,7 @@ TabData.prototype.tabUpdated = function(changeInfo, tab) {
  *
  */
 TabData.prototype.startNavigation = function(data) {
+  debugLogObject('TabData.startNavigation(data)', data);
   if (('parentFrameId' in data) && (data.parentFrameId < 0)) {
     if ('service' in this) {
       delete this['service'];
@@ -157,7 +163,7 @@ TabData.prototype.startNavigation = function(data) {
  *
  */
 TabData.prototype.endNavigation = function(data) {
-  debugLogObject('TabData.endNavigation data', data);
+  debugLogObject('TabData.endNavigation(data)', data);
   if ('navigation' in this) {
     if (('frameId' in data)) {
       if (data.frameId == this.navigation.frameId) {
@@ -197,6 +203,7 @@ TabData.prototype.endNavigation = function(data) {
  *
  */
 TabData.prototype.deleteNavigation = function(data) {
+  debugLogObject('TabData.deleteNavigation(data)', data);
   if ('navigation' in this) {
     delete this['navigation'];
   }
