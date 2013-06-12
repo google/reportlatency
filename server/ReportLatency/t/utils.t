@@ -30,7 +30,7 @@ foreach my $good (qw( . wiki news.google.com
   is(sanitize_service($good),$good,"$good service");
 }
 
-foreach my $good ('sub.example.com', 'sub.example.com proxy' ) {
+foreach my $good ('sub.example.com.', 'sub.example.com. proxy' ) {
   is(sanitize_location($good),$good,"$good location");
 }
 

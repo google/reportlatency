@@ -1,6 +1,12 @@
+reportlatency (1.0.1) precise; urgency=low
+
+  * Added location.pl summary page
+
+ -- Drake Diedrich <dld@google.com>  Tue, 11 Jun 2013 17:01:53 -0700
+
 reportlatency (1.0.0) precise; urgency=low
 
-  * Add JSON-RPC protocol for larger reports
+  * Add JSON-RPC protocol for larger reports.  Not yet working.
 
  -- Drake Diedrich <dld@google.com>  Tue, 04 Jun 2013 12:47:36 -0700
 

@@ -77,10 +77,14 @@ sub sanitize_service($) {
 sub sanitize_location {
   my ($location) = @_;
   return undef unless defined $location;
-  if ($location =~ /^($domain_re)(\s+[A-Za-z0-9]+)?/) {
+  if ($location =~ /^($domain_re\.)(.*)/) {
     my $domain = $1;
-    my $descriptor = $2;
-    return defined $descriptor ? "$domain$descriptor" : $domain;
+    my $rest = $2;
+    if ($rest =~ /^\s+[A-Za-z0-9]+$/) {
+      return "$domain$rest";
+    } else {
+      return $domain;
+    }
   } else {
     return undef;
   }

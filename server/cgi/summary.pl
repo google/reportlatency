@@ -203,7 +203,7 @@ EOF
 
   while (my $location = $location_sth->fetchrow_hashref) {
     my $name = $location->{remote_addr};
-    my $url = "location?name=$name";
+    my $url = "location?name=" . uri_escape($name);
     my $count = $location->{'services'};
     print latency_summary_row($name,$url,$count,$location);
   }
