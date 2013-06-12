@@ -1,8 +1,9 @@
 reportlatency (1.0.1) precise; urgency=low
 
   * Added location.pl summary page
+  * generate server-side location graphs
 
- -- Drake Diedrich <dld@google.com>  Tue, 11 Jun 2013 17:01:53 -0700
+ -- Drake Diedrich <dld@google.com>  Wed, 12 Jun 2013 14:27:15 -0700
 
 reportlatency (1.0.0) precise; urgency=low
 

@@ -18,7 +18,7 @@
 
 use strict;
 use DBI;
-use Test::More tests => 10;
+use Test::More tests => 11;
 use File::Temp qw(tempfile tempdir);
 
 $ENV{'PATH'} = '/usr/bin';
@@ -56,6 +56,7 @@ UPDATE report SET timestamp=DATETIME('now','-1 days') WHERE navigation_total=666
 EOF
 
   ok(close($sqlite3),"latency data added");
+  sleep(1);
 }
 
 chdir("$dir/batch");
@@ -74,6 +75,7 @@ unlink("$dir/data/latency.sqlite3");
 rmdir("$dir/data");
 ok(unlink("$dir/batch/service/service.png"),"rmdir service/service.png");
 ok(rmdir("$dir/batch/service"),"rmdir service/");
+ok(rmdir("$dir/batch/location"),"rmdir location/");
 ok(rmdir("$dir/batch"),"rmdir batch/");
 ok(rmdir($dir),"rmdir tmpdir");
 

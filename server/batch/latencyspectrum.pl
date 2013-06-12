@@ -109,6 +109,46 @@ sub service_graph {
   }
 }
 
+sub location_graph {
+  my ($dbh,$name,$options) = @_;
+
+  my $statement='SELECT strftime("%s",timestamp) AS timestamp,' .
+    'navigation_count AS count,' .
+    'navigation_high AS high,' .
+    'navigation_low AS low,' .
+    'navigation_total AS total ' .
+    'FROM report ' .
+    "WHERE timestamp <= datetime('now',?) AND " .
+    "timestamp > datetime('now',?) AND " .
+    'remote_addr = ? AND ' .
+    "navigation_count IS NOT NULL AND navigation_count != '' AND " .
+    "navigation_count>0;";
+  my $latency_sth = $dbh->prepare($statement) or die $!;
+  my $latency_rc = $latency_sth->execute('0 seconds', -$duration . " seconds",
+					$name);
+  my $spectrum = new ReportLatency::Spectrum( width => $width,
+					      height => $height,
+					      duration => $duration,
+					      ceiling => $latency_ceiling,
+					      border => 24 );
+  
+  while (my $row = $latency_sth->fetchrow_hashref) {
+    $spectrum->add_row($row);
+  }
+
+  my $path = "location/$name.png";
+  my ($volume,$directories,$file) = File::Spec->splitpath( $path );
+  if (! -d $directories ) {
+    make_path $directories;
+  }
+  if (open(my $png,">",$path)) {
+    print $png $spectrum->png();
+    close($png);
+  } else {
+    warn "$!: unable to open $path";
+  }
+}
+
 sub recent_services {
   my ($dbh) = @_;
 
@@ -151,6 +191,25 @@ sub recent_tags {
   @tags;
 }
 
+sub recent_locations {
+  my ($dbh) = @_;
+
+  my $locations_sth =
+      $dbh->prepare('SELECT DISTINCT remote_addr FROM report ' .
+                    "WHERE timestamp >= datetime('now',?);")
+        or die "prepare failed";
+
+  my $locations_rc = $locations_sth->execute("-$interval seconds");
+
+  my @locations;
+  while (my $row = $locations_sth->fetchrow_hashref) {
+    my $name = sanitize_location($row->{'remote_addr'});
+    push(@locations,$name);
+  }
+  $locations_sth->finish;
+  @locations;
+}
+
 sub all_services {
   my ($dbh) = @_;
 
@@ -186,7 +245,28 @@ sub all_tags {
     push(@tags,$tag);
   }
   $tags_sth->finish;
+
   @tags;
+}
+
+sub all_locations {
+  my ($dbh) = @_;
+
+  my $locations_sth =
+      $dbh->prepare('SELECT DISTINCT remote_addr ' .
+                    'FROM report ' .
+                    "WHERE remote_addr IS NOT NULL " .
+		    "ORDER BY remote_addr;")
+        or die "prepare failed";
+
+  my $locations_rc = $locations_sth->execute();
+
+  my @locations;
+  while (my $row = $locations_sth->fetchrow_hashref) {
+    my $name = sanitize_location($row->{'remote_addr'});
+    push(@locations,$name);
+  }
+  @locations;
 }
 
 sub tag_graph {
@@ -282,13 +362,15 @@ sub main() {
   print "untagged\n";
   untagged_graph($dbh,\%options);
 
-  my (@services,@tags);
+  my (@services,@tags,@locations);
   if ($options{'all'}) {
     @services = all_services($dbh);
     @tags = all_tags($dbh);
+    @locations = all_locations($dbh);
   } else {
     @services = recent_services($dbh);
     @tags = recent_tags($dbh);
+    @locations = recent_locations($dbh);
   }
 
   foreach my $service (@services) {
@@ -299,6 +381,11 @@ sub main() {
   foreach my $tag (@tags) {
     print "tag $tag\n";
     tag_graph($dbh,$tag,\%options);
+  }
+
+  foreach my $location (@locations) {
+    print "location $location\n";
+    location_graph($dbh,$location,\%options);
   }
 }
 
