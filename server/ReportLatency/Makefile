@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-all:
+all: local_module_paths
 
 test: local_module_paths
 	prove t

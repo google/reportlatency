@@ -18,7 +18,8 @@ use Regexp::Common;
 use Net::DNS::Resolver;
 
 use base 'Exporter';
-our @EXPORT    = qw(sanitize_service service_path mynum myround average
+our @EXPORT    = qw(sanitize_service sanitize_location service_path
+		    mynum myround average
 		    graphdir latency_dbh latency_summary_row net_class_c
 		    reverse_dns );
 
@@ -70,6 +71,18 @@ sub sanitize_service($) {
     }
   } else {
     return $domain;
+  }
+}
+
+sub sanitize_location {
+  my ($location) = @_;
+  return undef unless defined $location;
+  if ($location =~ /^($domain_re)(\s+[A-Za-z0-9]+)?/) {
+    my $domain = $1;
+    my $descriptor = $2;
+    return defined $descriptor ? "$domain$descriptor" : $domain;
+  } else {
+    return undef;
   }
 }
 
