@@ -21,7 +21,7 @@
 test('TabData.deleteRequest', function() {
   var t = new TabData();
 
-  var data = { requestId:1, timestamp:1000, url: 'http://host/' };
+  var data = { requestId:1, timestamp:1000, url: 'http://host.example.com/' };
   t.startRequest(data);
   data.timestamp = 1001;
   t.deleteRequest(data);
@@ -32,7 +32,7 @@ test('TabData.deleteRequest', function() {
 test('TabData.endRequest', function() {
   var t = new TabData();
 
-  var data = { requestId:1, timestamp:1000, url: 'http://host/' };
+  var data = { requestId:1, timestamp:1000, url: 'http://host.example.com/' };
   t.startRequest(data);
   data.timestamp = 1001;
   t.endRequest(data);
@@ -61,7 +61,7 @@ test('TabData.startNavigation', function() {
   var t = new TabData();
 
   var data = { frameId:0, parentFrameId:-1, processId:2999, tabId:30,
-	       timeStamp:1000, url:'http://host/' };
+	       timeStamp:1000, url:'http://host.example.com/' };
   t.startNavigation(data);
 
   equal(t.navigation.frameId, 0, 'frameId');
@@ -71,7 +71,7 @@ test('TabData.endNavigation', function() {
   var t = new TabData();
 
   var data = { frameId:0, parentFrameId:-1, processId:2999, tabId:30,
-	       timeStamp:1000, url:'http://host/' };
+	       timeStamp:1000, url:'http://host.example.com/' };
   t.startNavigation(data);
   delete data['parentFrameId'];
   data.timestamp = 1001;
