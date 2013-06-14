@@ -74,6 +74,19 @@ NameStats.prototype.count = function(measurement) {
   return c;
 };
 
+/**
+ *
+ * @param {string} measurement to aggregate.
+ * @returns {number} the total of measurement reports.
+ */
+NameStats.prototype.total = function(measurement) {
+  var c = 0;
+  for (var s in this.stat) {
+    c += this.stat[s].total(measurement);
+  }
+  return c;
+};
+
 
 /**
  * @returns {boolean} true if this entire object is empty.

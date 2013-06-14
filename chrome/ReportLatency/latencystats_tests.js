@@ -24,6 +24,8 @@ test('LatencyStats.add', function() {
   s.add('navigation', 5);
   equal(s.stat['navigation'].count, 1, 'single count');
   equal(s.stat['navigation'].total, 5, 'single total');
+  equal(s.count('navigation'), 1, 'single count()');
+  equal(s.total('navigation'), 5, 'single total()');
 
   s.add('navigation', 9);
   equal(s.stat['navigation'].count, 2, 'second count');

@@ -60,7 +60,8 @@ TabData.prototype.endRequest = function(data) {
       if ('url' in data) {
 	var name = aggregateName(data.url);
 	if (name) {
-	  var delay = data.timestamp - this.request[data.requestId].timestamp;
+	  var delay = data.timeStamp - this.request[data.requestId].timeStamp;
+	  debugLog('adding ' + delay + ' ms to ' + name + ' request stats');
 	  this.stat.add(name, 'request', delay);
 	  delete this.request[data.requestId];
 	} else {

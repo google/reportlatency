@@ -21,9 +21,9 @@
 test('TabData.deleteRequest', function() {
   var t = new TabData();
 
-  var data = { requestId:1, timestamp:1000, url: 'http://host.example.com/' };
+  var data = { requestId:1, timeStamp:1000, url: 'http://host.example.com/' };
   t.startRequest(data);
-  data.timestamp = 1001;
+  data.timeStamp = 1001;
   t.deleteRequest(data);
 
   equal(t.stat.count('request'), 0, 'deleteRequest left 0 recorded requests');
@@ -32,12 +32,15 @@ test('TabData.deleteRequest', function() {
 test('TabData.endRequest', function() {
   var t = new TabData();
 
-  var data = { requestId:1, timestamp:1000, url: 'http://host.example.com/' };
-  t.startRequest(data);
-  data.timestamp = 1001;
-  t.endRequest(data);
+  var dataStart = { requestId:1, timeStamp:1000,
+		    url: 'http://host.example.com/' };
+  t.startRequest(dataStart);
+  var dataEnd = { requestId:1, timeStamp:1010,
+		  url: 'http://host.example.com/' };
+  t.endRequest(dataEnd);
 
   equal(t.stat.count('request'), 1, 'endRequest left 1 recorded requests');
+  equal(t.stat.total('request'), 10, 'endRequest left 10 ms of requests');
 });
 
 test('TabData.tabUpdated', function() {
@@ -70,14 +73,16 @@ test('TabData.startNavigation', function() {
 test('TabData.endNavigation', function() {
   var t = new TabData();
 
-  var data = { frameId:0, parentFrameId:-1, processId:2999, tabId:30,
+  var dataStart = { frameId:0, parentFrameId:-1, processId:2999, tabId:30,
 	       timeStamp:1000, url:'http://host.example.com/' };
-  t.startNavigation(data);
-  delete data['parentFrameId'];
-  data.timestamp = 1001;
-  t.endNavigation(data);
+  t.startNavigation(dataStart);
 
-  equal(t.stat.count('navigation'), 1, 'endNavigation left 1 recorded requests');
+  var dataEnd = { frameId:0, processId:2999, tabId:30,
+	       timeStamp:1020, url:'http://host.example.com/' };
+  t.endNavigation(dataEnd);
+
+  equal(t.stat.count('navigation'), 1, 'endNavigation left 1 count');
+  equal(t.stat.total('navigation'), 20, 'endNavigation 20 ms total');
   equal(t.service, '.', "TabData.service == '.'");
 });
 
