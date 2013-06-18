@@ -18,8 +18,8 @@
 
 use strict;
 use Test::More tests => 1;
-BEGIN {
-  unshift(@INC,'.');
-  require_ok( './jspost.pl' );
-}
+
+BEGIN { unshift(@INC,'.'); }
+
+require_ok( './jspost.pl' );
 
