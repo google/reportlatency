@@ -33,28 +33,6 @@ my @params = qw( name final_name tz
               );
 
 
-sub aggregate_user_agent($) {
-  my ($browser) = @_;
-
-  if ($browser =~ /Chrome\//) {
-    return "Chrome";
-  }
-
-  if ($browser =~ /(Firefox|Gecko\/)/) {
-    return "Firefox";
-  }
-
-  if ($browser =~ /Safari\//) {
-    return "Safari";
-  }
-
-  if ($browser =~ /IE/) {
-    return "IE";
-  }
-
-  return "Other";
-}
-
 sub insert_command {
   my (@params) = @_;
   return 'INSERT INTO report (remote_addr,user_agent,' .

@@ -33,43 +33,9 @@ my @params = qw( name final_name tz
               );
 
 
-sub aggregate_user_agent($) {
-  my ($browser) = @_;
-
-  if ($browser =~ /Chrome\//) {
-    return "Chrome";
-  }
-
-  if ($browser =~ /(Firefox|Gecko\/)/) {
-    return "Firefox";
-  }
-
-  if ($browser =~ /Safari\//) {
-    return "Safari";
-  }
-
-  if ($browser =~ /IE/) {
-    return "IE";
-  }
-
-  return "Other";
-}
-
-sub insert_command {
-  my (@params) = @_;
-  return 'INSERT INTO report (remote_addr,user_agent,' .
-    join(',',@params) .
-    ') VALUES(?,?' . (',?' x scalar(@params)) . ');';
-}
-
-
-
 sub main {
   my $dbh = latency_dbh();
   my $store = new ReportLatency::Store(dbh => $dbh);
-
-  my $cmd = insert_command(@params);
-  my $insert = $dbh->prepare($cmd);
 
   my $q = CGI->new;
                                                                 

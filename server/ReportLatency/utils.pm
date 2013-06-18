@@ -21,7 +21,7 @@ use base 'Exporter';
 our @EXPORT    = qw(sanitize_service sanitize_location service_path
 		    mynum myround average
 		    graphdir latency_dbh latency_summary_row net_class_c
-		    reverse_dns );
+		    reverse_dns aggregate_user_agent);
 
 sub graphdir { return '/var/lib/reportlatency/www/graph'; }
 
@@ -168,6 +168,28 @@ sub reverse_dns {
     }
   }
   undef;
+}
+
+sub aggregate_user_agent($) {
+  my ($browser) = @_;
+
+  if ($browser =~ /Chrome\//) {
+    return "Chrome";
+  }
+
+  if ($browser =~ /(Firefox|Gecko\/)/) {
+    return "Firefox";
+  }
+
+  if ($browser =~ /Safari\//) {
+    return "Safari";
+  }
+
+  if ($browser =~ /IE/) {
+    return "IE";
+  }
+
+  return "Other";
 }
 
 1;
