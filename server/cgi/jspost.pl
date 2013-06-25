@@ -25,20 +25,34 @@ sub main {
   my $store = new ReportLatency::Store(dbh => $dbh);
 
   my $q = CGI->new;
-                                                                
+
   my $remote_addr =
     $store->aggregate_remote_address($ENV{'REMOTE_ADDR'},
 				     $ENV{'HTTP_X_FORWARDED_FOR'});
   my $user_agent = aggregate_user_agent($ENV{'HTTP_USER_AGENT'});
 
-  $dbh->disconnect;
+  my $type = $q->header;
+  my $content_type = $q->content_type;
+
+  if ($content_type eq 'application/json') {
+    print <<EOF;
+Content-type: text/plain
+
+Thank you for your report!
+EOF
+
+  } else {
 
   print <<EOF;
 Content-type: text/plain
 
-Thank you for your report!
+Thank you for your $type report, but it is $content_type not application/json.
 
 EOF
+  }
+
+  $dbh->disconnect;
+
 }
 
 main() unless caller();
