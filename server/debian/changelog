@@ -1,3 +1,9 @@
+reportlatency (1.0.2) precise; urgency=low
+
+  * broaden acceptance of sanitize_service() names
+
+ -- Drake Diedrich <dld@google.com>  Tue, 25 Jun 2013 12:45:58 -0700
+
 reportlatency (1.0.1) precise; urgency=low
 
   * Added location.pl summary page
