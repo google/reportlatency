@@ -64,7 +64,7 @@ sub sanitize_service($) {
     return undef;
   }
   if ($path) {
-    if ($path =~ m%^/[a-z]+$%) {
+    if ($path =~ m%^/[A-Za-z][A-Za-z0-9]*$%) {
       return "$domain$path";
     } else {
       return undef;

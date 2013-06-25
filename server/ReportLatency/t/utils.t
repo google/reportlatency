@@ -17,7 +17,7 @@
 # limitations under the License.
 
 use strict;
-use Test::More tests => 30;
+use Test::More tests => 31;
 BEGIN { unshift(@INC,'.'); use_ok( 'ReportLatency::utils' ); }
 
 foreach my $bad ( '<script>', undef, '' ) {
@@ -26,7 +26,8 @@ foreach my $bad ( '<script>', undef, '' ) {
 }
 
 foreach my $good (qw( . wiki news.google.com
-                      www.google.com/calendar ) ) {
+                      www.google.com/calendar
+		      www.google.com/calendar5) ) {
   is(sanitize_service($good),$good,"$good service");
 }
 
