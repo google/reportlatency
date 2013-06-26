@@ -14,45 +14,40 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-use JSON::RPC::Server::CGI;
+use Mojolicious::Lite;
 use DBI;
 use ReportLatency::utils;
 use ReportLatency::Store;
 use strict;
 
-sub main {
-  my $dbh = latency_dbh();
-  my $store = new ReportLatency::Store(dbh => $dbh);
+my $dbh = latency_dbh();
+my $store = new ReportLatency::Store(dbh => $dbh);
 
-  my $q = CGI->new;
-
+post '/' => sub {
+  my $self = shift;
   my $remote_addr =
     $store->aggregate_remote_address($ENV{'REMOTE_ADDR'},
 				     $ENV{'HTTP_X_FORWARDED_FOR'});
   my $user_agent = aggregate_user_agent($ENV{'HTTP_USER_AGENT'});
 
-  my $type = $q->header;
-  my $content_type = $q->content_type;
+  my $type = $self->header;
+  my $content_type = $self->content_type;
 
   if ($content_type eq 'application/json') {
-    print <<EOF;
-Content-type: text/plain
-
-Thank you for your report!
-EOF
-
+    my $reply = CGI->new;
+    $self->render('good');
   } else {
-
-  print <<EOF;
-Content-type: text/plain
-
-Thank you for your $type report, but it is $content_type not application/json.
-
-EOF
+   $self->render('bad', status => 400 );
   }
+};
 
-  $dbh->disconnect;
 
-}
+app->start;
 
-main() unless caller();
+__DATA__
+
+@@ good.txt.ep
+Thank you for your report!
+
+@@ badtype.txt.ep
+Thank you for your <%= $type %> report, but it is <%= $content_type %> not application/json.
