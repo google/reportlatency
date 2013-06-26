@@ -34,9 +34,12 @@ set -e
 
 PKG=reportlatency
 VARDIR=/var/lib/$PKG
+GRAPHDIR=$VARDIR/www/graphs
+DATADIR=$VARDIR/www/data
 DBDIR=$VARDIR/data
 DBFILE=$DBDIR/latency.sqlite3
-GRAPHDIR=$VARDIR/www/graphs
+DBBACK=$DBDIR/backup.sqlite3
+DBEXPORT=$DATADIR/latency.sqlite3
 PKGSHARE=/usr/share/$PKG
 
 case "$1" in
@@ -49,11 +52,14 @@ case "$1" in
 	  chown www-data:www-data $DBFILE
 	fi
 	chown www-data:www-data $DBDIR
-	chown -R www-data:www-data $GRAPHDIR
+	chown -R www-data:www-data $GRAPHDIR $DATADIR
 	a2enmod expires
 	if [ ! -e /etc/apache2/conf.d/reportlatency ] ; then
 	  ln -s ../../reportlatency/apache2.conf /etc/apache2/conf.d/reportlatency
 	  invoke-rc.d apache2 restart 1>&2
+	fi
+	if [ ! -e $DBEXPORT ] ; then
+	  ln -s $DBBACK $DBEXPORT
 	fi
     ;;
 

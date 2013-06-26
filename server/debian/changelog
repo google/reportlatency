@@ -1,3 +1,10 @@
+reportlatency (1.0.3) precise; urgency=low
+
+  * sqlite3 .backup dump and atomic move if good
+  * Export consistent, backup DB file
+
+ -- Drake Diedrich <dld@google.com>  Tue, 25 Jun 2013 17:36:34 -0700
+
 reportlatency (1.0.2) precise; urgency=low
 
   * broaden acceptance of sanitize_service() names

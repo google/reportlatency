@@ -8,3 +8,4 @@ var/lib/reportlatency/data
 var/lib/reportlatency/tag.d
 var/lib/reportlatency/www
 var/lib/reportlatency/www/graphs
+var/lib/reportlatency/www/data
