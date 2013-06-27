@@ -30,7 +30,7 @@ require_ok('./latencyspectrum.pl');
 my $dir = tempdir(CLEANUP => 1);
 mkdir("$dir/data");
 mkdir("$dir/batch");
-my $dbfile="$dir/data/latency.sqlite3";
+my $dbfile="$dir/data/backup.sqlite3";
 
 {
   open(my $sqlite3,"|-",'sqlite3',$dbfile) or die $!;
@@ -43,7 +43,7 @@ my $dbfile="$dir/data/latency.sqlite3";
 }
 
 {
-  open(my $sqlite3,"|-",'sqlite3',"$dir/data/latency.sqlite3")
+  open(my $sqlite3,"|-",'sqlite3',$dbfile)
     or die $!;
   print $sqlite3 <<EOF;
 INSERT INTO report(final_name,navigation_count,navigation_total) VALUES('service',3,666);
@@ -71,7 +71,7 @@ like($line,
 
 ok(unlink("$dir/batch/latency-spectrum.png"),"unlink latency-spectrump.png");
 ok(unlink("$dir/batch/untagged.png"),"unlink untagged.png");
-unlink("$dir/data/latency.sqlite3");
+unlink($dbfile);
 rmdir("$dir/data");
 ok(unlink("$dir/batch/service/service.png"),"rmdir service/service.png");
 ok(rmdir("$dir/batch/service"),"rmdir service/");

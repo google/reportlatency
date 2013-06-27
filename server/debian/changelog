@@ -1,3 +1,10 @@
+reportlatency (1.0.5) precise; urgency=low
+
+  * Batch and summary CGIs use backup sqlite database, rather than live
+    one to reduce database lock contention
+
+ -- Drake Diedrich <dld@google.com>  Thu, 27 Jun 2013 16:30:43 -0700
+
 reportlatency (1.0.4) precise; urgency=low
 
   * Switch to Mojolicious framework for new post processor

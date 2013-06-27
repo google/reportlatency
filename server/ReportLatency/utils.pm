@@ -30,17 +30,20 @@ sub graphdir { return '/var/lib/reportlatency/www/graph'; }
 # TODO: customize for different environments, allow overrides by local SA, etc.
 #
 
-sub latency_db_file() {
-  foreach my $file ('/var/lib/reportlatency/data/latency.sqlite3',
-		   '../data/latency.sqlite3') {
+sub latency_db_file {
+  my ($role) = @_;
+  $role = 'latency' unless defined $role;
+  foreach my $file ("/var/lib/reportlatency/data/$role.sqlite3",
+		   "../data/$role.sqlite3") {
     if ((-r $file) && (-w $file)) {
       return $file;
     }
   }
 }
 
-sub latency_dbh() {
-  my $dbfile = latency_db_file();
+sub latency_dbh {
+  my ($role) = @_;
+  my $dbfile = latency_db_file($role);
   $dbh = DBI->connect("dbi:SQLite:dbname=$dbfile",
                       {AutoCommit => 0}, '')
     or die $dbh->errstr;

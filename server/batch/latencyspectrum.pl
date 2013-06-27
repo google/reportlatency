@@ -354,7 +354,7 @@ sub main() {
   pod2usage(-verbose => 2) if $options{'man'};
   pod2usage(1) if $options{'help'};
 
-  my $dbh = latency_dbh();
+  my $dbh = latency_dbh('backup');
 
   print "total\n";
   total_graph($dbh,\%options);

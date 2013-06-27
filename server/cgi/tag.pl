@@ -23,7 +23,7 @@ use strict;
 
 
 sub main {
-  my $dbh = latency_dbh();
+  my $dbh = latency_dbh('backup');
 
   my $meta_sth =
     $dbh->prepare('SELECT count(distinct final_name) AS services,' .
