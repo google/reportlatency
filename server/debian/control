@@ -10,7 +10,7 @@ Package: reportlatency
 Architecture: all
 Depends: ${misc:Depends}, ${perl:Depends},
  libdate-calc-perl, libdbd-sqlite3-perl, libdbi-perl, libgd-gd2-perl, 
- libmath-round-perl, libmojolicious-perl, libnet-dns-perl,
+ libmath-round-perl, libnet-dns-perl,
  libregexp-common-perl, liburi-perl, sqlite3,
  apache2 | httpd
 Description: Receive ReportLatency browser reports and generate summaries
