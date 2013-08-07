@@ -1,7 +1,3 @@
-#!/usr/bin/perl -w
-#
-# Test post.pl compiles
-#
 # Copyright 2013 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-use strict;
-use Test::More tests => 1;
-BEGIN {
-  unshift(@INC,'.');
-  require_ok( './post.pl' );
-}
+all:
 
+test: local_module_paths
+	prove t
+
+clean:
+	rm -rf cover_db ReportLatency
+
+coverage: local_module_paths
+	cover -test
+
+local_module_paths: ReportLatency
+
+ReportLatency:
+	ln -s ../ReportLatency ReportLatency

@@ -20,59 +20,14 @@ use ReportLatency::utils;
 use ReportLatency::Store;
 use strict;
 
-# process these form parameters and insert into same table columns
-my @params = qw( name final_name tz
-                 tabupdate_count tabupdate_total
-                 tabupdate_high tabupdate_low
-                 request_count request_total
-		 request_high request_low
-                 navigation_count navigation_total
-                 navigation_high navigation_low
-                 navigation_committed_total navigation_committed_count
-                 navigation_committed_high
-              );
-
-
-sub insert_command {
-  my (@params) = @_;
-  return 'INSERT INTO report (remote_addr,user_agent,' .
-    join(',',@params) .
-    ') VALUES(?,?' . (',?' x scalar(@params)) . ');';
-}
-
-
 
 sub main {
   my $dbh = latency_dbh();
   my $store = new ReportLatency::Store(dbh => $dbh);
 
-  my $cmd = insert_command(@params);
-  my $insert = $dbh->prepare($cmd);
-
   my $q = CGI->new;
-                                                                
-  my $remote_addr =
-    $store->aggregate_remote_address($ENV{'REMOTE_ADDR'},
-				     $ENV{'HTTP_X_FORWARDED_FOR'});
-  my $user_agent = aggregate_user_agent($ENV{'HTTP_USER_AGENT'});
-  my @insert_values;
+  $store->post($q);
 
-  foreach my $p (@params) {
-    my $val = $q->param($p);
-    $val='' unless defined $val;
-    push(@insert_values,$val);
-  }
-
-  my $rc = $insert->execute($remote_addr,$user_agent,@insert_values);
-  $insert->finish;
-  $dbh->disconnect;
-
-  print <<EOF;
-Content-type: text/plain
-
-Thank you for your report!
-
-EOF
 }
 
 main() unless caller();

@@ -64,6 +64,89 @@ sub aggregate_remote_address {
   }
 }
 
+# process these form parameters and insert into same table columns
+my @params = qw( name final_name tz
+                 tabupdate_count tabupdate_total
+                 tabupdate_high tabupdate_low
+                 request_count request_total
+		 request_high request_low
+                 navigation_count navigation_total
+                 navigation_high navigation_low
+                 navigation_committed_total navigation_committed_count
+                 navigation_committed_high
+              );
+
+sub _insert_command {
+  my (@params) = @_;
+  return 'INSERT INTO report (remote_addr,user_agent,' .
+    join(',',@params) .
+    ') VALUES(?,?' . (',?' x scalar(@params)) . ');';
+}
+
+sub _insert_post_command {
+  my ($self) = @_;
+  my $insert = $self->{post_insert_command};
+  return $insert if defined $insert;
+
+  my $cmd = _insert_command(@params);
+  $insert = $self->{dbh}->prepare($cmd);
+  return $insert;
+}
+
+sub _thank_you() {
+  print <<EOF;
+Content-type: text/plain
+Status: 200
+
+Thank you for your report!
+
+EOF
+}
+
+sub _error {
+  print <<EOF;
+Content-type: text/plain
+Status: 500
+
+Error occured.
+
+EOF
+  print join("\n\n",@_);
+}
+
+sub post {
+  my ($self,$q) = @_;
+
+  my $insert = $self->_insert_post_command;
+  my $dbh = $self->{dbh};
+
+  my $remote_addr =
+    $self->aggregate_remote_address($ENV{'REMOTE_ADDR'},
+				    $ENV{'HTTP_X_FORWARDED_FOR'});
+  my $user_agent = aggregate_user_agent($ENV{'HTTP_USER_AGENT'});
+  my @insert_values;
+
+  foreach my $p (@params) {
+    my $val = $q->param($p);
+    $val='' unless defined $val;
+    push(@insert_values,$val);
+  }
+
+  if ($dbh->begin_work) {
+    if ($insert->execute($remote_addr,$user_agent,@insert_values)) {
+      if ($dbh->commit) {
+	_thank_you();
+      } else {
+	_error("commit failed", $dbh->errstr);
+      }
+    } else {
+      _error("insert failed", $insert->errstr);
+    }
+  } else {
+    _error("begin_work failed", $dbh->errstr);
+  }
+}
+
 1;
 
 
@@ -95,7 +178,7 @@ typically sqlite3 or syntactically compatible.
 
 =head2 Methods
 
-=head3 Contructors
+=head3 Constructors
 
 =over 4
 =item * LatencyReport::Store->new(...)
@@ -107,6 +190,13 @@ typically sqlite3 or syntactically compatible.
 The database handle for the sqlite3 or compatible database that should
 be used for real storage by this object.  The schema must already be present.
 
+=head3 Member functions
+
+=over 4
+=item * post(CGI)
+=over 8
+  Parse a CGI request object for latency report data and
+  insert it into the database.
 
 =head1 KNOWN BUGS
 

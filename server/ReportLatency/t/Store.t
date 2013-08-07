@@ -19,7 +19,7 @@
 use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
-use Test::More tests => 7;
+use Test::More tests => 8;
 
 BEGIN { unshift(@INC,'.'); use_ok( 'ReportLatency::Store' ); }
 
@@ -54,3 +54,7 @@ is($store->aggregate_remote_address('8.8.8.8'),'google.com.',
 is($store->aggregate_remote_address('0.0.0.1'),'0.0.0.0',
    'aggregate_remote_address(0.0.0.1)');
 
+
+is(ReportLatency::Store::_insert_command('name','value'),
+   'INSERT INTO report (remote_addr,user_agent,name,value) VALUES(?,?,?,?);',
+   'insert_command()');
