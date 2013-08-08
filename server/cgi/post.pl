@@ -22,12 +22,10 @@ use strict;
 
 
 sub main {
-  my $dbh = latency_dbh();
-  my $store = new ReportLatency::Store(dbh => $dbh);
+  my $store = new ReportLatency::Store();
 
   my $q = CGI->new;
   $store->post($q);
-
 }
 
 main() unless caller();

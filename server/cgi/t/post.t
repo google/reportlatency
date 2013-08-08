@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 #
-# Test post.pl compiles
+# Test post.pl
 #
 # Copyright 2013 Google Inc. All Rights Reserved.
 #
@@ -17,9 +17,33 @@
 # limitations under the License.
 
 use strict;
-use Test::More tests => 1;
+use Test::More tests => 4;
+use File::Temp qw/ tempfile tempdir /;
+
 BEGIN {
   unshift(@INC,'.');
-  require_ok( './post.pl' );
+  use_ok('ReportLatency::Store');
 }
 
+require_ok( './post.pl' );
+
+
+my $dir = tempdir(CLEANUP => 1);
+
+mkdir("$dir/data");
+mkdir("$dir/cgi-bin");
+my $dbfile = "$dir/data/latency.sqlite3";
+system("sqlite3 $dbfile < latency.sql");
+
+chdir("$dir/cgi-bin");
+
+$ENV{'HTTP_USER_AGENT'} = 'TestAgent';
+$ENV{'REMOTE_ADDR'} = '1.2.3.4';
+
+main();
+
+chdir();
+
+ok(unlink($dbfile),"unlink $dbfile");
+ok(rmdir("$dir/data"),"rmdir data/");
+ok(rmdir("$dir/cgi-bin"),"rmdir cgi-bin/");
