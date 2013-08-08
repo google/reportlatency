@@ -44,10 +44,13 @@ sub latency_db_file {
 sub latency_dbh {
   my ($role) = @_;
   my $dbfile = latency_db_file($role);
-  $dbh = DBI->connect("dbi:SQLite:dbname=$dbfile",
-                      {AutoCommit => 0}, '')
-    or die $dbh->errstr;
-  return $dbh;
+  if ($dbfile) {
+    $dbh = DBI->connect("dbi:SQLite:dbname=$dbfile",
+			{AutoCommit => 0, RaiseError => 1}, '')
+      or die $dbh->errstr;
+    return $dbh;
+  }
+  undef;
 }
 
 #
