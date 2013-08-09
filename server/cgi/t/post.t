@@ -20,6 +20,7 @@ use strict;
 use Test::More tests => 7;
 use File::Temp qw/ tempfile tempdir /;
 use IO::String;
+use DBI;
 
 BEGIN {
   unshift(@INC,'.');
@@ -51,8 +52,10 @@ $out->setpos(0);
 like($out->getline,qr/^Content-type:/,'Content-type');
 like($out->getline,qr/^Status: 2/,'2xx');
 
-my $dbh = DBI->connect("dbi:SQLite:dbname=$dbfile",
-		       {AutoCommit => 0, RaiseError => 1}, '')
+my $dbh;
+
+$dbh = DBI->connect("dbi:SQLite:dbname=$dbfile",
+		    {AutoCommit => 0, RaiseError => 1}, '')
   or die $dbh->errstr;
 
 my $count_sth = $dbh->prepare("SELECT count(*) FROM report");
