@@ -17,8 +17,9 @@
 # limitations under the License.
 
 use strict;
-use Test::More tests => 4;
+use Test::More tests => 7;
 use File::Temp qw/ tempfile tempdir /;
+use IO::String;
 
 BEGIN {
   unshift(@INC,'.');
@@ -40,10 +41,26 @@ chdir("$dir/cgi-bin");
 $ENV{'HTTP_USER_AGENT'} = 'TestAgent';
 $ENV{'REMOTE_ADDR'} = '1.2.3.4';
 
+my $out = new IO::String;
+*OLD_STDOUT = *STDOUT;
+select $out;
 main();
+select OLD_STDOUT;
+
+$out->setpos(0);
+like($out->getline,qr/^Content-type:/,'Content-type');
+like($out->getline,qr/^Status: 2/,'2xx');
+
+my $dbh = DBI->connect("dbi:SQLite:dbname=$dbfile",
+		       {AutoCommit => 0, RaiseError => 1}, '')
+  or die $dbh->errstr;
+
+my $count_sth = $dbh->prepare("SELECT count(*) FROM report");
+
+$count_sth->execute();
+
 
 chdir();
-
 ok(unlink($dbfile),"unlink $dbfile");
 ok(rmdir("$dir/data"),"rmdir data/");
 ok(rmdir("$dir/cgi-bin"),"rmdir cgi-bin/");
