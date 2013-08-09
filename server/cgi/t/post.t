@@ -17,7 +17,7 @@
 # limitations under the License.
 
 use strict;
-use Test::More tests => 7;
+use Test::More tests => 11;
 use File::Temp qw/ tempfile tempdir /;
 use IO::String;
 use DBI;
@@ -59,9 +59,19 @@ $dbh = DBI->connect("dbi:SQLite:dbname=$dbfile",
   or die $dbh->errstr;
 
 my $count_sth = $dbh->prepare("SELECT count(*) FROM report");
-
 $count_sth->execute();
+my ($count) = $count_sth->fetchrow_array;
+is($count, 1, '1 count');
+$count_sth->finish;
 
+my $report_sth =
+  $dbh->prepare("SELECT timestamp,remote_addr FROM report WHERE user_agent=?");
+$report_sth->execute("Other");
+my ($timestamp,$remote_addr) = $report_sth->fetchrow_array;
+like($timestamp,qr/^\d{4}-/,'timestamp');
+is($remote_addr,'1.2.3.0','network address');
+ok(!$report_sth->fetchrow_array,'  end of select');
+$report_sth->finish;
 
 chdir();
 ok(unlink($dbfile),"unlink $dbfile");
