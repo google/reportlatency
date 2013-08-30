@@ -30,6 +30,20 @@ sub graphdir { return '/var/lib/reportlatency/www/graph'; }
 # TODO: customize for different environments, allow overrides by local SA, etc.
 #
 
+our $dbh = ReportLatency::utils::latency_dbh();
+
+sub config_file {
+  my $file = $ENV{'REPORTLATENCY_CONFIG_FILE'} || "/etc/reportlatency.conf";
+  if (-e $file) {
+    do $file;
+    die $@ if $@;
+    return 1;
+  }
+  return;
+}
+
+config_file();
+
 sub latency_db_file {
   my ($role) = @_;
   $role = 'latency' unless defined $role;
@@ -43,14 +57,15 @@ sub latency_db_file {
 
 sub latency_dbh {
   my ($role) = @_;
-  my $dbfile = latency_db_file($role);
-  if ($dbfile) {
-    $dbh = DBI->connect("dbi:SQLite:dbname=$dbfile",
-			{AutoCommit => 0, RaiseError => 1}, '')
-      or die $dbh->errstr;
-    return $dbh;
+  if (! defined $dbh) {
+    my $dbfile = latency_db_file($role);
+    if ($dbfile) {
+      $dbh = DBI->connect("dbi:SQLite:dbname=$dbfile",
+			  {AutoCommit => 0, RaiseError => 1}, '')
+	or die $dbh->errstr;
+    }
   }
-  undef;
+  $dbh;
 }
 
 #
