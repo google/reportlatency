@@ -28,7 +28,7 @@ my $dir = tempdir(CLEANUP => 1);
 my $dbfile = "$dir/latency.sqlite3";
 {
   open(my $sqlite3,"|-",'sqlite3',$dbfile) or die $!;
-  open(my $sql,'<','../cgi/latency.sql') or die $!;
+  open(my $sql,'<','../sql/sqlite3.sql') or die $!;
   while (my $line = $sql->getline) {
     print $sqlite3 $line;
   }
