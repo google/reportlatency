@@ -18,7 +18,7 @@
 
 use strict;
 use DBI;
-use Test::More tests => 11;
+use Test::More tests => 12;
 use File::Temp qw(tempfile tempdir);
 
 $ENV{'PATH'} = '/usr/bin';
@@ -74,6 +74,7 @@ ok(unlink("$dir/batch/untagged.png"),"unlink untagged.png");
 unlink($dbfile);
 rmdir("$dir/data");
 ok(unlink("$dir/batch/service/service.png"),"rmdir service/service.png");
+ok(unlink("$dir/batch/location/.png"),"unlink null location png");
 ok(rmdir("$dir/batch/service"),"rmdir service/");
 ok(rmdir("$dir/batch/location"),"rmdir location/");
 ok(rmdir("$dir/batch"),"rmdir batch/");
