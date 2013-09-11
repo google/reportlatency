@@ -24,7 +24,7 @@ my $dir = tempdir(CLEANUP => 1);
 
 my $dbfile = "$dir/latency.sqlite";
 
-system("sqlite3 $dbfile < latency.sql");
+system("sqlite3 $dbfile < sqlite3.sql");
 
 my $tables=`sqlite3 $dbfile .tables`;
 chomp($tables);
