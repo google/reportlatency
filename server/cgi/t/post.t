@@ -35,7 +35,7 @@ my $dir = tempdir(CLEANUP => 1);
 mkdir("$dir/data");
 mkdir("$dir/cgi-bin");
 my $dbfile = "$dir/data/latency.sqlite3";
-system("sqlite3 $dbfile < latency.sql");
+system("sqlite3 $dbfile < ../sql/sqlite3.sql");
 
 chdir("$dir/cgi-bin");
 
