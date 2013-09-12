@@ -19,7 +19,8 @@
 use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
-use Test::More tests => 8;
+use Test::More tests => 9;
+use HTML::Tidy;
 
 BEGIN { unshift(@INC,'.'); use_ok( 'ReportLatency::Store' ); }
 
@@ -58,3 +59,9 @@ is($store->aggregate_remote_address('0.0.0.1'),'0.0.0.0',
 is(ReportLatency::Store::_insert_command('name','value'),
    'INSERT INTO report (remote_addr,user_agent,name,value) VALUES(?,?,?,?);',
    'insert_command()');
+
+
+my $tidy = new HTML::Tidy;
+
+my $empty_tag_html = $store->tag_html('null');
+ok($tidy->parse('empty_tag',$empty_tag_html),'tag_html(null) is tidy');

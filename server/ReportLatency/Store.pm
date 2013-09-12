@@ -284,7 +284,8 @@ Timespan: $meta->{'min_timestamp'} through $meta->{'max_timestamp'}
 </body>
 </html>
 EOF
-  return "$io";
+  $io->setpos(0);
+  return ${$io->string_ref};
 }
 
 1;
