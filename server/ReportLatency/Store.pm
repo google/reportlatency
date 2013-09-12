@@ -207,6 +207,7 @@ sub tag_html {
 EOF
 
   print $io <<EOF;
+<!DOCTYPE html>
 <html>
 <head>
   <style type="text/css">
