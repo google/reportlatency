@@ -145,7 +145,7 @@ sub latency_summary_row {
   my $html = "  <tr> <td align=left>";
   if (defined $name && $name ne '') {
     if (defined $url && $url ne '') {
-      $html .= "<a href=\"$url\"> $name";
+      $html .= "<a href=\"$url\"> $name </a> ";
     } else {
       $html .= $name;
     }
