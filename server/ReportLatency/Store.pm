@@ -253,8 +253,6 @@ EOF
 
   $dbh->rollback;  # there shouldn't be changes
 
-  $dbh->disconnect;
-
   print $io <<EOF;
 <tr>
  <th> Service </th>

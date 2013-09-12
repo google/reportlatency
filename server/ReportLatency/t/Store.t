@@ -19,7 +19,7 @@
 use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
-use Test::More tests => 9;
+use Test::More tests => 15;
 use HTML::Tidy;
 
 BEGIN { unshift(@INC,'.'); use_ok( 'ReportLatency::Store' ); }
@@ -56,12 +56,42 @@ is($store->aggregate_remote_address('0.0.0.1'),'0.0.0.0',
    'aggregate_remote_address(0.0.0.1)');
 
 
-is(ReportLatency::Store::_insert_command('name','value'),
-   'INSERT INTO report (remote_addr,user_agent,name,value) VALUES(?,?,?,?);',
-   'insert_command()');
-
-
 my $tidy = new HTML::Tidy;
 
 my $empty_tag_html = $store->tag_html('null');
 ok($tidy->parse('empty_tag',$empty_tag_html),'tag_html(null) is tidy');
+my $messages=0;
+for my $message ( $tidy->messages ) {
+  print $message->as_string . "\n";
+  $messages++;
+}
+is($messages, 0, 'No HTML::Tidy messages');
+$tidy->clear_messages();
+
+
+$dbh->begin_work;
+ok($dbh->do(q{
+  INSERT INTO tag(tag,name) VALUES('Google','google.com');
+}),'INSERT Google tag');
+ok($dbh->do(q{
+  INSERT INTO report(name,final_name,request_count,request_total) VALUES('google.com','google.com',1,1000);
+}), 'INSERT google.com report');
+ok($dbh->commit,'commit');
+
+
+my $tag_html = $store->tag_html('Google');
+ok($tidy->parse('tag',$tag_html),'tag_html(Google) is tidy');
+
+$messages=0;
+for my $message ( $tidy->messages ) {
+  print $message->as_string . "\n";
+  $messages++;
+}
+is($messages, 0, 'No HTML::Tidy messages');
+$tidy->clear_messages();
+
+
+is(ReportLatency::Store::_insert_command('name','value'),
+   'INSERT INTO report (remote_addr,user_agent,name,value) VALUES(?,?,?,?);',
+   'insert_command()');
+
