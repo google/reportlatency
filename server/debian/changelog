@@ -2,8 +2,9 @@ reportlatency (1.0.7) precise; urgency=low
 
   * Move tag summary HTML generation into ReportLatency::Store, unit
     test, and fix HTML errors
+  * Allow alternate database handles to be configured
 
- -- Drake Diedrich <dld@google.com>  Thu, 12 Sep 2013 16:59:22 -0700
+ -- Drake Diedrich <dld@google.com>  Thu, 12 Sep 2013 17:00:26 -0700
 
 reportlatency (1.0.6) precise; urgency=low
 
