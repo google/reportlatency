@@ -141,13 +141,14 @@ sub average($$) {
 
 sub latency_summary_row {
   my ($name,$url,$count,$row) = @_;
+  my $sname = sanitize_service($name);
 
   my $html = "  <tr> <td align=left>";
-  if (defined $name && $name ne '') {
+  if (defined $sname && $sname ne '') {
     if (defined $url && $url ne '') {
-      $html .= "<a href=\"$url\"> $name </a> ";
+      $html .= "<a href=\"$url\"> $sname </a> ";
     } else {
-      $html .= $name;
+      $html .= $sname;
     }
   }
   $html .= ' </td>';
