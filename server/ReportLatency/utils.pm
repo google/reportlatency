@@ -16,6 +16,7 @@ package ReportLatency::utils;
 use Math::Round;
 use Regexp::Common;
 use Net::DNS::Resolver;
+use DBI;
 
 use base 'Exporter';
 our @EXPORT    = qw(sanitize_service sanitize_location service_path
