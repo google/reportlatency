@@ -1,3 +1,9 @@
+reportlatency (1.0.8) precise; urgency=low
+
+  * Fix latencygraph.pl include
+
+ -- Drake Diedrich <dld@google.com>  Mon, 16 Sep 2013 10:04:35 -0700
+
 reportlatency (1.0.7.1) precise; urgency=low
 
   * sanitize output row name
