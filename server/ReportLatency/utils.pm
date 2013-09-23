@@ -13,13 +13,14 @@
 # limitations under the License.
 
 package ReportLatency::utils;
+use DBI;
+use HTML::Scrubber;
 use Math::Round;
 use Regexp::Common;
 use Net::DNS::Resolver;
-use DBI;
 
 use base 'Exporter';
-our @EXPORT    = qw(sanitize_service sanitize_location service_path
+our @EXPORT    = qw(sanitize sanitize_service sanitize_location service_path
 		    mynum myround average
 		    graphdir latency_dbh latency_summary_row net_class_c
 		    reverse_dns aggregate_user_agent);
@@ -112,6 +113,16 @@ sub sanitize_location {
   }
 }
 
+my $scrubber = HTML::Scrubber->new(allow => [ qw[ b i u ] ]);
+sub sanitize {
+  my ($str) = @_;
+  return undef unless defined $str;
+  return undef if $str eq '';
+  my $scrubbed = $scrubber->scrub($str);
+  return undef unless $scrubbed eq $str;
+  return $scrubbed;
+}
+  
 # used for pre-generated graphs, icons, etc
 sub service_path($$) {
   my ($name,$ext) = @_;
@@ -142,7 +153,8 @@ sub average($$) {
 
 sub latency_summary_row {
   my ($name,$url,$count,$row) = @_;
-  my $sname = sanitize_service($name);
+#  my $sname = sanitize_service($name);
+  my $sname = $name;
 
   my $html = "  <tr> <td align=left>";
   if (defined $sname && $sname ne '') {

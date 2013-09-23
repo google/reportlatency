@@ -149,8 +149,10 @@ sub post {
 }
 
 sub tag_html {
-  my ($self,$tag_name) = @_;
+  my ($self,$tag) = @_;
   my $dbh = $self->{dbh};
+
+  my $tag_name = sanitize($tag);
 
   my $meta_sth =
     $dbh->prepare('SELECT count(distinct final_name) AS services,' .
@@ -197,7 +199,7 @@ sub tag_html {
 
   $dbh->begin_work;
 
-  my $rc = $meta_sth->execute($tag_name);
+  my $rc = $meta_sth->execute($tag);
   my $meta = $meta_sth->fetchrow_hashref;
   $meta_sth->finish;
 
@@ -247,7 +249,8 @@ EOF
     my $name = $service->{final_name};
     my $url = "service?service=$name";
     my $count = $service->{'dependencies'};
-    print $io latency_summary_row($name,$url,$count,$service);
+    print $io latency_summary_row(sanitize_service($name),$url,$count,
+				  $service);
   }
   $service_sth->finish;
 

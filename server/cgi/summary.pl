@@ -205,7 +205,7 @@ EOF
     my $name = $location->{remote_addr};
     my $url = "location?name=" . uri_escape($name);
     my $count = $location->{'services'};
-    print latency_summary_row($name,$url,$count,$location);
+    print latency_summary_row(sanitize_location($name),$url,$count,$location);
   }
   $location_sth->finish;
 

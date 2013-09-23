@@ -1,3 +1,9 @@
+reportlatency (1.0.8.1) precise; urgency=low
+
+  * Fix location information in summary
+
+ -- Drake Diedrich <dld@google.com>  Mon, 23 Sep 2013 14:11:32 -0700
+
 reportlatency (1.0.8) precise; urgency=low
 
   * Fix latencygraph.pl include

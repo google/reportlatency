@@ -27,7 +27,7 @@ sub main {
   my $dbh = latency_dbh('backup');
   my $store = new ReportLatency::Store(dbh => $dbh);
   my $q = new CGI;
-  my $tag_name = sanitize_service($q->param('name'));
+  my $tag_name = $q->param('name');
 
   print $q->header(-type => 'text/html');
   print $store->tag_html($tag_name);
