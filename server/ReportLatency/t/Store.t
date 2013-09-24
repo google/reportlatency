@@ -19,8 +19,7 @@
 use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
-use Test::More tests => 13;
-use HTML::Tidy;
+use Test::More tests => 11;
 
 BEGIN { use lib '..'; }
 
@@ -58,36 +57,17 @@ is($store->aggregate_remote_address('0.0.0.1'),'0.0.0.0',
    'aggregate_remote_address(0.0.0.1)');
 
 
-my $tidy = new HTML::Tidy;
-
-my $empty_tag_html = $store->tag_html('null');
-is($tidy->parse('empty_tag',$empty_tag_html), undef, 'tidy tag_html(null)');
-for my $message ( $tidy->messages ) {
-  print $message->as_string . "\n";
-}
-$tidy->clear_messages();
-
 
 $dbh->begin_work;
-ok($dbh->do(q{
-  INSERT INTO tag(tag,name) VALUES('Google','google.com');
-}),'INSERT Google tag');
-ok($dbh->do(q{
-  INSERT INTO report(name,final_name,request_count,request_total) VALUES('google.com','google.com',1,1000);
-}), 'INSERT google.com report');
-ok($dbh->commit,'commit');
-
-
-my $tag_html = $store->tag_html('Google');
-is($tidy->parse('tag',$tag_html), undef, 'tidy tag_html(Google)');
-
-for my $message ( $tidy->messages ) {
-  print $message->as_string . "\n";
-}
-$tidy->clear_messages();
-
 
 is(ReportLatency::Store::_insert_command('name','value'),
    'INSERT INTO report (remote_addr,user_agent,name,value) VALUES(?,?,?,?);',
    'insert_command()');
+
+is($store->aggregate_remote_address('8.8.8.8'),'google.com.',
+   'aggregate_remote_address(8.8.8.8)');
+is($store->aggregate_remote_address('8.8.8.8'),'google.com.',
+   '2nd aggregate_remote_address(8.8.8.8)');
+is($store->aggregate_remote_address('0.0.0.1'),'0.0.0.0',
+   'aggregate_remote_address(0.0.0.1)');
 
