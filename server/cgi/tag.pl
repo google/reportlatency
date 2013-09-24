@@ -18,7 +18,6 @@ use DBI;
 use CGI;
 use ReportLatency::utils;
 use ReportLatency::Store;
-use URI::Escape;
 
 use strict;
 
