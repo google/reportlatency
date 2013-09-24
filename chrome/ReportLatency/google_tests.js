@@ -37,7 +37,7 @@ test('googleName', function() {
       'www.google.com/voice',
       'www.google.com/voice#inbox');
   equal(googleName
-      ('www.google.com', 'search?q=css image'),
+      ('www.google.com', 'search?q=css%20image'),
       'www.google.com/search',
       'www.google.com/search');
   equal(googleName
