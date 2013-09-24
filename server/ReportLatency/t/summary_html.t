@@ -59,7 +59,7 @@ ok($dbh->do(q{
   INSERT INTO report(timestamp,name,final_name,request_count,request_total) VALUES(9999,'google.com','google.com',1,1000);
 }), 'INSERT google.com report');
 
-is($tidy->parse('summary_html',$summary_html), 1, 'summary.html');
+is($tidy->parse('summary_html',$summary_html), undef, 'summary.html');
 for my $message ( $tidy->messages ) {
   print $message->as_string . "\n";
 }

@@ -250,8 +250,10 @@ sub summary_html {
 EOF
 
   print $io <<EOF;
+<!DOCTYPE html>
 <html>
 <head>
+  <title>ReportLatency summary</title>
   <style type="text/css">
     table.alternate tr:nth-child(odd) td{ background-color: #CCFFCC; }
     table.alternate tr:nth-child(even) td{ background-color: #99DD99; }
@@ -259,18 +261,14 @@ EOF
 </head>
 <body>
 
-<h1> ReportLatency Summary
+<h1> ReportLatency Summary </h1>
 <p align=center>
 <img src="graphs/latency-spectrum.png" width="80%"
  alt="latency spectrum">
-</img>
 </p>
 
-<h2> Latency By Tag </h1>
-
-<table class="alternate">
+<table class="alternate" summary="Latency report for all services by tag">
 $tag_header
-<hl>
 EOF
 
   $rc = $tag_sth->execute($meta->{'min_timestamp'},
@@ -296,7 +294,6 @@ EOF
   print $io latency_summary_row('total', '', $meta->{'services'}, $meta);
 
   print $io <<EOF;
-</tr>
 </table>
 
 EOF
@@ -319,9 +316,8 @@ EOF
   print $io <<EOF;
 <h2> Latency By Location </h2>
 
-<table class="alternate">
+<table class="alternate" summary="Latency report for all services by location">
 $location_header
-<hl>
 EOF
   $rc = $location_sth->execute($meta->{'min_timestamp'},
 			       $meta->{'max_timestamp'});
