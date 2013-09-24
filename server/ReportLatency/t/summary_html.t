@@ -20,7 +20,7 @@ use strict;
 use CGI;
 use DBI;
 use File::Temp qw(tempfile tempdir);
-use Test::More tests => 8;
+use Test::More tests => 6;
 use HTML::Tidy;
 
 BEGIN {
@@ -53,8 +53,13 @@ isa_ok($store, 'ReportLatency::Store');
 is($store->{dbh}, $dbh, "dbh");
 
 my $tidy = new HTML::Tidy;
-my $empty_html = $store->summary_html();
-is($tidy->parse('empty_tag',$empty_html), undef, 'tidy empty summary_html()');
+my $summary_html = $store->summary_html();
+
+ok($dbh->do(q{
+  INSERT INTO report(timestamp,name,final_name,request_count,request_total) VALUES(9999,'google.com','google.com',1,1000);
+}), 'INSERT google.com report');
+
+is($tidy->parse('summary_html',$summary_html), 1, 'summary.html');
 for my $message ( $tidy->messages ) {
   print $message->as_string . "\n";
 }
