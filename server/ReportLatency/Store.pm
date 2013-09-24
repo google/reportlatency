@@ -207,8 +207,10 @@ sub untagged_html {
 EOF
 
   print $io <<EOF;
+<!DOCTYPE html>
 <html>
 <head>
+  <title>Latency report for untagged services</title>
   <style type="text/css">
     table.alternate tr:nth-child(odd) td{ background-color: #CCFFCC; }
     table.alternate tr:nth-child(even) td{ background-color: #99DD99; }
@@ -221,10 +223,9 @@ EOF
 <p align=center>
 <img src="graphs/untagged.png" width="80%"
  alt="latency spectrum">
-</img>
 </p>
 
-<table class="alternate">
+<table class="alternate" summary="Latency report for untagged services">
 <tr>
  <th colspan=2> Service </th>
  <th colspan=2> Request </th>
@@ -237,7 +238,6 @@ EOF
  <th>Count</th> <th>Latency (ms)</th>
  <th>Count</th> <th>Latency (ms)</th>
 </tr>
-<hl>
 EOF
 
   $rc = $service_sth->execute($meta->{'min_timestamp'},
@@ -272,7 +272,6 @@ EOF
   print $io latency_summary_row('total', '', $meta->{'services'}, $meta);
 
   print $io <<EOF;
-</tr>
 </table>
 
 <p>
