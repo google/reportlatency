@@ -635,6 +635,7 @@ sub service_not_found($$) {
   my $io = new IO::String;
 
   print $io <<EOF;
+<!DOCTYPE html>
 <html>
 <body>
 <h1> Latency Report </h1>
@@ -655,6 +656,7 @@ sub service_found {
   my $rc = $select->execute($service);
 
   print $io <<EOF;
+<!DOCTYPE html>
 <html>
 <head>
   <style type="text/css">
@@ -669,12 +671,11 @@ sub service_found {
 
 <p align=center>
 <img src="graphs/service/$service.png" width="80%" alt="latency spectrum">
-</img>
 </p>
 
-<h2> All locations, each name </h2>
+<h2> All locations, each request name </h2>
 
-<table class="alternate">
+<table class="alternate" summary="$service latency by request name">
 <tr>
  <th rowspan=2> Request Name</th>
  <th colspan=2> Request </th>
@@ -686,7 +687,6 @@ sub service_found {
  <th>Count</th> <th>Latency (ms)</th>
  <th>Count</th> <th>Latency (ms)</th>
 </tr>
-<hl>
 EOF
 
   while ( my $row = $select->fetchrow_hashref) {
@@ -699,7 +699,7 @@ EOF
     print $io " <td align=right> " . myround($row->{'tabupdate_latency'}) . " </td>";
     print $io " <td align=right> " . mynum($row->{'navigation_count'}) . " </td>";
     print $io ' <td align=right> ' .
-      myround($row->{'navigation_latency'}) . " </a></td>";
+      myround($row->{'navigation_latency'}) . " </td>";
     print $io "  </tr>\n";
   }
 
@@ -741,7 +741,7 @@ EOF
 
 <h2> Each location, names aggregated </h2>
 
-<table class="alternate">
+<table class="alternate" summary="$service latency by location">
 <tr>
  <th rowspan=2> Location </th>
  <th colspan=2> Request </th>
@@ -753,7 +753,6 @@ EOF
  <th>Count</th> <th>Latency (ms)</th>
  <th>Count</th> <th>Latency (ms)</th>
 </tr>
-<hl>
 EOF
 
   $rc = $select_location->execute($service);
@@ -767,13 +766,14 @@ EOF
     print $io " <td align=right> " . myround($row->{'tabupdate_latency'}) . " </td>";
     print $io " <td align=right> " . mynum($row->{'navigation_count'}) . " </td>";
     print $io ' <td align=right> ' .
-      myround($row->{'navigation_latency'}) . " </a></td>";
+      myround($row->{'navigation_latency'}) . " </td>";
     print $io "  </tr>\n";
   }
 
   $select->finish;
 
   print $io <<EOF;
+</table>
 <p>
 Timespan: $meta->{'min_timestamp'} through $meta->{'max_timestamp'}
 </p>
