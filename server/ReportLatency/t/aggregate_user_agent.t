@@ -18,7 +18,10 @@
 
 use strict;
 use Test::More tests => 9;
-BEGIN { unshift(@INC,'.'); use_ok( 'ReportLatency::utils' ); }
+ 
+BEGIN { use lib '..'; }
+
+use_ok( 'ReportLatency::utils' );
 
 foreach my $ua
   ('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1312.52 Safari/537.17',

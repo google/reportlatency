@@ -226,8 +226,6 @@ sub summary_html {
 		  'AND tag.tag is null;')
       or die "prepare failed";
 
-  my $q = new CGI;
-
   $dbh->begin_work;
 
   my $rc = $meta_sth->execute();

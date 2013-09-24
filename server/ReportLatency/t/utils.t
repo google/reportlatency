@@ -18,7 +18,11 @@
 
 use strict;
 use Test::More tests => 42;
-BEGIN { unshift(@INC,'.'); use_ok( 'ReportLatency::utils' ); }
+
+BEGIN { use lib '..'; }
+
+use_ok( 'ReportLatency::utils' );
+
 
 foreach my $bad ( '<script>', undef, '' ) {
   is(sanitize_service($bad),undef,"no $bad from sanitize_service()");

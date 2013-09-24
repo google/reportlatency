@@ -22,7 +22,9 @@ use File::Temp qw(tempfile tempdir);
 use Test::More tests => 13;
 use HTML::Tidy;
 
-BEGIN { unshift(@INC,'.'); use_ok( 'ReportLatency::Store' ); }
+BEGIN { use lib '..'; }
+
+use_ok( 'ReportLatency::Store' );
 
 
 my $dir = tempdir(CLEANUP => 1);

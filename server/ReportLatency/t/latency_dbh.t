@@ -21,7 +21,9 @@ use DBI;
 use File::Temp qw(tempfile tempdir);
 use Test::More tests => 6;
 
-BEGIN { unshift(@INC,'.'); use_ok( 'ReportLatency::utils' ); }
+BEGIN { use lib '..'; }
+
+use_ok( 'ReportLatency::utils' );
 
 
 my $dir = tempdir(CLEANUP => 1);

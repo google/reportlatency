@@ -19,7 +19,10 @@
 use strict;
 use Test::More tests => 36;
 
-BEGIN { unshift(@INC,'.'); use_ok( 'ReportLatency::Spectrum' ); }
+BEGIN { use lib '..'; }
+
+use_ok( 'ReportLatency::Spectrum' );
+
 
 my $spectrum = new ReportLatency::Spectrum( logarithmic => 0 );
 
