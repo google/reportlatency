@@ -29,7 +29,7 @@ sub main {
   my $service_name = sanitize_service($q->param('service'));
 
   print $q->header(-type => 'text/html');
-  print $service_html($service_name);
+  print $store->service_html($service_name);
 }
 
 main() unless caller();

@@ -1,3 +1,10 @@
+reportlatency (1.0.8.2) precise; urgency=low
+
+  * Move HTML generation out of CGI scripts and test validity
+  * Fix some calls from CGI scripts
+
+ -- Drake Diedrich <dld@google.com>  Tue, 24 Sep 2013 16:56:29 -0700
+
 reportlatency (1.0.8.1) precise; urgency=low
 
   * Fix location information in summary
