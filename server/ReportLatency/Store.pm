@@ -246,11 +246,13 @@ EOF
 			      $meta->{'max_timestamp'},$tag_name);
 
   while (my $service = $service_sth->fetchrow_hashref) {
-    my $name = $service->{final_name};
-    my $url = "service?service=$name";
-    my $count = $service->{'dependencies'};
-    print $io latency_summary_row(sanitize_service($name),$url,$count,
-				  $service);
+    my $name = sanitize_service($service->{final_name});
+    if (defined $name) {
+      my $url = "service?service=$name";
+      my $count = $service->{'dependencies'};
+      print $io latency_summary_row(sanitize_service($name),$url,$count,
+				    $service);
+    }
   }
   $service_sth->finish;
 

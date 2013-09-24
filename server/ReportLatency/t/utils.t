@@ -17,7 +17,7 @@
 # limitations under the License.
 
 use strict;
-use Test::More tests => 41;
+use Test::More tests => 42;
 BEGIN { unshift(@INC,'.'); use_ok( 'ReportLatency::utils' ); }
 
 foreach my $bad ( '<script>', undef, '' ) {
@@ -25,6 +25,11 @@ foreach my $bad ( '<script>', undef, '' ) {
   is(sanitize_location($bad),undef,"no $bad from sanitize_location()");
   is(sanitize($bad),undef,"no $bad from sanitize()");
 }
+
+foreach my $bad ( 'www.google.com/url?sa=t&q=search%20term' ) {
+  is(sanitize_service($bad),undef,"no $bad from sanitize_service()");
+}
+
 
 foreach my $good (qw( . wiki news.google.com
                       www.google.com/calendar
