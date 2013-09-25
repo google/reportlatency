@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 #
-# Test latencyspectrum.pl
+# Test generate-static-content.pl
 #
 # Copyright 2013 Google Inc. All Rights Reserved.
 #
@@ -23,13 +23,12 @@ use File::Temp qw(tempfile tempdir);
 
 $ENV{'PATH'} = '/usr/bin';
 
-push(@INC,'.');
+BEGIN { use lib ".."; }
 
-require_ok('./latencyspectrum.pl');
+require_ok('./generate-static-content.pl');
 
 my $dir = tempdir(CLEANUP => 1);
 mkdir("$dir/data");
-mkdir("$dir/batch");
 my $dbfile="$dir/data/backup.sqlite3";
 
 {
@@ -59,24 +58,24 @@ EOF
   sleep(1);
 }
 
-chdir("$dir/batch");
+chdir("$dir");
 
 main();
 
-open(my $id,"-|","identify", "latency-spectrum.png") or die $!;
+open(my $id,"-|","identify", "$dir/graphs/latency-spectrum.png") or die $!;
 my $line = $id->getline;
 like($line,
-     qr/^latency-spectrum\.png PNG \d+x\d+/,
+     qr/latency-spectrum\.png PNG \d+x\d+/,
      'PNG');
 
-ok(unlink("$dir/batch/latency-spectrum.png"),"unlink latency-spectrump.png");
-ok(unlink("$dir/batch/untagged.png"),"unlink untagged.png");
+ok(unlink("$dir/graphs/latency-spectrum.png"),"unlink latency-spectrump.png");
+ok(unlink("$dir/graphs/untagged.png"),"unlink untagged.png");
 unlink($dbfile);
 rmdir("$dir/data");
-ok(unlink("$dir/batch/service/service.png"),"rmdir service/service.png");
-ok(unlink("$dir/batch/location/.png"),"unlink null location png");
-ok(rmdir("$dir/batch/service"),"rmdir service/");
-ok(rmdir("$dir/batch/location"),"rmdir location/");
-ok(rmdir("$dir/batch"),"rmdir batch/");
+ok(unlink("$dir/graphs/service/service.png"),"rmdir service/service.png");
+ok(unlink("$dir/graphs/location/.png"),"unlink null location png");
+ok(rmdir("$dir/graphs/service"),"rmdir service/");
+ok(rmdir("$dir/graphs/location"),"rmdir location/");
+ok(rmdir("$dir/graphs"),"rmdir graphs/");
 ok(rmdir($dir),"rmdir tmpdir");
 

@@ -18,21 +18,23 @@ use HTML::Scrubber;
 use Math::Round;
 use Regexp::Common;
 use Net::DNS::Resolver;
+use File::Path qw(make_path);
+use File::Spec;
 
 use base 'Exporter';
 our @EXPORT    = qw(sanitize sanitize_service sanitize_location service_path
 		    mynum myround average
-		    graphdir latency_dbh latency_summary_row net_class_c
+		    open_path
+		    latency_dbh latency_summary_row net_class_c
 		    reverse_dns aggregate_user_agent);
-
-sub graphdir { return '/var/lib/reportlatency/www/graph'; }
 
 #
 # All the CGI and batch scripts need the same database handle. Here it is.
 # TODO: customize for different environments, allow overrides by local SA, etc.
 #
 
-our $dbh = ReportLatency::utils::latency_dbh();
+our %dbh;
+$dbh{'latency'} = ReportLatency::utils::latency_dbh();
 
 sub config_file {
   my $file = $ENV{'REPORTLATENCY_CONFIG_FILE'} || "/etc/reportlatency.conf";
@@ -49,7 +51,8 @@ config_file();
 sub latency_db_file {
   my ($role) = @_;
   $role = 'latency' unless defined $role;
-  foreach my $file ("/var/lib/reportlatency/data/$role.sqlite3",
+  foreach my $file ("data/$role.sqlite3",
+		    "/var/lib/reportlatency/data/$role.sqlite3",
 		   "../data/$role.sqlite3") {
     if ((-r $file) && (-w $file)) {
       return $file;
@@ -59,15 +62,16 @@ sub latency_db_file {
 
 sub latency_dbh {
   my ($role) = @_;
-  if (! defined $dbh) {
+  $role = 'latency' unless defined $role;
+  if (! defined $dbh{$role}) {
     my $dbfile = latency_db_file($role);
     if ($dbfile) {
-      $dbh = DBI->connect("dbi:SQLite:dbname=$dbfile",
+      $dbh{$role} = DBI->connect("dbi:SQLite:dbname=$dbfile",
 			  {AutoCommit => 0, RaiseError => 1}, '')
-	or die $dbh->errstr;
+	or die $dbh{$role}->errstr;
     }
   }
-  $dbh;
+  $dbh{$role};
 }
 
 #
@@ -130,6 +134,17 @@ sub service_path($$) {
   return undef if ($name ne $sane_name);
   return "$name$ext";
 }
+
+sub open_path($) {
+  my ($path) = @_;
+  my ($volume,$directories,$file) = File::Spec->splitpath( $path );
+  if (! -d $directories ) {
+    make_path $directories;
+  }
+  open(my $fh,">",$path) || die "$!: unable to open $path";
+  return $fh;
+}
+
 
 sub mynum($) {
   my ($x) = @_;

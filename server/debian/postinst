@@ -34,8 +34,7 @@ set -e
 
 PKG=reportlatency
 VARDIR=/var/lib/$PKG
-GRAPHDIR=$VARDIR/www/graphs
-DATADIR=$VARDIR/www/data
+WWWDIR=$VARDIR/www
 DBDIR=$VARDIR/data
 DBFILE=$DBDIR/latency.sqlite3
 DBBACK=$DBDIR/backup.sqlite3
@@ -52,7 +51,7 @@ case "$1" in
 	  chown www-data:www-data $DBFILE
 	fi
 	chown www-data:www-data $DBDIR
-	chown -R www-data:www-data $GRAPHDIR $DATADIR
+	chown -R www-data:www-data $WWWDIR
 	a2enmod expires
 	if [ ! -e /etc/apache2/conf.d/reportlatency ] ; then
 	  ln -s ../../reportlatency/apache2.conf /etc/apache2/conf.d/reportlatency

@@ -19,8 +19,6 @@ use ReportLatency::utils;
 use ReportLatency::Spectrum;
 use DBI;
 use GD;
-use File::Path qw(make_path remove_tree);
-use File::Spec;
 use Getopt::Long;
 use Pod::Usage;
 use strict;
@@ -63,7 +61,7 @@ sub total_graph {
     $spectrum->add_row($row);
   }
 
-  open(my $png,">","latency-spectrum.png") or die $!;
+  my $png = open_path("graphs/latency-spectrum.png");
   print $png $spectrum->png();
   close($png);
 }
@@ -96,17 +94,9 @@ sub service_graph {
     $spectrum->add_row($row);
   }
 
-  my $path = "service/$name.png";
-  my ($volume,$directories,$file) = File::Spec->splitpath( $path );
-  if (! -d $directories ) {
-    make_path $directories;
-  }
-  if (open(my $png,">",$path)) {
-    print $png $spectrum->png();
-    close($png);
-  } else {
-    warn "$!: unable to open $path";
-  }
+  my $png = open_path("graphs/service/$name.png");
+  print $png $spectrum->png();
+  close($png);
 }
 
 sub location_graph {
@@ -136,17 +126,9 @@ sub location_graph {
     $spectrum->add_row($row);
   }
 
-  my $path = "location/$name.png";
-  my ($volume,$directories,$file) = File::Spec->splitpath( $path );
-  if (! -d $directories ) {
-    make_path $directories;
-  }
-  if (open(my $png,">",$path)) {
-    print $png $spectrum->png();
-    close($png);
-  } else {
-    warn "$!: unable to open $path";
-  }
+  my $png = open_path("graphs/location/$name.png");
+  print $png $spectrum->png();
+  close($png);
 }
 
 sub recent_services {
@@ -297,15 +279,9 @@ sub tag_graph {
     $spectrum->add_row($row);
   }
 
-  if (! -d 'tag') {
-    mkdir 'tag';
-  }
-  if (open(my $png,">","tag/$name.png")) {
-    print $png $spectrum->png();
-    close($png);
-  } else {
-    warn "$!: unable to open tag/$name.png";
-  }
+  my $png = open_path("graphs/tag/$name.png");
+  print $png $spectrum->png();
+  close($png);
 }
 
 sub untagged_graph {
@@ -335,12 +311,9 @@ sub untagged_graph {
     $spectrum->add_row($row);
   }
 
-  if (open(my $png,">","untagged.png")) {
-    print $png $spectrum->png();
-    close($png);
-  } else {
-    warn "$!: unable to open untagged.png";
-  }
+ my $png = open_path("graphs/untagged.png");
+  print $png $spectrum->png();
+  close($png);
 }
 
 
@@ -354,7 +327,7 @@ sub main() {
   pod2usage(-verbose => 2) if $options{'man'};
   pod2usage(1) if $options{'help'};
 
-  my $dbh = latency_dbh('backup');
+  my $dbh = latency_dbh('backup') || die "Unable to open db";
 
   print "total\n";
   total_graph($dbh,\%options);
@@ -395,7 +368,7 @@ __END__
 
 =head1 NAME
 
-latencygraph.pl - generate latency spectrum graphs from a sqlite database
+generate-static-content.pl - generate latency spectrum graphs from a sqlite database
 
 =head1 SYNOPSIS
 

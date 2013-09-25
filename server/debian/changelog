@@ -1,3 +1,14 @@
+reportlatency (1.0.9) precise; urgency=low
+
+  * Rename latencygraph.pl to generate-static-content.pl before adding
+    new non-graph content generation
+  * require current dir to be above graphs/
+  * generalize write file opens for batch processing script
+  * Switch completely to use lib '..' in tests, eliminate ReportLatency
+    symlink
+
+ -- Drake Diedrich <dld@google.com>  Wed, 25 Sep 2013 14:50:34 -0700
+
 reportlatency (1.0.8.2) precise; urgency=low
 
   * Move HTML generation out of CGI scripts and test validity
