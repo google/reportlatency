@@ -197,8 +197,6 @@ sub untagged_html {
 
   my $io = new IO::String;
 
-  $dbh->begin_work;
-
   my $rc = $meta_sth->execute();
   my $meta = $meta_sth->fetchrow_hashref;
   $meta_sth->finish;
@@ -250,8 +248,6 @@ EOF
     print $io latency_summary_row($name,$url,$count,$service);
   }
   $service_sth->finish;
-
-  $dbh->rollback;  # there shouldn't be changes
 
   print $io <<EOF;
 <tr>
@@ -365,8 +361,6 @@ sub summary_html {
 		  'AND tag.tag is null;')
       or die "prepare failed";
 
-  $dbh->begin_work;
-
   my $rc = $meta_sth->execute();
   my $meta = $meta_sth->fetchrow_hashref;
   $meta_sth->finish;
@@ -470,8 +464,6 @@ EOF
   }
   $location_sth->finish;
 
-  $dbh->rollback;  # there shouldn't be changes
-
 print $io <<EOF;
 </table>
 
@@ -535,8 +527,6 @@ sub location_html {
       or die "prepare failed";
 
 
-  $dbh->begin_work;
-
   my $rc = $meta_sth->execute($location);
   my $meta = $meta_sth->fetchrow_hashref;
   $meta_sth->finish;
@@ -590,10 +580,6 @@ EOF
     }
   }
   $service_sth->finish;
-
-  $dbh->rollback;  # there shouldn't be changes
-
-  $dbh->disconnect;
 
   print $io <<EOF;
 <tr>
@@ -846,8 +832,6 @@ sub service_html {
 		  'ORDER BY remote_addr;')
       or die "prepare failed";
 
-  $dbh->begin_work;
-
   my $rc = $meta_sth->execute($service_name);
   my $row = $meta_sth->fetchrow_hashref;
   $meta_sth->finish;
@@ -908,8 +892,6 @@ sub tag_html {
       or die "prepare failed";
 
 
-  $dbh->begin_work;
-
   my $rc = $meta_sth->execute($tag);
   my $meta = $meta_sth->fetchrow_hashref;
   $meta_sth->finish;
@@ -966,8 +948,6 @@ EOF
     }
   }
   $service_sth->finish;
-
-  $dbh->rollback;  # there shouldn't be changes
 
   print $io <<EOF;
 <tr>

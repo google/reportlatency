@@ -17,6 +17,7 @@
 
 use ReportLatency::utils;
 use ReportLatency::Spectrum;
+use ReportLatency::Store;
 use DBI;
 use GD;
 use Getopt::Long;
@@ -66,6 +67,13 @@ sub total_graph {
   close($png);
 }
 
+sub service_report {
+  my ($store,$name,$options) = @_;
+
+  my $report = open_path("services/$name.html");
+  print $report $store->service_html($name);
+  close($report);
+}
 
 sub service_graph {
   my ($dbh,$name,$options) = @_;
@@ -328,6 +336,8 @@ sub main() {
   pod2usage(1) if $options{'help'};
 
   my $dbh = latency_dbh('backup') || die "Unable to open db";
+  $dbh->begin_work() || die "Unable to open transaction";
+  my $store = new ReportLatency::Store( dbh => $dbh );
 
   print "total\n";
   total_graph($dbh,\%options);
@@ -349,6 +359,7 @@ sub main() {
   foreach my $service (@services) {
     print "service $service\n";
     service_graph($dbh,$service,\%options);
+    service_report($store,$service,\%options);
   }
 
   foreach my $tag (@tags) {
@@ -360,6 +371,9 @@ sub main() {
     print "location $location\n";
     location_graph($dbh,$location,\%options);
   }
+
+  $dbh->rollback() ||
+    die "Unable to rollback, but there should be no changes anyway";
 }
 
 main() unless caller();
