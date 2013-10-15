@@ -70,7 +70,7 @@ sub total_graph {
 sub service_report {
   my ($store,$name,$options) = @_;
 
-  my $report = open_path("services/$name.html");
+  my $report = open_path("service/$name.html");
   print $report $store->service_html($name);
   close($report);
 }

@@ -58,7 +58,7 @@ EOF
   sleep(1);
 }
 
-chdir("$dir");
+chdir($dir);
 
 main();
 
@@ -78,6 +78,6 @@ ok(rmdir("$dir/graphs/service"),"rmdir service/");
 ok(rmdir("$dir/graphs/location"),"rmdir location/");
 ok(rmdir("$dir/graphs"),"rmdir graphs/");
 ok(unlink("$dir/service/service.html"),"unlink service.html");
-ok(rmdir("$dir/service"),"unlink service/");
+ok(rmdir("$dir/service"),"unlink services/");
 ok(rmdir($dir),"rmdir tmpdir");
 
