@@ -743,7 +743,7 @@ sub service_found {
 <h1> $service $meta->{'date'} Latency Report </h1>
 
 <p align=center>
-<img src="graphs/service/$service.png" width="80%" alt="latency spectrum">
+<img src="services/$service.png" width="80%" alt="latency spectrum">
 </p>
 
 <h2> All locations, each request name </h2>

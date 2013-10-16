@@ -71,7 +71,7 @@ sub total_graph {
 sub service_report {
   my ($view,$name,$options) = @_;
 
-  my $report = open_path("service/$name.html");
+  my $report = open_path("services/$name.html");
   print $report $view->service_html($name);
   close($report);
 }
@@ -103,7 +103,7 @@ sub service_graph {
     $spectrum->add_row($row);
   }
 
-  my $png = open_path("graphs/service/$name.png");
+  my $png = open_path("services/$name.png");
   print $png $spectrum->png();
   close($png);
 }

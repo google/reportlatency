@@ -89,7 +89,7 @@ EOF
 
   while (my $service = $service_sth->fetchrow_hashref) {
     my $name = $service->{final_name};
-    my $url = "service/$name.html";
+    my $url = "services/$name.html";
     my $count = $service->{'dependencies'};
     print $io latency_summary_row($name,$url,$count,$service);
   }
@@ -502,7 +502,7 @@ sub service_found {
 <h1> $service $meta->{'date'} Latency Report </h1>
 
 <p align=center>
-<img src="graphs/service/$service.png" width="80%" alt="latency spectrum">
+<img src="$service.png" width="80%" alt="latency spectrum">
 </p>
 
 <h2> All locations, each request name </h2>
