@@ -17,6 +17,7 @@
 
 use ReportLatency::utils;
 use ReportLatency::Spectrum;
+use ReportLatency::StaticView;
 use ReportLatency::Store;
 use DBI;
 use GD;
@@ -68,10 +69,10 @@ sub total_graph {
 }
 
 sub service_report {
-  my ($store,$name,$options) = @_;
+  my ($view,$name,$options) = @_;
 
   my $report = open_path("service/$name.html");
-  print $report $store->service_html($name);
+  print $report $view->service_html($name);
   close($report);
 }
 
@@ -338,6 +339,7 @@ sub main() {
   my $dbh = latency_dbh('backup') || die "Unable to open db";
   $dbh->begin_work() || die "Unable to open transaction";
   my $store = new ReportLatency::Store( dbh => $dbh );
+  my $view = new ReportLatency::StaticView($store);
 
   print "total\n";
   total_graph($dbh,\%options);
@@ -359,7 +361,7 @@ sub main() {
   foreach my $service (@services) {
     print "service $service\n";
     service_graph($dbh,$service,\%options);
-    service_report($store,$service,\%options);
+    service_report($view,$service,\%options);
   }
 
   foreach my $tag (@tags) {
@@ -382,7 +384,7 @@ __END__
 
 =head1 NAME
 
-generate-static-content.pl - generate latency spectrum graphs from a sqlite database
+generate-static-content.pl - generate latency spectrum graphs and tables from a sqlite database
 
 =head1 SYNOPSIS
 
@@ -392,7 +394,7 @@ ls -l latency.sqlite3
 
 cd ../graphs
 
-latencyspectrum.pl [-all]
+generate-static-content.pl [-all]
 
  Options:
    -all       Generate all graphs, even if data is current
@@ -405,7 +407,7 @@ latencyspectrum.pl [-all]
 
 =item B<-all>
 
-Generate all graphs, even if no new data has arrived.  Useful to
+Generate all graphs adn tables, even if no new data has arrived.  Useful to
 occaisionally catch up after and outage or to fill in recent blank
 areas for inactive services.
 
@@ -422,8 +424,8 @@ Prints the manual page and exits.
 =head1 DESCRIPTION
 
 Part of the ReportLatency service, this script pre-generates expensive
-graphs of the full spectrum of latency reports over the past two
-weeks, with intensite coded to green color brightness, and a red
+graphs and tables of the full spectrum of latency reports over the past two
+weeks.  Graph intensity is coded to green color brightness, and a red
 average value.  The output is in the current directory, and the sqlite
 database must be in ../data/latency.sqlite3 or
 /var/lib/reportlatency/data/latency.sqlite3
