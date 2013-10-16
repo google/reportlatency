@@ -63,7 +63,7 @@ sub total_graph {
     $spectrum->add_row($row);
   }
 
-  my $png = open_path("graphs/latency-spectrum.png");
+  my $png = open_path("tags/summary.png");
   print $png $spectrum->png();
   close($png);
 }
@@ -135,7 +135,7 @@ sub location_graph {
     $spectrum->add_row($row);
   }
 
-  my $png = open_path("graphs/location/$name.png");
+  my $png = open_path("locations/$name.png");
   print $png $spectrum->png();
   close($png);
 }
@@ -288,7 +288,7 @@ sub tag_graph {
     $spectrum->add_row($row);
   }
 
-  my $png = open_path("graphs/tag/$name.png");
+  my $png = open_path("tags/$name.png");
   print $png $spectrum->png();
   close($png);
 }
@@ -320,7 +320,7 @@ sub untagged_graph {
     $spectrum->add_row($row);
   }
 
- my $png = open_path("graphs/untagged.png");
+ my $png = open_path("tags/untagged.png");
   print $png $spectrum->png();
   close($png);
 }
@@ -358,12 +358,6 @@ sub main() {
     @locations = recent_locations($dbh);
   }
 
-  foreach my $service (@services) {
-    print "service $service\n";
-    service_graph($dbh,$service,\%options);
-    service_report($view,$service,\%options);
-  }
-
   foreach my $tag (@tags) {
     print "tag $tag\n";
     tag_graph($dbh,$tag,\%options);
@@ -372,6 +366,12 @@ sub main() {
   foreach my $location (@locations) {
     print "location $location\n";
     location_graph($dbh,$location,\%options);
+  }
+
+  foreach my $service (@services) {
+    print "service $service\n";
+    service_graph($dbh,$service,\%options);
+    service_report($view,$service,\%options);
   }
 
   $dbh->rollback() ||

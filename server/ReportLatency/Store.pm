@@ -306,7 +306,7 @@ EOF
 <h1> Latency Summary For Untagged Services </h1>
 
 <p align=center>
-<img src="graphs/untagged.png" width="80%"
+<img src="tags/untagged.png" width="80%"
  alt="latency spectrum">
 </p>
 
@@ -483,7 +483,7 @@ EOF
 
 <h1> ReportLatency Summary </h1>
 <p align=center>
-<img src="graphs/latency-spectrum.png" width="80%"
+<img src="tags/summary.png" width="80%"
  alt="latency spectrum">
 </p>
 
@@ -636,7 +636,7 @@ EOF
 <h1> Latency Summary For Location $location </h1>
 
 <p align=center>
-<img src="graphs/location/$location.png" width="80%"
+<img src="$location.png" width="80%"
  alt="latency spectrum">
 </p>
 
@@ -958,7 +958,7 @@ EOF
 <h1> Latency Summary For Tag $tag_name </h1>
 
 <p align=center>
-<img src="graphs/tag/$tag_name.png" width="80%"
+<img src="tags/$tag_name.png" width="80%"
  alt="latency spectrum">
 </p>
 
