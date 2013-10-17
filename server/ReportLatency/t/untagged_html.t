@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 #
-# Test ReportLatency::Store.pm
+# Test ReportLatency::StaticView.pm's untagged_html()
 #
 # Copyright 2013 Google Inc. All Rights Reserved.
 #
@@ -28,6 +28,7 @@ BEGIN {
 }
 
 use_ok( 'ReportLatency::Store' );
+use_ok( 'ReportLatency::StaticView' );
 
 my $dir = tempdir(CLEANUP => 1);
 my $dbfile = "$dir/latency.sqlite3";
@@ -48,16 +49,17 @@ $dbh = DBI->connect("dbi:SQLite:dbname=$dbfile",
 
 my $store = new ReportLatency::Store(dbh => $dbh);
 
-isa_ok($store, 'ReportLatency::Store');
+my $view = new ReportLatency::StaticView($store);
+isa_ok($view, 'ReportLatency::StaticView');
 
-is($store->{dbh}, $dbh, "dbh");
 
 my $tidy = new HTML::Tidy;
-my $untagged_html = $store->untagged_html();
 
 ok($dbh->do(q{
   INSERT INTO report(timestamp,name,final_name,request_count,request_total) VALUES(9999,'google.com','google.com',1,1000);
 }), 'INSERT google.com report');
+
+my $untagged_html = $view->untagged_html();
 
 is($tidy->parse('untagged_html',$untagged_html), undef, 'untagged.html');
 for my $message ( $tidy->messages ) {

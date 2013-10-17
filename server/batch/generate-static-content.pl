@@ -76,6 +76,14 @@ sub service_report {
   close($report);
 }
 
+sub untagged_report {
+  my ($view,$options) = @_;
+
+  my $report = open_path("tags/untagged.html");
+  print $report $view->untagged_html();
+  close($report);
+}
+
 sub service_graph {
   my ($dbh,$name,$options) = @_;
 
@@ -346,6 +354,7 @@ sub main() {
 
   print "untagged\n";
   untagged_graph($dbh,\%options);
+  untagged_report($view,\%options);
 
   my (@services,@tags,@locations);
   if ($options{'all'}) {

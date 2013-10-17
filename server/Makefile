@@ -1,5 +1,3 @@
-#!/usr/bin/perl -wT
-#
 # Copyright 2013 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,22 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-use DBI;
-use CGI;
-use ReportLatency::utils;
-use ReportLatency::Store;
-use ReportLatency::CGIView;
-use strict;
+all:
 
-
-sub main {
-  my $dbh = latency_dbh('backup');
-  my $store = new ReportLatency::Store(dbh => $dbh);
-  my $view = new ReportLatency::CGIView($store);
-  my $q = new CGI;
-
-  print $q->header(-type => 'text/html');
-  print $view->untagged_html();
-}
-
-main() unless caller();
+test:
+	cd batch && prove t
+	cd cgi && prove t
+	cd ReportLatency && prove t
+	cd sql && prove t

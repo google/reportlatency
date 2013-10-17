@@ -66,7 +66,7 @@ reportlatency (1.0.4) precise; urgency=low
 
   * Switch to Mojolicious framework for new post processor
 
- -- Drake Diedrich <dld@localhost>  Wed, 26 Jun 2013 14:12:07 -0700
+ -- Drake Diedrich <dld@google.com>  Wed, 26 Jun 2013 14:12:07 -0700
 
 reportlatency (1.0.3) precise; urgency=low
 

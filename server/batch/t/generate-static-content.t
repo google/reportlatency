@@ -18,7 +18,7 @@
 
 use strict;
 use DBI;
-use Test::More tests => 13;
+use Test::More tests => 14;
 use File::Temp qw(tempfile tempdir);
 
 $ENV{'PATH'} = '/usr/bin';
@@ -62,21 +62,22 @@ chdir($dir);
 
 main();
 
-open(my $id,"-|","identify", "$dir/graphs/latency-spectrum.png") or die $!;
+open(my $id,"-|","identify", "$dir/tags/summary.png") or die $!;
 my $line = $id->getline;
 like($line,
-     qr/latency-spectrum\.png PNG \d+x\d+/,
+     qr/summary\.png PNG \d+x\d+/,
      'PNG');
 
-ok(unlink("$dir/graphs/latency-spectrum.png"),"unlink latency-spectrump.png");
-ok(unlink("$dir/graphs/untagged.png"),"unlink untagged.png");
 unlink($dbfile);
 rmdir("$dir/data");
+ok(unlink("$dir/locations/.png"),"unlink null location png");
+ok(rmdir("$dir/locations"),"rmdir locations/");
 ok(unlink("$dir/services/service.png"),"rmdir service/service.png");
 ok(unlink("$dir/services/service.html"),"unlink service.html");
 ok(rmdir("$dir/services"),"unlink services/");
-ok(unlink("$dir/graphs/location/.png"),"unlink null location png");
-ok(rmdir("$dir/graphs/location"),"rmdir location/");
-ok(rmdir("$dir/graphs"),"rmdir graphs/");
+ok(unlink("$dir/tags/summary.png"),"unlink summary.png");
+ok(unlink("$dir/tags/untagged.html"),"unlink untagged.html");
+ok(unlink("$dir/tags/untagged.png"),"unlink untagged.png");
+ok(rmdir("$dir/tags"),"rmdir tags/");
 ok(rmdir($dir),"rmdir tmpdir");
 
