@@ -461,6 +461,12 @@ EOF
 }
 
 
+sub service_img_url {
+  my ($self,$service) = @_;
+
+  return "$service.png";
+}
+
 sub service_not_found($$) {
   my ($self,$name) = @_;
 
@@ -487,6 +493,8 @@ sub service_found {
 
   my $rc = $select->execute($service);
 
+  my $service_img_url = $self->service_img_url($service);
+
   print $io <<EOF;
 <!DOCTYPE html>
 <html>
@@ -502,7 +510,7 @@ sub service_found {
 <h1> $service $meta->{'date'} Latency Report </h1>
 
 <p align=center>
-<img src="$service.png" width="80%" alt="latency spectrum">
+<img src="$service_img_url" width="80%" alt="latency spectrum">
 </p>
 
 <h2> All locations, each request name </h2>

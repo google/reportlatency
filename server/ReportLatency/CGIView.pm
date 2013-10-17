@@ -20,6 +20,13 @@ use vars qw($VERSION);
 
 $VERSION     = 0.1;
 
+sub service_img_url {
+  my ($self,$service) = @_;
+
+  return "services/$service.png";
+}
+
+
 
 1;
 
