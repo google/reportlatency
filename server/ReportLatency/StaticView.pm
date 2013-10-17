@@ -38,6 +38,11 @@ sub untagged_img_url {
   return "untagged.png";
 }
 
+sub service_url_from_tag {
+  my ($self,$name) = @_;
+  return "../services/$name.html";
+}
+
 sub untagged_html {
   my ($self) = @_;
   my $store = $self->{store};
@@ -95,7 +100,7 @@ EOF
 
   while (my $service = $service_sth->fetchrow_hashref) {
     my $name = $service->{final_name};
-    my $url = "services/$name.html";
+    my $url = $self->service_url_from_tag($name);
     my $count = $service->{'dependencies'};
     print $io latency_summary_row($name,$url,$count,$service);
   }
