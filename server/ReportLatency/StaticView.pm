@@ -34,6 +34,10 @@ sub new {
   return $self;
 }
 
+sub untagged_img_url {
+  return "untagged.png";
+}
+
 sub untagged_html {
   my ($self) = @_;
   my $store = $self->{store};
@@ -53,6 +57,8 @@ sub untagged_html {
   my $service_header = <<EOF;
 EOF
 
+  my $untagged_img_url = $self->untagged_img_url;
+
   print $io <<EOF;
 <!DOCTYPE html>
 <html>
@@ -68,7 +74,7 @@ EOF
 <h1> Latency Summary For Untagged Services </h1>
 
 <p align=center>
-<img src="graphs/untagged.png" width="80%"
+<img src="$untagged_img_url" width="80%"
  alt="latency spectrum">
 </p>
 

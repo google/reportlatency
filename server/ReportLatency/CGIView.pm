@@ -26,6 +26,10 @@ sub service_img_url {
   return "services/$service.png";
 }
 
+sub untagged_img_url {
+  return "tags/untagged.png";
+}
+
 
 
 1;
