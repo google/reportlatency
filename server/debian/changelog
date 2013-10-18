@@ -1,3 +1,11 @@
+reportlatency (1.1.0) precise; urgency=low
+
+  * Moved to MVC model
+  * Fully static report generation in addition to images
+  * Dynamic report views using static images
+
+ -- Drake Diedrich <dld@google.com>  Fri, 18 Oct 2013 16:48:48 -0700
+
 reportlatency (1.0.9.1) precise; urgency=low
 
   * Generate static HTML report for each service
