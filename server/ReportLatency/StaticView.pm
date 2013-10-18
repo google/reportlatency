@@ -39,6 +39,11 @@ sub tag_img_url {
   return "$tag.png";
 }
 
+sub tag_url {
+  my ($self,$tag) = @_;
+  return "$tag.html";
+}
+
 sub untagged_img_url {
   return "untagged.png";
 }
@@ -46,6 +51,16 @@ sub untagged_img_url {
 sub service_url_from_tag {
   my ($self,$name) = @_;
   return "../services/$name.html";
+}
+
+sub location_url {
+  my ($self,$name) = @_;
+  return "$name.html";
+}
+
+sub location_url_from_tag {
+  my ($self,$name) = @_;
+  return "../locations/" . $self->location_url($name);
 }
 
 sub summary_html {
@@ -108,7 +123,7 @@ EOF
 
   while (my $tag = $tag_sth->fetchrow_hashref) {
     my $name = $tag->{tag};
-    my $url = "tag?name=$name";
+    my $url = $self->tag_url($name);
     my $count = $tag->{'services'};
     print $io latency_summary_row($name,$url,$count,$tag);
   }
@@ -156,7 +171,7 @@ EOF
 
   while (my $location = $location_sth->fetchrow_hashref) {
     my $name = $location->{remote_addr};
-    my $url = "location?name=" . uri_escape($name);
+    my $url = $self->location_url(uri_escape($name));
     my $count = $location->{'services'};
     print $io latency_summary_row(sanitize_location($name),$url,
 				  $count,$location);

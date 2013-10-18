@@ -42,6 +42,16 @@ sub service_url {
 
 sub service_url_from_tag { return service_url(@_); }
 
+sub tag_url {
+  my ($self,$name) = @_;
+  return "tag?name=$name";
+}
+
+sub location_url {
+  my ($self,$name) = @_;
+  return "location?name=$name";
+}
+sub location_url_from_tag { return location_url(@_); }
 
 1;
 
