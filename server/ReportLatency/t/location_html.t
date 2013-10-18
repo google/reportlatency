@@ -20,11 +20,12 @@ use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
 use HTML::Tidy;
-use Test::More tests => 8;
+use Test::More tests => 7;
 
 BEGIN { use lib '..'; }
 
 use_ok( 'ReportLatency::Store' );
+use_ok( 'ReportLatency::StaticView' );
 
 
 my $dir = tempdir(CLEANUP => 1);
@@ -45,10 +46,8 @@ $dbh = DBI->connect("dbi:SQLite:dbname=$dbfile",
   or die $dbh->errstr;
 
 my $store = new ReportLatency::Store(dbh => $dbh);
+my $view = new ReportLatency::StaticView($store);
 
-isa_ok($store, 'ReportLatency::Store');
-
-is($store->{dbh}, $dbh, "dbh");
 
 my $tidy = new HTML::Tidy;
 
@@ -61,7 +60,7 @@ ok($dbh->do(q{
 ok($dbh->commit,'commit');
 
 
-my $location_html = $store->location_html('office.google.com');
+my $location_html = $view->location_html('office.google.com');
 is($tidy->parse('office',$location_html), undef,
    'tidy location_html(office.google.com)');
 

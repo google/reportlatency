@@ -164,6 +164,14 @@ sub location_graph {
   close($png);
 }
 
+sub location_report {
+  my ($view,$name,$options) = @_;
+
+  my $report = open_path("locations/$name.html");
+  print $report $view->location_html($name);
+  close($report);
+}
+
 sub recent_services {
   my ($dbh) = @_;
 
@@ -393,6 +401,7 @@ sub main() {
   foreach my $location (@locations) {
     print "location $location\n";
     location_graph($dbh,$location,\%options);
+    location_report($view,$location,\%options);
   }
 
   foreach my $service (@services) {

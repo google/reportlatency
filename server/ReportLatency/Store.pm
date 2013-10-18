@@ -421,16 +421,10 @@ sub summary_location_sth {
   return $sth;
 }
 
-sub location_html {
-  my ($self,$loc) = @_;
+sub location_meta_sth {
+  my ($self) = @_;
   my $dbh = $self->{dbh};
-
-  my $unescape = uri_unescape($loc);
-  my $location = sanitize_location($unescape);
-
-  my $io = new IO::String;
-
-  my $meta_sth =
+  my $sth =
     $dbh->prepare('SELECT count(distinct final_name) AS services,' .
 		  'min(timestamp) AS min_timestamp,' .
                   'max(timestamp) AS max_timestamp,' .
@@ -447,9 +441,14 @@ sub location_html {
                   "WHERE timestamp >= datetime('now','-14 days') " .
 		  'AND remote_addr = ?;')
       or die "prepare failed";
+  return $sth;
+}
 
 
-  my $service_sth =
+sub location_service_sth {
+  my ($self) = @_;
+  my $dbh = $self->{dbh};
+  my $sth =
     $dbh->prepare('SELECT final_name,' .
                   'count(distinct report.name) AS dependencies,' .
                   'sum(tabupdate_count) AS tabupdate_count,' .
@@ -467,96 +466,8 @@ sub location_html {
                   'GROUP BY final_name ' .
 		  'ORDER BY final_name;')
       or die "prepare failed";
-
-
-  my $rc = $meta_sth->execute($location);
-  my $meta = $meta_sth->fetchrow_hashref;
-  $meta_sth->finish;
-
-  my $service_header = <<EOF;
-EOF
-
-  print $io <<EOF;
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Latency Summary For Location $location</title>
-  <style type="text/css">
-    table.alternate tr:nth-child(odd) td{ background-color: #CCFFCC; }
-    table.alternate tr:nth-child(even) td{ background-color: #99DD99; }
-  </style>
-</head>
-<body>
-
-<h1> Latency Summary For Location $location </h1>
-
-<p align=center>
-<img src="$location.png" width="80%"
- alt="latency spectrum">
-</p>
-
-<table class="alternate" summary="Latency report for all services at location $location">
-<tr>
- <th colspan=2> Service </th>
- <th colspan=2> Request </th>
- <th colspan=2> Tab Update </th>
- <th colspan=2> Navigation </th>
-</tr>
-<tr>
- <th>Name</th> <th>Dependencies</th>
- <th>Count</th> <th>Latency (ms)</th>
- <th>Count</th> <th>Latency (ms)</th>
- <th>Count</th> <th>Latency (ms)</th>
-</tr>
-EOF
-
-  $rc = $service_sth->execute($meta->{'min_timestamp'},
-			      $meta->{'max_timestamp'},$location);
-
-  while (my $service = $service_sth->fetchrow_hashref) {
-    my $name = sanitize_service($service->{final_name});
-    if (defined $name) {
-      my $url = "service?service=$name";
-      my $count = $service->{'dependencies'};
-      print $io latency_summary_row($name,$url,$count,$service);
-    }
-  }
-  $service_sth->finish;
-
-  print $io <<EOF;
-<tr>
- <th> Service </th>
- <th> Service </th>
- <th colspan=2> Request </th>
- <th colspan=2> Tab Update </th>
- <th colspan=2> Navigation </th>
-</tr>
-<tr>
- <th></th> <th>Count</th>
- <th>Count</th> <th>Latency (ms)</th>
- <th>Count</th> <th>Latency (ms)</th>
- <th>Count</th> <th>Latency (ms)</th>
-</tr>
-EOF
-
-  print $io latency_summary_row('total', '', $meta->{'services'}, $meta);
-
-  print $io <<EOF;
-</table>
-
-<p>
-Timespan: $meta->{'min_timestamp'} through $meta->{'max_timestamp'}
-</p>
-                      
-</body>
-</html>
-EOF
-
-  $io->setpos(0);
-  return ${$io->string_ref};
+  return $sth;
 }
-
-
 
 1;
 

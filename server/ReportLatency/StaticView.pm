@@ -53,9 +53,19 @@ sub service_url_from_tag {
   return "../services/$name.html";
 }
 
+sub service_url_from_location {
+  my ($self,$name) = @_;
+  return "../services/$name.html";
+}
+
 sub location_url {
   my ($self,$name) = @_;
   return "$name.html";
+}
+
+sub location_img_url {
+  my ($self,$name) = @_;
+  return "$name.png";
 }
 
 sub location_url_from_tag {
@@ -293,55 +303,22 @@ EOF
 
 sub location_html {
   my ($self,$loc) = @_;
-  my $dbh = $self->{dbh};
+
+  my $store = $self->{store};
 
   my $unescape = uri_unescape($loc);
   my $location = sanitize_location($unescape);
 
   my $io = new IO::String;
 
-  my $meta_sth =
-    $dbh->prepare('SELECT count(distinct final_name) AS services,' .
-		  'min(timestamp) AS min_timestamp,' .
-                  'max(timestamp) AS max_timestamp,' .
-                  'sum(tabupdate_count) AS tabupdate_count,' .
-                  'sum(tabupdate_total)/sum(tabupdate_count)' .
-                  ' AS tabupdate_latency,' .
-                  'sum(request_count) AS request_count,' .
-                  'sum(request_total)/sum(request_count)' .
-                  ' AS request_latency,' .
-                  'sum(navigation_count) AS navigation_count,' .
-                  'sum(navigation_total)/sum(navigation_count)' .
-                  ' AS navigation_latency ' .
-                  'FROM report ' .
-                  "WHERE timestamp >= datetime('now','-14 days') " .
-		  'AND remote_addr = ?;')
-      or die "prepare failed";
-
-
-  my $service_sth =
-    $dbh->prepare('SELECT final_name,' .
-                  'count(distinct report.name) AS dependencies,' .
-                  'sum(tabupdate_count) AS tabupdate_count,' .
-                  'sum(tabupdate_total)/sum(tabupdate_count)' .
-                  ' AS tabupdate_latency,' .
-                  'sum(request_count) AS request_count,' .
-                  'sum(request_total)/sum(request_count)' .
-                  ' AS request_latency,' .
-                  'sum(navigation_count) AS navigation_count,' .
-                  'sum(navigation_total)/sum(navigation_count)' .
-                  ' AS navigation_latency ' .
-                  'FROM report ' .
-                  'WHERE timestamp >= ? AND timestamp <= ? ' .
-		  'AND remote_addr = ? ' .
-                  'GROUP BY final_name ' .
-		  'ORDER BY final_name;')
-      or die "prepare failed";
-
+  my $meta_sth = $store->location_meta_sth;
+  my $service_sth = $store->location_service_sth;
 
   my $rc = $meta_sth->execute($location);
   my $meta = $meta_sth->fetchrow_hashref;
   $meta_sth->finish;
+
+  my $location_img_url = $self->location_img_url($location);
 
   my $service_header = <<EOF;
 EOF
@@ -361,7 +338,7 @@ EOF
 <h1> Latency Summary For Location $location </h1>
 
 <p align=center>
-<img src="graphs/location/$location.png" width="80%"
+<img src="$location_img_url" width="80%"
  alt="latency spectrum">
 </p>
 
@@ -386,7 +363,7 @@ EOF
   while (my $service = $service_sth->fetchrow_hashref) {
     my $name = sanitize_service($service->{final_name});
     if (defined $name) {
-      my $url = "service?service=$name";
+      my $url = $self->service_url_from_location($name);
       my $count = $service->{'dependencies'};
       print $io latency_summary_row($name,$url,$count,$service);
     }
