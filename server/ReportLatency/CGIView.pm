@@ -30,9 +30,14 @@ sub untagged_img_url {
   return "tags/untagged.png";
 }
 
+sub tag_img_url {
+  my ($self,$tag) = @_;
+  return "tags/$tag.png";
+}
+
 sub service_url {
   my ($self,$name) = @_;
-  return "service?name=$name";
+  return "service?service=$name";
 }
 
 sub service_url_from_tag { return service_url(@_); }

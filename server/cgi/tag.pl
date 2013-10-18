@@ -18,6 +18,7 @@ use DBI;
 use CGI;
 use ReportLatency::utils;
 use ReportLatency::Store;
+use ReportLatency::CGIView;
 
 use strict;
 
@@ -25,11 +26,12 @@ use strict;
 sub main {
   my $dbh = latency_dbh('backup');
   my $store = new ReportLatency::Store(dbh => $dbh);
+  my $view = new ReportLatency::CGIView($store);
   my $q = new CGI;
   my $tag_name = $q->param('name');
 
   print $q->header(-type => 'text/html');
-  print $store->tag_html($tag_name);
+  print $view->tag_html($tag_name);
 }
 
 main() unless caller();

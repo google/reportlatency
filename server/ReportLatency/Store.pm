@@ -178,6 +178,57 @@ sub untagged_meta_sth {
   return $sth;
 }
 
+sub tag_meta_sth {
+  my ($self) = @_;
+  my $dbh = $self->{dbh};
+  my $sth =
+    $dbh->prepare('SELECT count(distinct final_name) AS services,' .
+		  'min(timestamp) AS min_timestamp,' .
+                  'max(timestamp) AS max_timestamp,' .
+                  'sum(tabupdate_count) AS tabupdate_count,' .
+                  'sum(tabupdate_total)/sum(tabupdate_count)' .
+                  ' AS tabupdate_latency,' .
+                  'sum(request_count) AS request_count,' .
+                  'sum(request_total)/sum(request_count)' .
+                  ' AS request_latency,' .
+                  'sum(navigation_count) AS navigation_count,' .
+                  'sum(navigation_total)/sum(navigation_count)' .
+                  ' AS navigation_latency ' .
+                  'FROM report ' .
+                  'INNER JOIN tag ' .
+                  'ON report.final_name = tag.name ' .
+                  "WHERE timestamp >= datetime('now','-14 days') " .
+		  'AND tag.tag = ?;')
+      or die "prepare failed";
+  return $sth;
+}
+
+sub tag_service_sth {
+  my ($self) = @_;
+  my $dbh = $self->{dbh};
+  my $sth =
+    $dbh->prepare('SELECT final_name,' .
+                  'count(distinct report.name) AS dependencies,' .
+                  'sum(tabupdate_count) AS tabupdate_count,' .
+                  'sum(tabupdate_total)/sum(tabupdate_count)' .
+                  ' AS tabupdate_latency,' .
+                  'sum(request_count) AS request_count,' .
+                  'sum(request_total)/sum(request_count)' .
+                  ' AS request_latency,' .
+                  'sum(navigation_count) AS navigation_count,' .
+                  'sum(navigation_total)/sum(navigation_count)' .
+                  ' AS navigation_latency ' .
+                  'FROM report ' .
+		  'INNER JOIN tag ' .
+		  'ON report.final_name = tag.name ' .
+                  'WHERE timestamp >= ? AND timestamp <= ? ' .
+		  'AND tag.tag = ? ' .
+                  'GROUP BY final_name ' .
+		  'ORDER BY final_name;')
+      or die "prepare failed";
+  return $sth;
+}
+
 sub untagged_service_sth {
   my ($self) = @_;
   my $dbh = $self->{dbh};
@@ -607,143 +658,6 @@ EOF
 }
 
 
-sub tag_html {
-  my ($self,$tag) = @_;
-  my $dbh = $self->{dbh};
-
-  my $tag_name = sanitize($tag);
-
-  my $meta_sth =
-    $dbh->prepare('SELECT count(distinct final_name) AS services,' .
-		  'min(timestamp) AS min_timestamp,' .
-                  'max(timestamp) AS max_timestamp,' .
-                  'sum(tabupdate_count) AS tabupdate_count,' .
-                  'sum(tabupdate_total)/sum(tabupdate_count)' .
-                  ' AS tabupdate_latency,' .
-                  'sum(request_count) AS request_count,' .
-                  'sum(request_total)/sum(request_count)' .
-                  ' AS request_latency,' .
-                  'sum(navigation_count) AS navigation_count,' .
-                  'sum(navigation_total)/sum(navigation_count)' .
-                  ' AS navigation_latency ' .
-                  'FROM report ' .
-                  'INNER JOIN tag ' .
-                  'ON report.final_name = tag.name ' .
-                  "WHERE timestamp >= datetime('now','-14 days') " .
-		  'AND tag.tag = ?;')
-      or die "prepare failed";
-
-
-  my $service_sth =
-    $dbh->prepare('SELECT final_name,' .
-                  'count(distinct report.name) AS dependencies,' .
-                  'sum(tabupdate_count) AS tabupdate_count,' .
-                  'sum(tabupdate_total)/sum(tabupdate_count)' .
-                  ' AS tabupdate_latency,' .
-                  'sum(request_count) AS request_count,' .
-                  'sum(request_total)/sum(request_count)' .
-                  ' AS request_latency,' .
-                  'sum(navigation_count) AS navigation_count,' .
-                  'sum(navigation_total)/sum(navigation_count)' .
-                  ' AS navigation_latency ' .
-                  'FROM report ' .
-		  'INNER JOIN tag ' .
-		  'ON report.final_name = tag.name ' .
-                  'WHERE timestamp >= ? AND timestamp <= ? ' .
-		  'AND tag.tag = ? ' .
-                  'GROUP BY final_name ' .
-		  'ORDER BY final_name;')
-      or die "prepare failed";
-
-
-  my $rc = $meta_sth->execute($tag);
-  my $meta = $meta_sth->fetchrow_hashref;
-  $meta_sth->finish;
-
-  my $io = new IO::String;
-
-  my $service_header = <<EOF;
-EOF
-
-  print $io <<EOF;
-<!DOCTYPE html>
-<html>
-<head>
-  <title>$tag_name ReportLatency summary</title>
-  <style type="text/css">
-    table.alternate tr:nth-child(odd) td{ background-color: #CCFFCC; }
-    table.alternate tr:nth-child(even) td{ background-color: #99DD99; }
-  </style>
-</head>
-<body>
-
-<h1> Latency Summary For Tag $tag_name </h1>
-
-<p align=center>
-<img src="tags/$tag_name.png" width="80%"
- alt="latency spectrum">
-</p>
-
-<table class="alternate" summary="Latency report for $tag_name services">
-<tr>
- <th colspan=2> Service </th>
- <th colspan=2> Request </th>
- <th colspan=2> Tab Update </th>
- <th colspan=2> Navigation </th>
-</tr>
-<tr>
- <th>Name</th> <th>Dependencies</th>
- <th>Count</th> <th>Latency (ms)</th>
- <th>Count</th> <th>Latency (ms)</th>
- <th>Count</th> <th>Latency (ms)</th>
-</tr>
-EOF
-
-  $rc = $service_sth->execute($meta->{'min_timestamp'},
-			      $meta->{'max_timestamp'},$tag_name);
-
-  while (my $service = $service_sth->fetchrow_hashref) {
-    my $name = sanitize_service($service->{final_name});
-    if (defined $name) {
-      my $url = "service?service=$name";
-      my $count = $service->{'dependencies'};
-      print $io latency_summary_row(sanitize_service($name),$url,$count,
-				    $service);
-    }
-  }
-  $service_sth->finish;
-
-  print $io <<EOF;
-<tr>
- <th> Service </th>
- <th> Service </th>
- <th colspan=2> Request </th>
- <th colspan=2> Tab Update </th>
- <th colspan=2> Navigation </th>
-</tr>
-<tr>
- <th></th> <th>Count</th>
- <th>Count</th> <th>Latency (ms)</th>
- <th>Count</th> <th>Latency (ms)</th>
- <th>Count</th> <th>Latency (ms)</th>
-</tr>
-EOF
-
-  print $io latency_summary_row('total', '', $meta->{'services'}, $meta);
-
-  print $io <<EOF;
-</table>
-
-<p>
-Timespan: $meta->{'min_timestamp'} through $meta->{'max_timestamp'}
-</p>
-                      
-</body>
-</html>
-EOF
-  $io->setpos(0);
-  return ${$io->string_ref};
-}
 
 1;
 

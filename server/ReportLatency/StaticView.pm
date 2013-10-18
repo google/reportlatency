@@ -34,6 +34,11 @@ sub new {
   return $self;
 }
 
+sub tag_img_url {
+  my ($self,$tag) = @_;
+  return "$tag.png";
+}
+
 sub untagged_img_url {
   return "untagged.png";
 }
@@ -664,51 +669,13 @@ sub service_html {
 
 sub tag_html {
   my ($self,$tag) = @_;
-  my $dbh = $self->{dbh};
+  my $store = $self->{store};
 
   my $tag_name = sanitize($tag);
+  my $tag_img_url = $self->tag_img_url($tag_name);
 
-  my $meta_sth =
-    $dbh->prepare('SELECT count(distinct final_name) AS services,' .
-		  'min(timestamp) AS min_timestamp,' .
-                  'max(timestamp) AS max_timestamp,' .
-                  'sum(tabupdate_count) AS tabupdate_count,' .
-                  'sum(tabupdate_total)/sum(tabupdate_count)' .
-                  ' AS tabupdate_latency,' .
-                  'sum(request_count) AS request_count,' .
-                  'sum(request_total)/sum(request_count)' .
-                  ' AS request_latency,' .
-                  'sum(navigation_count) AS navigation_count,' .
-                  'sum(navigation_total)/sum(navigation_count)' .
-                  ' AS navigation_latency ' .
-                  'FROM report ' .
-                  'INNER JOIN tag ' .
-                  'ON report.final_name = tag.name ' .
-                  "WHERE timestamp >= datetime('now','-14 days') " .
-		  'AND tag.tag = ?;')
-      or die "prepare failed";
-
-
-  my $service_sth =
-    $dbh->prepare('SELECT final_name,' .
-                  'count(distinct report.name) AS dependencies,' .
-                  'sum(tabupdate_count) AS tabupdate_count,' .
-                  'sum(tabupdate_total)/sum(tabupdate_count)' .
-                  ' AS tabupdate_latency,' .
-                  'sum(request_count) AS request_count,' .
-                  'sum(request_total)/sum(request_count)' .
-                  ' AS request_latency,' .
-                  'sum(navigation_count) AS navigation_count,' .
-                  'sum(navigation_total)/sum(navigation_count)' .
-                  ' AS navigation_latency ' .
-                  'FROM report ' .
-		  'INNER JOIN tag ' .
-		  'ON report.final_name = tag.name ' .
-                  'WHERE timestamp >= ? AND timestamp <= ? ' .
-		  'AND tag.tag = ? ' .
-                  'GROUP BY final_name ' .
-		  'ORDER BY final_name;')
-      or die "prepare failed";
+  my $meta_sth = $store->tag_meta_sth;
+  my $service_sth = $store->tag_service_sth;
 
 
   my $rc = $meta_sth->execute($tag);
@@ -735,7 +702,7 @@ EOF
 <h1> Latency Summary For Tag $tag_name </h1>
 
 <p align=center>
-<img src="graphs/tag/$tag_name.png" width="80%"
+<img src="$tag_img_url" width="80%"
  alt="latency spectrum">
 </p>
 

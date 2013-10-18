@@ -76,6 +76,14 @@ sub service_report {
   close($report);
 }
 
+sub tag_report {
+  my ($view,$name,$options) = @_;
+
+  my $report = open_path("tags/$name.html");
+  print $report $view->tag_html($name);
+  close($report);
+}
+
 sub untagged_report {
   my ($view,$options) = @_;
 
@@ -370,6 +378,7 @@ sub main() {
   foreach my $tag (@tags) {
     print "tag $tag\n";
     tag_graph($dbh,$tag,\%options);
+    tag_report($view,$tag,\%options);
   }
 
   foreach my $location (@locations) {
