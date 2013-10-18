@@ -654,7 +654,7 @@ EOF
   while (my $service = $service_sth->fetchrow_hashref) {
     my $name = sanitize_service($service->{final_name});
     if (defined $name) {
-      my $url = "service?service=$name";
+      my $url = $self->service_url_from_tag($name);
       my $count = $service->{'dependencies'};
       print $io latency_summary_row(sanitize_service($name),$url,$count,
 				    $service);
