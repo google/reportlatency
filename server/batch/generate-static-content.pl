@@ -66,6 +66,14 @@ sub total_graph {
   my $png = open_path("tags/summary.png");
   print $png $spectrum->png();
   close($png);
+
+}
+
+sub total_report {
+  my ($view,$options) = @_;
+  my $html = open_path("tags/summary.html");
+  print $html $view->summary_html();
+  close($html);
 }
 
 sub service_report {
@@ -359,6 +367,7 @@ sub main() {
 
   print "total\n";
   total_graph($dbh,\%options);
+  total_report($view,\%options);
 
   print "untagged\n";
   untagged_graph($dbh,\%options);

@@ -20,7 +20,7 @@ use strict;
 use CGI;
 use DBI;
 use File::Temp qw(tempfile tempdir);
-use Test::More tests => 6;
+use Test::More tests => 5;
 use HTML::Tidy;
 
 BEGIN {
@@ -28,6 +28,7 @@ BEGIN {
 }
 
 use_ok( 'ReportLatency::Store' );
+use_ok( 'ReportLatency::StaticView' );
 
 my $dir = tempdir(CLEANUP => 1);
 my $dbfile = "$dir/latency.sqlite3";
@@ -47,13 +48,11 @@ $dbh = DBI->connect("dbi:SQLite:dbname=$dbfile",
   or die $dbh->errstr;
 
 my $store = new ReportLatency::Store(dbh => $dbh);
+my $view = new ReportLatency::StaticView($store);
 
-isa_ok($store, 'ReportLatency::Store');
-
-is($store->{dbh}, $dbh, "dbh");
 
 my $tidy = new HTML::Tidy;
-my $summary_html = $store->summary_html();
+my $summary_html = $view->summary_html();
 
 ok($dbh->do(q{
   INSERT INTO report(timestamp,name,final_name,request_count,request_total) VALUES(9999,'google.com','google.com',1,1000);

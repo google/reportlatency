@@ -18,7 +18,7 @@
 
 use strict;
 use Test::More tests => 1;
-push(@INC,'.');
+BEGIN { use lib '..'; }
 
 require_ok('./summary.pl');
 

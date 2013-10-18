@@ -48,6 +48,134 @@ sub service_url_from_tag {
   return "../services/$name.html";
 }
 
+sub summary_html {
+  my ($self) = @_;
+  my $store = $self->{store};
+
+  my $meta_sth = $store->summary_meta_sth;
+  my $tag_sth = $store->summary_tag_sth;
+  my $other_sth = $store->summary_untagged_sth;
+  my $location_sth = $store->summary_location_sth;
+
+
+  my $rc = $meta_sth->execute();
+  my $meta = $meta_sth->fetchrow_hashref;
+  $meta_sth->finish;
+
+  my $io = new IO::String;
+
+  my $tag_header = <<EOF;
+<tr>
+ <th colspan=2> Tag </th>
+ <th colspan=2> Request </th>
+ <th colspan=2> Tab Update </th>
+ <th colspan=2> Navigation </th>
+</tr>
+<tr>
+ <th>Name</th> <th>Services</th>
+ <th>Count</th> <th>Latency (ms)</th>
+ <th>Count</th> <th>Latency (ms)</th>
+ <th>Count</th> <th>Latency (ms)</th>
+</tr>
+EOF
+
+  print $io <<EOF;
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ReportLatency summary</title>
+  <style type="text/css">
+    table.alternate tr:nth-child(odd) td{ background-color: #CCFFCC; }
+    table.alternate tr:nth-child(even) td{ background-color: #99DD99; }
+  </style>
+</head>
+<body>
+
+<h1> ReportLatency Summary </h1>
+<p align=center>
+<img src="tags/summary.png" width="80%"
+ alt="latency spectrum">
+</p>
+
+<table class="alternate" summary="Latency report for all services by tag">
+$tag_header
+EOF
+
+  $rc = $tag_sth->execute($meta->{'min_timestamp'},
+				$meta->{'max_timestamp'});
+
+  while (my $tag = $tag_sth->fetchrow_hashref) {
+    my $name = $tag->{tag};
+    my $url = "tag?name=$name";
+    my $count = $tag->{'services'};
+    print $io latency_summary_row($name,$url,$count,$tag);
+  }
+  $tag_sth->finish;
+
+  $rc = $other_sth->execute($meta->{'min_timestamp'},
+			    $meta->{'max_timestamp'});
+  my $other = $other_sth->fetchrow_hashref;
+  print $io latency_summary_row('untagged','untagged',
+				$other->{'services'},$other);
+  $other_sth->finish;
+
+  print $io $tag_header;
+
+  print $io latency_summary_row('total', '', $meta->{'services'}, $meta);
+
+  print $io <<EOF;
+</table>
+
+EOF
+
+  my $location_header = <<EOF;
+<tr>
+ <th colspan=2> Location </th>
+ <th colspan=2> Request </th>
+ <th colspan=2> Tab Update </th>
+ <th colspan=2> Navigation </th>
+</tr>
+<tr>
+ <th>Name</th> <th>Services</th>
+ <th>Count</th> <th>Latency (ms)</th>
+ <th>Count</th> <th>Latency (ms)</th>
+ <th>Count</th> <th>Latency (ms)</th>
+</tr>
+EOF
+
+  print $io <<EOF;
+<h2> Latency By Location </h2>
+
+<table class="alternate" summary="Latency report for all services by location">
+$location_header
+EOF
+  $rc = $location_sth->execute($meta->{'min_timestamp'},
+			       $meta->{'max_timestamp'});
+
+  while (my $location = $location_sth->fetchrow_hashref) {
+    my $name = $location->{remote_addr};
+    my $url = "location?name=" . uri_escape($name);
+    my $count = $location->{'services'};
+    print $io latency_summary_row(sanitize_location($name),$url,
+				  $count,$location);
+  }
+  $location_sth->finish;
+
+print $io <<EOF;
+</table>
+
+<p>
+Timespan: $meta->{'min_timestamp'} through $meta->{'max_timestamp'}
+</p>
+                      
+</body>
+</html>
+EOF
+
+  $io->setpos(0);
+  return ${$io->string_ref};
+}
+
 sub untagged_html {
   my ($self) = @_;
   my $store = $self->{store};
@@ -145,201 +273,6 @@ EOF
 }
 
 
-sub summary_html {
-  my ($self) = @_;
-  my $dbh = $self->{dbh};
-
-  my $meta_sth =
-    $dbh->prepare('SELECT "total" AS tag,' .
-		  'min(timestamp) AS min_timestamp,' .
-                  'max(timestamp) AS max_timestamp,' .
-                  'count(distinct final_name) AS services,' .
-                  'sum(request_count) AS request_count,' .
-                  'sum(request_total)/sum(request_count) AS request_latency,' .
-                  'sum(tabupdate_count) AS tabupdate_count,' .
-                  'sum(tabupdate_total)/sum(tabupdate_count) ' .
-		  'AS tabupdate_latency,' .
-                  'sum(navigation_count) AS navigation_count,' .
-                  'sum(navigation_total)/sum(navigation_count) ' .
-		  'AS navigation_latency ' .
-                  'FROM report ' .
-                  "WHERE timestamp >= datetime('now','-14 days');" )
-      or die "prepare failed";
-
-  my $tag_sth =
-    $dbh->prepare('SELECT tag.tag as tag,' .
-                  'count(distinct final_name) AS services,' .
-                  'sum(tabupdate_count) AS tabupdate_count,' .
-                  'sum(tabupdate_total)/sum(tabupdate_count)' .
-                  ' AS tabupdate_latency,' .
-                  'sum(request_count) AS request_count,' .
-                  'sum(request_total)/sum(request_count)' .
-                  ' AS request_latency,' .
-                  'sum(navigation_count) AS navigation_count,' .
-                  'sum(navigation_total)/sum(navigation_count)' .
-                  ' AS navigation_latency ' .
-                  'FROM report ' .
-		  'INNER JOIN tag ' .
-		  'ON report.final_name = tag.name ' .
-                  'WHERE timestamp >= ? AND timestamp <= ? ' .
-                  'GROUP BY tag ' .
-		  'ORDER BY tag;')
-      or die "prepare failed";
-
-  my $location_sth =
-    $dbh->prepare('SELECT remote_addr,' .
-                  'count(distinct final_name) AS services,' .
-                  'sum(tabupdate_count) AS tabupdate_count,' .
-                  'sum(tabupdate_total)/sum(tabupdate_count)' .
-                  ' AS tabupdate_latency,' .
-                  'sum(request_count) AS request_count,' .
-                  'sum(request_total)/sum(request_count)' .
-                  ' AS request_latency,' .
-                  'sum(navigation_count) AS navigation_count,' .
-                  'sum(navigation_total)/sum(navigation_count)' .
-                  ' AS navigation_latency ' .
-                  'FROM report ' .
-                  'WHERE timestamp >= ? AND timestamp <= ? ' .
-                  'GROUP BY remote_addr ' .
-		  'ORDER BY remote_addr;')
-      or die "prepare failed";
-
-  my $other_sth =
-    $dbh->prepare('SELECT ' .
-                  'count(distinct final_name) AS services,' .
-                  'sum(tabupdate_count) AS tabupdate_count,' .
-                  'sum(tabupdate_total)/sum(tabupdate_count)' .
-                  ' AS tabupdate_latency,' .
-                  'sum(request_count) AS request_count,' .
-                  'sum(request_total)/sum(request_count)' .
-                  ' AS request_latency,' .
-                  'sum(navigation_count) AS navigation_count,' .
-                  'sum(navigation_total)/sum(navigation_count)' .
-                  ' AS navigation_latency ' .
-                  'FROM report ' .
-		  'LEFT OUTER JOIN tag ' .
-		  'ON report.final_name = tag.name ' .
-                  'WHERE timestamp >= ? AND timestamp <= ? ' .
-		  'AND tag.tag is null;')
-      or die "prepare failed";
-
-  my $rc = $meta_sth->execute();
-  my $meta = $meta_sth->fetchrow_hashref;
-  $meta_sth->finish;
-
-  my $io = new IO::String;
-
-  my $tag_header = <<EOF;
-<tr>
- <th colspan=2> Tag </th>
- <th colspan=2> Request </th>
- <th colspan=2> Tab Update </th>
- <th colspan=2> Navigation </th>
-</tr>
-<tr>
- <th>Name</th> <th>Services</th>
- <th>Count</th> <th>Latency (ms)</th>
- <th>Count</th> <th>Latency (ms)</th>
- <th>Count</th> <th>Latency (ms)</th>
-</tr>
-EOF
-
-  print $io <<EOF;
-<!DOCTYPE html>
-<html>
-<head>
-  <title>ReportLatency summary</title>
-  <style type="text/css">
-    table.alternate tr:nth-child(odd) td{ background-color: #CCFFCC; }
-    table.alternate tr:nth-child(even) td{ background-color: #99DD99; }
-  </style>
-</head>
-<body>
-
-<h1> ReportLatency Summary </h1>
-<p align=center>
-<img src="graphs/latency-spectrum.png" width="80%"
- alt="latency spectrum">
-</p>
-
-<table class="alternate" summary="Latency report for all services by tag">
-$tag_header
-EOF
-
-  $rc = $tag_sth->execute($meta->{'min_timestamp'},
-				$meta->{'max_timestamp'});
-
-  while (my $tag = $tag_sth->fetchrow_hashref) {
-    my $name = $tag->{tag};
-    my $url = "tag?name=$name";
-    my $count = $tag->{'services'};
-    print $io latency_summary_row($name,$url,$count,$tag);
-  }
-  $tag_sth->finish;
-
-  $rc = $other_sth->execute($meta->{'min_timestamp'},
-			    $meta->{'max_timestamp'});
-  my $other = $other_sth->fetchrow_hashref;
-  print $io latency_summary_row('untagged','untagged',
-				$other->{'services'},$other);
-  $other_sth->finish;
-
-  print $io $tag_header;
-
-  print $io latency_summary_row('total', '', $meta->{'services'}, $meta);
-
-  print $io <<EOF;
-</table>
-
-EOF
-
-  my $location_header = <<EOF;
-<tr>
- <th colspan=2> Location </th>
- <th colspan=2> Request </th>
- <th colspan=2> Tab Update </th>
- <th colspan=2> Navigation </th>
-</tr>
-<tr>
- <th>Name</th> <th>Services</th>
- <th>Count</th> <th>Latency (ms)</th>
- <th>Count</th> <th>Latency (ms)</th>
- <th>Count</th> <th>Latency (ms)</th>
-</tr>
-EOF
-
-  print $io <<EOF;
-<h2> Latency By Location </h2>
-
-<table class="alternate" summary="Latency report for all services by location">
-$location_header
-EOF
-  $rc = $location_sth->execute($meta->{'min_timestamp'},
-			       $meta->{'max_timestamp'});
-
-  while (my $location = $location_sth->fetchrow_hashref) {
-    my $name = $location->{remote_addr};
-    my $url = "location?name=" . uri_escape($name);
-    my $count = $location->{'services'};
-    print $io latency_summary_row(sanitize_location($name),$url,
-				  $count,$location);
-  }
-  $location_sth->finish;
-
-print $io <<EOF;
-</table>
-
-<p>
-Timespan: $meta->{'min_timestamp'} through $meta->{'max_timestamp'}
-</p>
-                      
-</body>
-</html>
-EOF
-
-  $io->setpos(0);
-  return ${$io->string_ref};
-}
 
 sub location_html {
   my ($self,$loc) = @_;
