@@ -57,6 +57,8 @@ sub summary_html {
   my $other_sth = $store->summary_untagged_sth;
   my $location_sth = $store->summary_location_sth;
 
+  my $summary_img_url = $self->tag_img_url('summary');
+
 
   my $rc = $meta_sth->execute();
   my $meta = $meta_sth->fetchrow_hashref;
@@ -93,7 +95,7 @@ EOF
 
 <h1> ReportLatency Summary </h1>
 <p align=center>
-<img src="tags/summary.png" width="80%"
+<img src="$summary_img_url" width="80%"
  alt="latency spectrum">
 </p>
 
