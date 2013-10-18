@@ -54,6 +54,10 @@ sub location_url {
 }
 sub location_url_from_tag { return location_url(@_); }
 
+sub location_img_url {
+  my ($self,$name) = @_;
+  return "locations/$name.png";
+}
 1;
 
 
