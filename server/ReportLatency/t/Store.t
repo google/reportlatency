@@ -19,7 +19,7 @@
 use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
-use Test::More tests => 11;
+use Test::More tests => 12;
 
 BEGIN { use lib '..'; }
 
@@ -70,4 +70,6 @@ is($store->aggregate_remote_address('8.8.8.8'),'google.com.',
    '2nd aggregate_remote_address(8.8.8.8)');
 is($store->aggregate_remote_address('0.0.0.1'),'0.0.0.0',
    'aggregate_remote_address(0.0.0.1)');
+
+ok($dbh->rollback,'db rollback');
 

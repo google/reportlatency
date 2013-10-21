@@ -20,7 +20,7 @@ use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
 use HTML::Tidy;
-use Test::More tests => 7;
+use Test::More tests => 9;
 
 BEGIN { use lib '..'; }
 
@@ -44,6 +44,8 @@ my $dbh;
 $dbh = DBI->connect("dbi:SQLite:dbname=$dbfile",
 		       {AutoCommit => 0}, '')
   or die $dbh->errstr;
+
+ok($dbh->begin_work,'begin transaction');
 
 my $store = new ReportLatency::Store(dbh => $dbh);
 my $view = new ReportLatency::StaticView($store);
@@ -69,3 +71,4 @@ for my $message ( $tidy->messages ) {
 }
 $tidy->clear_messages();
 
+ok($dbh->rollback,'rollback transaction');

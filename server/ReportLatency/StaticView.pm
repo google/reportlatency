@@ -191,10 +191,11 @@ EOF
 print $io <<EOF;
 </table>
 
-<p>
-Timespan: $meta->{'min_timestamp'} through $meta->{'max_timestamp'}
-</p>
-                      
+EOF
+
+  print $io meta_timestamp_html($meta);
+
+  print <<EOF;
 </body>
 </html>
 EOF
@@ -287,10 +288,12 @@ EOF
   print $io <<EOF;
 </table>
 
-<p>
-Timespan: $meta->{'min_timestamp'} through $meta->{'max_timestamp'}
-</p>
-                      
+EOF
+
+  print $io meta_timestamp_html($meta);
+
+print <<EOF;
+
 </body>
 </html>
 EOF
@@ -390,11 +393,11 @@ EOF
 
   print $io <<EOF;
 </table>
+EOF
 
-<p>
-Timespan: $meta->{'min_timestamp'} through $meta->{'max_timestamp'}
-</p>
+  print $io meta_timestamp_html($meta);
                       
+print $io <<EOF;
 </body>
 </html>
 EOF
@@ -556,14 +559,14 @@ EOF
 
   $select->finish;
 
-  my $min_t = $meta->{'min_timestamp'} || '';
-  my $max_t = $meta->{'max_timestamp'} || '';
-
   print $io <<EOF;
 </table>
-<p>
-Timespan: $min_t through $max_t
-</p>
+
+EOF
+
+  print $io meta_timestamp_html($meta);
+
+print <<EOF;
 
 </body>
 </html>
@@ -571,6 +574,18 @@ EOF
 
   $io->setpos(0);
   return ${$io->string_ref};
+}
+
+sub meta_timestamp_html {
+  my ($meta) = @_;
+  my $min_t = $meta->{'min_timestamp'} || '';
+  my $max_t = $meta->{'max_timestamp'} || '';
+
+  return <<EOF;
+<p>
+Timespan: $min_t through $max_t
+</p>
+EOF
 }
 
 sub service_html {
