@@ -60,12 +60,12 @@ sub service_url_from_location {
 
 sub location_url {
   my ($self,$name) = @_;
-  return "$name.html";
+  return ( $name || '') . '.html';
 }
 
 sub location_img_url {
   my ($self,$name) = @_;
-  return "$name.png";
+  return ( $name || '') . '.png';
 }
 
 sub location_url_from_tag {
@@ -326,11 +326,12 @@ sub location_html {
   my $service_header = <<EOF;
 EOF
 
+  my $title = 'Location ' . ($location||'');
   print $io <<EOF;
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Latency Summary For Location $location</title>
+  <title>Latency Summary For $title</title>
   <style type="text/css">
     table.alternate tr:nth-child(odd) td{ background-color: #CCFFCC; }
     table.alternate tr:nth-child(even) td{ background-color: #99DD99; }
@@ -338,14 +339,14 @@ EOF
 </head>
 <body>
 
-<h1> Latency Summary For Location $location </h1>
+<h1> Latency Summary For $title </h1>
 
 <p align=center>
 <img src="$location_img_url" width="80%"
  alt="latency spectrum">
 </p>
 
-<table class="alternate" summary="Latency report for all services at location $location">
+<table class="alternate" summary="Latency report for all services at $title">
 <tr>
  <th colspan=2> Service </th>
  <th colspan=2> Request </th>

@@ -159,7 +159,7 @@ sub location_graph {
     $spectrum->add_row($row);
   }
 
-  my $png = open_path("locations/$name.png");
+  my $png = open_path('locations/' . ($name||'') . '.png');
   print $png $spectrum->png();
   close($png);
 }
@@ -167,7 +167,7 @@ sub location_graph {
 sub location_report {
   my ($view,$name,$options) = @_;
 
-  my $report = open_path("locations/$name.html");
+  my $report = open_path('locations/' . ($name||'') . '.html');
   print $report $view->location_html($name);
   close($report);
 }
@@ -399,7 +399,7 @@ sub main() {
   }
 
   foreach my $location (@locations) {
-    print "location $location\n";
+    print "location " . ($location||'') . "\n";
     location_graph($dbh,$location,\%options);
     location_report($view,$location,\%options);
   }
