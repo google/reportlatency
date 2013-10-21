@@ -25,9 +25,12 @@ use_ok( 'ReportLatency::utils' );
 
 
 foreach my $bad ( '<script>', undef, '' ) {
-  is(sanitize_service($bad),undef,"no $bad from sanitize_service()");
-  is(sanitize_location($bad),undef,"no $bad from sanitize_location()");
-  is(sanitize($bad),undef,"no $bad from sanitize()");
+  is(sanitize_service($bad),undef,
+     'no ' . ($bad || 'undef') . ' from sanitize_service()');
+  is(sanitize_location($bad),undef,
+     'no ' . ($bad || 'undef') . ' from sanitize_location()');
+  is(sanitize($bad),undef,
+     'no ' . ($bad || 'undef') . ' from sanitize()');
 }
 
 foreach my $bad ( 'www.google.com/url?sa=t&q=search%20term' ) {
