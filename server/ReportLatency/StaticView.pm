@@ -702,9 +702,10 @@ EOF
   print $io <<EOF;
 </table>
 
-<p>
-Timespan: $meta->{'min_timestamp'} through $meta->{'max_timestamp'}
-</p>
+EOF
+  print $io meta_timestamp_html($meta);
+
+  print $io <<EOF;
                       
 </body>
 </html>
