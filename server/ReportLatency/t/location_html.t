@@ -20,7 +20,7 @@ use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
 use HTML::Tidy;
-use Test::More tests => 9;
+use Test::More tests => 8;
 
 BEGIN { use lib '..'; }
 
@@ -59,7 +59,6 @@ ok($dbh->do(q{
 ok($dbh->do(q{
   INSERT INTO report(timestamp,remote_addr,name,final_name,request_count,request_total) VALUES('9999','office.google.com.', 'google.com','google.com',1,1000);
 }), 'INSERT google.com report');
-ok($dbh->commit,'commit');
 
 
 my $location_html = $view->location_html('office.google.com');
