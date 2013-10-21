@@ -20,7 +20,7 @@ use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
 use HTML::Tidy;
-use Test::More tests => 9;
+use Test::More tests => 12;
 
 BEGIN { use lib '..'; }
 
@@ -60,6 +60,7 @@ for my $message ( $tidy->messages ) {
 $tidy->clear_messages();
 
 
+ok($dbh->begin_work,'begin');
 ok($dbh->do(q{
   INSERT INTO tag(tag,name) VALUES('Google','google.com');
 }),'INSERT Google tag');
@@ -69,6 +70,7 @@ ok($dbh->do(q{
 ok($dbh->commit,'commit');
 
 
+ok($dbh->begin_work,'begin');
 my $tag_html = $view->tag_html('Google');
 is($tidy->parse('tag',$tag_html), undef, 'tidy tag_html(Google)');
 
@@ -76,4 +78,5 @@ for my $message ( $tidy->messages ) {
   print $message->as_string . "\n";
 }
 $tidy->clear_messages();
+ok($dbh->rollback,'rollback');
 
