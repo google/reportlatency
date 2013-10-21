@@ -1,3 +1,10 @@
+reportlatency (1.1.1) precise; urgency=low
+
+  * Fix builds in pristine environment, hadn't cleaned up all
+    Reportlatency symlink dependencies in unit tests
+
+ -- Drake Diedrich <dld@google.com>  Mon, 21 Oct 2013 10:07:36 -0700
+
 reportlatency (1.1.0) precise; urgency=low
 
   * Moved to MVC model

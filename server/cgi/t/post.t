@@ -22,11 +22,9 @@ use File::Temp qw/ tempfile tempdir /;
 use IO::String;
 use DBI;
 
-BEGIN {
-  unshift(@INC,'.');
-  use_ok('ReportLatency::Store');
-}
+BEGIN { use lib '..'; }
 
+use_ok('ReportLatency::Store');
 require_ok( './post.pl' );
 
 
