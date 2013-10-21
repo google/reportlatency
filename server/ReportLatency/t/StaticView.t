@@ -20,7 +20,7 @@ use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
 use HTML::Tidy;
-use Test::More tests => 7;
+use Test::More tests => 6;
 
 BEGIN { use lib '..'; }
 
@@ -41,8 +41,7 @@ my $dbfile = "$dir/latency.sqlite3";
 }
 
 my $dbh;
-$dbh = DBI->connect("dbi:SQLite:dbname=$dbfile",
-		       {AutoCommit => 0}, '')
+$dbh = DBI->connect("dbi:SQLite:dbname=$dbfile", {}, '')
   or die $dbh->errstr;
 
 my $store = new ReportLatency::Store(dbh => $dbh);
@@ -63,7 +62,6 @@ $tidy->clear_messages();
 ok($dbh->do(q{
   INSERT INTO report(name,final_name,request_count,request_total) VALUES('google.com','google.com',1,1000);
 }), 'INSERT google.com report');
-ok($dbh->commit,'commit');
 
 
 my $service_html = $view->service_html('google.com');

@@ -541,8 +541,9 @@ EOF
   $rc = $select_location->execute($service);
 
   while ( my $row = $select_location->fetchrow_hashref) {
+    my $location = $row->{'remote_addr'} || 'N/A';
     print $io "  <tr>";
-    print $io " <td> " . $row->{'remote_addr'} . " </td>";
+    print $io " <td> $location </td>";
     print $io " <td align=right> " . mynum($row->{'request_count'}) . " </td>";
     print $io " <td align=right> " . myround($row->{'request_latency'}) . " </td>";
     print $io " <td align=right> " . mynum($row->{'tabupdate_count'}) . " </td>";
@@ -555,10 +556,13 @@ EOF
 
   $select->finish;
 
+  my $min_t = $meta->{'min_timestamp'} || '';
+  my $max_t = $meta->{'max_timestamp'} || '';
+
   print $io <<EOF;
 </table>
 <p>
-Timespan: $meta->{'min_timestamp'} through $meta->{'max_timestamp'}
+Timespan: $min_t through $max_t
 </p>
 
 </body>
