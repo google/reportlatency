@@ -188,14 +188,14 @@ EOF
   }
   $location_sth->finish;
 
-print $io <<EOF;
+  print $io <<EOF;
 </table>
 
 EOF
 
   print $io meta_timestamp_html($meta);
 
-  print <<EOF;
+  print $io <<EOF;
 </body>
 </html>
 EOF
