@@ -181,7 +181,7 @@ EOF
 
   while (my $location = $location_sth->fetchrow_hashref) {
     my $name = $location->{remote_addr};
-    my $url = $self->location_url(uri_escape($name));
+    my $url = $self->location_url_from_tag(uri_escape($name));
     my $count = $location->{'services'};
     print $io latency_summary_row(sanitize_location($name),$url,
 				  $count,$location);
