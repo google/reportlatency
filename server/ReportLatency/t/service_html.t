@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 #
-# Test ReportLatency::StaticView.pm
+# Test ReportLatency::StaticView.pm's service_html()
 #
 # Copyright 2013 Google Inc. All Rights Reserved.
 #
