@@ -35,6 +35,7 @@ set -e
 PKG=reportlatency
 VARDIR=/var/lib/$PKG
 WWWDIR=$VARDIR/www
+DATADIR=$WWWDIR/data
 DBDIR=$VARDIR/data
 DBFILE=$DBDIR/latency.sqlite3
 DBBACK=$DBDIR/backup.sqlite3
