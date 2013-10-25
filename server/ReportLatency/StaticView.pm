@@ -567,7 +567,7 @@ EOF
 
   print $io meta_timestamp_html($meta);
 
-print <<EOF;
+  print $io <<EOF;
 
 </body>
 </html>
