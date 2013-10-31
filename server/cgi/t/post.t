@@ -17,10 +17,11 @@
 # limitations under the License.
 
 use strict;
-use Test::More tests => 11;
+use Test::More tests => 15;
 use File::Temp qw/ tempfile tempdir /;
 use IO::String;
 use DBI;
+use CGI::Util qw(escape unescape);
 
 BEGIN { use lib '..'; }
 
@@ -39,15 +40,30 @@ chdir("$dir/cgi-bin");
 
 $ENV{'HTTP_USER_AGENT'} = 'TestAgent';
 $ENV{'REMOTE_ADDR'} = '1.2.3.4';
+$ENV{'REQUEST_METHOD'} = 'POST';
+$ENV{'CONTENT_TYPE'} = 'application/x-www-form-urlencoded';
+
+my $in = new IO::String;
+my $postcontent =
+  'name=name&final_name=service_name&navigation_count=1&navigation_total=1000';
+print $in $postcontent;
+$ENV{'CONTENT_LENGTH'} = length($postcontent);
+
+$in->setpos(0);
+*OLD_STDIN = *STDIN;
+*STDIN = $in;
 
 my $out = new IO::String;
 *OLD_STDOUT = *STDOUT;
 select $out;
 main();
+
 select OLD_STDOUT;
 
+*STDIN = *OLD_STDIN;
+
 $out->setpos(0);
-like($out->getline,qr/^Content-type:/,'Content-type');
+like($out->getline,qr/^Content-type:/, 'Content-type');
 like($out->getline,qr/^Status: 2/,'2xx');
 
 my $dbh;
@@ -63,11 +79,17 @@ is($count, 1, '1 count');
 $count_sth->finish;
 
 my $report_sth =
-  $dbh->prepare("SELECT timestamp,remote_addr FROM report WHERE user_agent=?");
+  $dbh->prepare("SELECT timestamp,remote_addr,name,final_name,navigation_count,navigation_total FROM report WHERE user_agent=?");
 $report_sth->execute("Other");
-my ($timestamp,$remote_addr) = $report_sth->fetchrow_array;
+my ($timestamp,$remote_addr,$name,$service,$nav_count,$nav_total) =
+  $report_sth->fetchrow_array;
 like($timestamp,qr/^\d{4}-/,'timestamp');
 is($remote_addr,'1.2.3.0','network address');
+is($name,'name','request name');
+is($service,'service_name','service name');
+is($nav_count,1,'navigation_count');
+is($nav_total,1000,'navigation_total');
+
 ok(!$report_sth->fetchrow_array,'  end of select');
 $report_sth->finish;
 

@@ -119,7 +119,7 @@ EOF
   print join("\n\n",@_);
 }
 
-sub post {
+sub parse_www_form {
   my ($self,$q) = @_;
 
   my $insert = $self->_insert_post_command;
@@ -149,6 +149,30 @@ sub post {
     }
   } else {
     $self->_error("begin_work failed", $dbh->errstr);
+  }
+}
+
+sub parse_json {
+  my ($self,$data) = @_;
+
+  return $self->_error("unimplemented","parse_json()");
+}
+
+sub post {
+  my ($self,$q) = @_;
+
+  if ($q->request_method() eq 'POST') {
+    my $type = $q->content_type();
+    if ($type eq 'application/x-www-form-urlencoded' ||
+	$type eq 'multipart/form-data') {
+      return $self->parse_www_form($q);
+    } elsif ($type eq 'application/json') {
+      return $self->parse_json($q);
+    } else {
+      return $self->_error("inappropriate Content-Type ", $type);
+    }
+  } else {
+    return $self->_error("inappropriate access method ", $q->request_method());
   }
 }
 
