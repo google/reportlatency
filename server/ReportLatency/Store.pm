@@ -153,7 +153,9 @@ sub parse_www_form {
 }
 
 sub parse_json {
-  my ($self,$data) = @_;
+  my ($self,$j) = @_;
+
+  print STDERR "parse_json($j)\n";
 
   return $self->_error("unimplemented","parse_json()");
 }
@@ -167,7 +169,7 @@ sub post {
 	$type eq 'multipart/form-data') {
       return $self->parse_www_form($q);
     } elsif ($type eq 'application/json') {
-      return $self->parse_json($q);
+      return $self->parse_json($q->param('POSTDATA'));
     } else {
       return $self->_error("inappropriate Content-Type ", $type);
     }
