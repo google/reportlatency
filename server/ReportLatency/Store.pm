@@ -19,7 +19,8 @@ use vars qw($VERSION);
 use ReportLatency::utils;
 use IO::String;
 use URI::Escape;
-
+use JSON;
+use Data::Dumper;
 
 $VERSION     = 0.1;
 
@@ -153,11 +154,19 @@ sub parse_www_form {
 }
 
 sub parse_json {
-  my ($self,$j) = @_;
+  my ($self,$json) = @_;
 
-  print STDERR "parse_json($j)\n";
+  print STDERR "parse_json($json)\n";
 
-  return $self->_error("unimplemented","parse_json()");
+  eval {
+    my $obj = decode_json $json;
+
+    print STDERR Dumper($obj);
+    $self->_thank_you();
+  } or do {
+    print STDERR "bad JSON\n";
+    return $self->_error("unimplemented","parse_json()");
+  }
 }
 
 sub post {

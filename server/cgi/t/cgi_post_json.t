@@ -46,11 +46,11 @@ $ENV{'CONTENT_TYPE'} = 'application/json';
 my $in = new IO::String;
 my $postcontent = <<EOF;
 {
-  service_name: {
-    name: {
-      navigation: {
-        count: 1,
-        total: 1000
+  "service_name": {
+    "name": {
+      "navigation": {
+        "count": 1,
+        "total": 1000
       }
     }
   }
