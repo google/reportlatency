@@ -153,20 +153,52 @@ sub parse_www_form {
   }
 }
 
-sub parse_json {
-  my ($self,$json) = @_;
+sub add_name_stats {
+  my ($self,$service,$name,$location,$tz,$useragent,$namestats) = @_;
+  print STDERR "add_name_stats($name)\n";
+  print STDERR Dumper($namestats);
+  print STDERR "\n";
+}
 
-  print STDERR "parse_json($json)\n";
+sub add_service_stats {
+  my ($self,$location,$tz,$useragent,$service,$servicestats) = @_;
+  print STDERR "add_service_stats($location,$tz,$useragent,$service,...)\n";
+  print STDERR Dumper($servicestats);
 
-  eval {
-    my $obj = decode_json $json;
-
-    print STDERR Dumper($obj);
-    $self->_thank_you();
-  } or do {
-    print STDERR "bad JSON\n";
-    return $self->_error("unimplemented","parse_json()");
+  foreach my $name (keys %{$servicestats}) {
+    $self->add_name_stats($service,$name,$location,$tz,$useragent,
+			  $servicestats->{$name});
   }
+}
+
+sub parse_json {
+  my ($self,$q) = @_;
+
+  my $json = $q->param('POSTDATA');
+
+  my $location =
+    $self->aggregate_remote_address($ENV{'REMOTE_ADDR'},
+				    $ENV{'HTTP_X_FORWARDED_FOR'});
+  my $user_agent = aggregate_user_agent($ENV{'HTTP_USER_AGENT'});
+
+  my $dbh = $self->{dbh};
+
+  my $obj;
+  eval {
+     $obj = decode_json $json;
+  } or do {
+    return $self->_error("unimplemented","parse_json()");
+  };
+
+  my $tz = $obj->{tz};
+
+  $dbh->begin_work or die $dbh->errstr;
+  foreach my $service (keys %{$obj->{services}}) {
+    $self->add_service_stats($location,$tz,$user_agent,
+			     $service,$obj->{services}->{$service});
+  }
+  $dbh->commit or return $self->_error('commit',$dbh->errstr);
+  $self->_thank_you();
 }
 
 sub post {
@@ -178,7 +210,7 @@ sub post {
 	$type eq 'multipart/form-data') {
       return $self->parse_www_form($q);
     } elsif ($type eq 'application/json') {
-      return $self->parse_json($q->param('POSTDATA'));
+      return $self->parse_json($q);
     } else {
       return $self->_error("inappropriate Content-Type ", $type);
     }
