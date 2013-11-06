@@ -20,7 +20,6 @@ use ReportLatency::utils;
 use IO::String;
 use URI::Escape;
 use JSON;
-use Data::Dumper;
 
 $VERSION     = 0.1;
 
@@ -153,17 +152,47 @@ sub parse_www_form {
   }
 }
 
+sub _insert_table_hash {
+  my ($self,$table,$hash) = @_;
+
+  return "INSERT INTO $table (" .
+    join(',',sort(keys %{$hash})) .
+      ') VALUES (' .
+	join(',', split(//,'?' x scalar(keys %{$hash}))) .
+	  ');';
+}
+
 sub add_name_stats {
   my ($self,$service,$name,$location,$tz,$useragent,$namestats) = @_;
-  print STDERR "add_name_stats($name)\n";
-  print STDERR Dumper($namestats);
-  print STDERR "\n";
+  my (%sql);
+  $sql{'name'} = $name if $name;
+  $sql{'final_name'} = $service if $service;
+  $sql{'tz'} = $tz if $tz;
+  $sql{'remote_addr'} = $location if $location;
+  $sql{'user_agent'} = $useragent if $useragent;
+
+  foreach my $stattype (qw(navigation tabupdate request)) {
+    my $stat = $namestats->{$stattype};
+    if (defined $stat) {
+      if (ref($stat) eq 'HASH') {
+	foreach my $statfield (qw(count total high low)) {
+	  $sql{$stattype . '_' . $statfield} =
+	    $namestats->{$stattype}->{$statfield}
+	      if defined $namestats->{$stattype}->{$statfield};
+	}
+      }
+    }
+  }
+
+  my $sql = $self->_insert_table_hash('report',\%sql);
+  my $insert = $self->{dbh}->prepare($sql);
+  my $rv = $insert->execute(map $sql{$_}, sort keys %sql);
+  $insert->finish;
 }
+
 
 sub add_service_stats {
   my ($self,$location,$tz,$useragent,$service,$servicestats) = @_;
-  print STDERR "add_service_stats($location,$tz,$useragent,$service,...)\n";
-  print STDERR Dumper($servicestats);
 
   foreach my $name (keys %{$servicestats}) {
     $self->add_name_stats($service,$name,$location,$tz,$useragent,
