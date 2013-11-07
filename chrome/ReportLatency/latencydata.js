@@ -27,6 +27,11 @@
 function LatencyData() {
   this.tab = {};
   this.stats = new ServiceStats();
+  if ('runtime' in chrome) {
+    if (typeof ( chrome.runtime.getManifest ) == 'function') {
+      this.manifest = chrome.runtime.getManifest();
+    }
+  }
 }
 
 
@@ -197,7 +202,9 @@ LatencyData.prototype.postLatency = function(skip) {
   req.open('POST', reportToUrl(), true);
   req.setRequestHeader('Content-type', 'application/json');
   var report={};
-  report.version = "0.0";  // placeholder for extension version
+  if ('manifest' in this) {
+    report.version = this.manifest.version;
+  }
   report.tz = timeZone(Date());
   report.services = {};
   report.services[bestFinal] = bestService; // future: could be more than one
