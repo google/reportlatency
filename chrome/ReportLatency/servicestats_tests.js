@@ -70,12 +70,23 @@ test('ServiceStats.delete', function() {
   s.add('service', 'server', 'navigation', 5);
   s.add('service', 'redirector', 'navigation', 10);
   
-  s.delete('service','server');
-  ok('service' in s.stat,'service still present');
-  ok('redirector' in s.stat['service'].stat, 'redirector present');
-  ok(! ('server' in s.stat['service'].stat), 'server deleted');
-
-  s.delete('service', 'redirector');
+  s.delete('service');
   ok(!('service' in s.stat),'service deleted');
+});
+
+test('ServiceStats.toJSON', function() {
+  var s = new ServiceStats();
+
+  s.add('service', 'server', 'navigation', 5);
+  
+  var jtxt = JSON.stringify(s);
+  var obj = JSON.parse(jtxt);
+
+  ok('service' in obj,'obj.service');
+  ok('server' in obj.service,'obj.service.server');
+  ok('navigation' in obj.service.server,'obj.service.server.navigation');
+  ok('count' in obj.service.server.navigation,
+     'obj.service.server.navigation.count');
+  equal(obj.service.server.navigation.count, 1, '1 server navigation count');
 });
 

@@ -98,13 +98,6 @@ NameStats.prototype.empty = function() {
   return true;
 };
 
-/**
- * @param {string} name of the data set to delete.
- */
-NameStats.prototype.delete = function(name) {
-  delete this.stat[name];
-};
-
 
 /**
  * @param {string} last name of data set collected, and to skip over.
@@ -132,3 +125,13 @@ NameStats.prototype.best = function(last) {
   }
   return b;
 };
+
+/**
+ *
+ * All the reportable data is in this.stat, so just report that for the
+ * wire protocol
+ *
+ */
+NameStats.prototype.toJSON = function() {
+  return this.stat;
+}

@@ -188,25 +188,22 @@ LatencyData.prototype.postLatency = function(skip) {
   if (!bestFinal) {
     return;
   }
-  debugLog("bestFinal = " + bestFinal);
   var bestService = this.stats.service(bestFinal);
   var bestOriginal = bestService.best(skip);
 
-  if (bestFinal && bestOriginal) {
-    var req = new XMLHttpRequest();
-    var params = 'name=' + bestOriginal + '&final_name=' + bestFinal +
-        '&tz=' + timeZone(Date());
-    params += bestService.stat[bestOriginal].params();
+  var req = new XMLHttpRequest();
 
-    console.log('  posting ' + params);
-    req.open('POST', reportToUrl(), true);
-    req.setRequestHeader('Content-type',
-                         'application/x-www-form-urlencoded');
-    req.send(params);
-    this.stats.delete(bestFinal,bestOriginal);
-    this.reportExtensionStats();
-  }
-
+  console.log('  posting ' + bestFinal);
+  req.open('POST', reportToUrl(), true);
+  req.setRequestHeader('Content-type', 'application/json');
+  var report={};
+  report.version = "0.0";  // placeholder for extension version
+  report.tz = timeZone(Date());
+  report.services = {};
+  report.services[bestFinal] = bestService; // future: could be more than one
+  req.send(JSON.stringify(report));
+  this.stats.delete(bestFinal);
+  this.reportExtensionStats();
 }
 
 /**
@@ -215,19 +212,10 @@ LatencyData.prototype.postLatency = function(skip) {
  *
  **/
 LatencyData.prototype.reportExtensionStats = function() {
-  console.log('ReportLatency');
   var services = '';
   for (var n in this.stats.stat) {
     services = services.concat(' ' + n );
   }
-  /*
-  console.log('  ' + Object.keys(navigation).length +
-              ' outstanding navigations');
-  console.log('  ' + Object.keys(request).length +
-              ' outstanding requests');
-  console.log('  ' + Object.keys(tabupdate).length +
-              ' outstanding tabupdates');
-  */
   console.log('  ' + Object.keys(this.stats.stat).length +
               ' pending service reports:' + services);
 }

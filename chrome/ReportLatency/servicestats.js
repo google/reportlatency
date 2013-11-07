@@ -99,14 +99,20 @@ ServiceStats.prototype.best = function(last) {
 
 /**
  *
- * Delete a latency record for a named original and final service name
+ * Delete a latency record for a final service name
  *
  * @param {string} final name of service (as delivered)
- * @param {string} original name of service (as requested)
  */
-ServiceStats.prototype.delete = function(final, original) {
-  this.stat[final].delete(original);
-  if (this.stat[final].empty()) {
-    delete this.stat[final];
-  }
+ServiceStats.prototype.delete = function(final) {
+  delete this.stat[final];
+}
+
+/**
+ *
+ * All the reportable data is in this.stat, so just report that for the
+ * wire protocol
+ *
+ */
+ServiceStats.prototype.toJSON = function() {
+  return this.stat;
 }

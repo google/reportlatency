@@ -99,3 +99,13 @@ LatencyStats.prototype.total = function(measurement) {
   }
   return 0;
 };
+
+/**
+ *
+ * All the reportable data is in this.stat, so just report that for the
+ * wire protocol
+ *
+ */
+LatencyStats.prototype.toJSON = function() {
+  return this.stat;
+}
