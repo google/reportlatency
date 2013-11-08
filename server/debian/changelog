@@ -1,3 +1,9 @@
+reportlatency (1.2.1) precise; urgency=low
+
+  * Log extension version to database if sent
+
+ -- Drake Diedrich <dld@google.com>  Fri, 08 Nov 2013 10:42:22 -0800
+
 reportlatency (1.2.0) precise; urgency=low
 
   * Server version accepting both form and json posts

@@ -21,6 +21,7 @@ CREATE TABLE report (
   name	TEXT,
   final_name	TEXT,
   tz		TEXT,
+  version	TEXT,
   tabupdate_dead	INTEGER,
   tabupdate_count	INTEGER,
   tabupdate_total	REAL,

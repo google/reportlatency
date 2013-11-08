@@ -163,13 +163,14 @@ sub _insert_table_hash {
 }
 
 sub add_name_stats {
-  my ($self,$service,$name,$location,$tz,$useragent,$namestats) = @_;
+  my ($self,$service,$name,$location,$tz,$useragent,$version,$namestats) = @_;
   my (%sql);
   $sql{'name'} = $name if $name;
   $sql{'final_name'} = $service if $service;
   $sql{'tz'} = $tz if $tz;
   $sql{'remote_addr'} = $location if $location;
   $sql{'user_agent'} = $useragent if $useragent;
+  $sql{'version'} = $version if $version;
 
   foreach my $stattype (qw(navigation tabupdate request)) {
     my $stat = $namestats->{$stattype};
@@ -192,10 +193,10 @@ sub add_name_stats {
 
 
 sub add_service_stats {
-  my ($self,$location,$tz,$useragent,$service,$servicestats) = @_;
+  my ($self,$location,$tz,$useragent,$version,$service,$servicestats) = @_;
 
   foreach my $name (keys %{$servicestats}) {
-    $self->add_name_stats($service,$name,$location,$tz,$useragent,
+    $self->add_name_stats($service,$name,$location,$tz,$useragent,$version,
 			  $servicestats->{$name});
   }
 }
@@ -220,10 +221,11 @@ sub parse_json {
   };
 
   my $tz = $obj->{tz};
+  my $version = $obj->{version};
 
   $dbh->begin_work or die $dbh->errstr;
   foreach my $service (keys %{$obj->{services}}) {
-    $self->add_service_stats($location,$tz,$user_agent,
+    $self->add_service_stats($location,$tz,$user_agent,$version,
 			     $service,$obj->{services}->{$service});
   }
   $dbh->commit or return $self->_error('commit',$dbh->errstr);
