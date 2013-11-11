@@ -2,7 +2,7 @@ Source: reportlatency
 Section: admin
 Priority: extra
 Maintainer: Drake Diedrich <dld@google.com>
-Build-Depends: debhelper (>= 8.0.0)
+Build-Depends: debhelper (>= 8.0.0), libhtml-scrubber-perl, libhtml-tidy-perl
 Standards-Version: 3.9.3
 Homepage: https://code.google.com/p/reportlatency
 
