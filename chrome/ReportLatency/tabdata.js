@@ -40,7 +40,6 @@ function TabData() {
  */
 TabData.prototype.startRequest = function(data) {
   debugLogObject('TabData.startRequest(data)', data);
-  console.log('startRequest timeStamp:' + data.timeStamp);
   if ('requestId' in data) {
     if (data.requestId in this.request) {
       console.log('interleaved requestId ' + data.requestId);
@@ -49,7 +48,6 @@ TabData.prototype.startRequest = function(data) {
       data1.statusCode = data.statusCode;
       this.endRequest(data1);
     }
-    console.log('request[' + data.requestId + '] = ' + data);
     this.request[data.requestId] = data;
   } else {
     console.log('missing requestId in startRequest() data');
@@ -64,10 +62,8 @@ TabData.prototype.startRequest = function(data) {
  */
 TabData.prototype.endRequest = function(data) {
   debugLogObject('TabData.endRequest(data)', data);
-  console.log('endRequest timeStamp:' + data.timeStamp);
   if ('requestId' in data) {
     if (data.requestId in this.request) {
-      console.log('  old timeStamp:' + this.request[data.requestId].timeStamp);
       if (!data.fromCache) {
 	if (('url' in data) &&
 	    (data.url == this.request[data.requestId].url)) {
@@ -75,7 +71,8 @@ TabData.prototype.endRequest = function(data) {
 	  if (name) {
 	    var delay = data.timeStamp -
 	      this.request[data.requestId].timeStamp;
-	    console.log('adding ' + delay + ' ms to ' + name + ' request stats');
+	    console.log('adding ' + delay + ' ms to ' + name +
+			' request stats');
 	    this.stat.add(name, 'request', delay);
 	  } else {
 	    console.log('no service name from ' + data.url +
