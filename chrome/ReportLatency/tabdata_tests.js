@@ -53,6 +53,34 @@ test('TabData.endRequest', function() {
 	'cached endRequest left 1 recorded requests');
   equal(t.stat.total('request'), 10,
 	'cached endRequest left 10 ms of requests');
+
+  // sometimes events in redirects are out of order and have sloppy timestamps.
+  // It's not really clear what the right answer is, choose one that's
+  // practical to implement.
+
+  var dataStart3 = { requestId:3, timeStamp:1030,
+		     url: 'http://host.example.com/v1' };
+  t.startRequest(dataStart3);
+  var dataStart4 = { requestId:3, timeStamp:1040, fromCache:false,
+		     statusCode:304,
+		     url: 'http://host.example.com/v2' };
+  t.startRequest(dataStart4);
+
+  var dataEnd3 = { requestId:3, timeStamp:1039, fromCache:false,
+		   statusCode:304,
+		   url: 'http://host.example.com/v1' };
+  t.endRequest(dataEnd3);
+  var dataEnd4 = { requestId:3, timeStamp:1054, fromCache:false,
+		   statusCode:200,
+		   url: 'http://host.example.com/v2' };
+  t.endRequest(dataEnd4);
+
+  equal(t.stat.count('request'), 3,
+	'redirected endRequest left 3 recorded requests');
+  equal(t.stat.total('request'), 10 + 9 + 14,
+	'redirected endRequest left 33 ms of requests');
+
+
 });
 
 test('TabData.tabUpdated', function() {

@@ -40,7 +40,16 @@ function TabData() {
  */
 TabData.prototype.startRequest = function(data) {
   debugLogObject('TabData.startRequest(data)', data);
+  console.log('startRequest timeStamp:' + data.timeStamp);
   if ('requestId' in data) {
+    if (data.requestId in this.request) {
+      console.log('interleaved requestId ' + data.requestId);
+      var data1 = Object.create(this.request[data.requestId]);
+      data1.timeStamp = data.timeStamp;
+      data1.statusCode = data.statusCode;
+      this.endRequest(data1);
+    }
+    console.log('request[' + data.requestId + '] = ' + data);
     this.request[data.requestId] = data;
   } else {
     console.log('missing requestId in startRequest() data');
@@ -55,24 +64,28 @@ TabData.prototype.startRequest = function(data) {
  */
 TabData.prototype.endRequest = function(data) {
   debugLogObject('TabData.endRequest(data)', data);
+  console.log('endRequest timeStamp:' + data.timeStamp);
   if ('requestId' in data) {
     if (data.requestId in this.request) {
+      console.log('  old timeStamp:' + this.request[data.requestId].timeStamp);
       if (!data.fromCache) {
-	if ('url' in data) {
+	if (('url' in data) &&
+	    (data.url == this.request[data.requestId].url)) {
 	  var name = aggregateName(data.url);
 	  if (name) {
-	    var delay = data.timeStamp - this.request[data.requestId].timeStamp;
-	    debugLog('adding ' + delay + ' ms to ' + name + ' request stats');
+	    var delay = data.timeStamp -
+	      this.request[data.requestId].timeStamp;
+	    console.log('adding ' + delay + ' ms to ' + name + ' request stats');
 	    this.stat.add(name, 'request', delay);
 	  } else {
 	    console.log('no service name from ' + data.url +
 			' in endRequest()');
 	  }
+	  delete this.request[data.requestId];
 	} else {
-	  console.log('missing data.url in endRequest()');
+	  console.log('missing or mismatched data.url in endRequest()');
 	}
       }
-      delete this.request[data.requestId];
     } else {
       console.log('requestId ' + data.requestId + ' not found in endRequest');
     }
