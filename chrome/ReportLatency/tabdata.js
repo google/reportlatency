@@ -57,20 +57,22 @@ TabData.prototype.endRequest = function(data) {
   debugLogObject('TabData.endRequest(data)', data);
   if ('requestId' in data) {
     if (data.requestId in this.request) {
-      if ('url' in data) {
-	var name = aggregateName(data.url);
-	if (name) {
-	  var delay = data.timeStamp - this.request[data.requestId].timeStamp;
-	  debugLog('adding ' + delay + ' ms to ' + name + ' request stats');
-	  this.stat.add(name, 'request', delay);
-	  delete this.request[data.requestId];
+      if (!data.fromCache) {
+	if ('url' in data) {
+	  var name = aggregateName(data.url);
+	  if (name) {
+	    var delay = data.timeStamp - this.request[data.requestId].timeStamp;
+	    debugLog('adding ' + delay + ' ms to ' + name + ' request stats');
+	    this.stat.add(name, 'request', delay);
+	  } else {
+	    console.log('no service name from ' + data.url +
+			' in endRequest()');
+	  }
 	} else {
-	  console.log('no service name from ' + data.url +
-		      ' in endRequest()');
+	  console.log('missing data.url in endRequest()');
 	}
-      } else {
-	console.log('missing data.url in endRequest()');
       }
+      delete this.request[data.requestId];
     } else {
       console.log('requestId ' + data.requestId + ' not found in endRequest');
     }

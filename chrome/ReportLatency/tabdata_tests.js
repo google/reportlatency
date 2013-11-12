@@ -35,12 +35,24 @@ test('TabData.endRequest', function() {
   var dataStart = { requestId:1, timeStamp:1000,
 		    url: 'http://host.example.com/' };
   t.startRequest(dataStart);
-  var dataEnd = { requestId:1, timeStamp:1010,
+  var dataEnd = { requestId:1, timeStamp:1010, fromCache:false,
 		  url: 'http://host.example.com/' };
   t.endRequest(dataEnd);
 
   equal(t.stat.count('request'), 1, 'endRequest left 1 recorded requests');
   equal(t.stat.total('request'), 10, 'endRequest left 10 ms of requests');
+
+  var dataStart2 = { requestId:2, timeStamp:1020,
+		    url: 'http://host.example.com/image.png' };
+  t.startRequest(dataStart2);
+  var dataEnd2 = { requestId:2, timeStamp:1021, fromCache:true,
+		  url: 'http://host.example.com/image.png' };
+  t.endRequest(dataEnd2);
+
+  equal(t.stat.count('request'), 1,
+	'cached endRequest left 1 recorded requests');
+  equal(t.stat.total('request'), 10,
+	'cached endRequest left 10 ms of requests');
 });
 
 test('TabData.tabUpdated', function() {
