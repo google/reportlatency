@@ -63,10 +63,10 @@ LatencyData.prototype.endRequest = function(data) {
     if (data.tabId in this.tab) {
       this.tab[data.tabId].endRequest(data);
     } else {
-      console.log(data.tabId + ' tabId not found in endRequest');
+      logObject(data.tabId + ' tabId not found in endRequest()', data);
     }
   } else {
-    console.log('malformed data in endRequest - no tabId');
+    logObject('malformed data in endRequest - no tabId', data);
   }
 };
 
@@ -81,10 +81,10 @@ LatencyData.prototype.deleteRequest = function(data) {
     if (data.tabId in this.tab) {
       this.tab[data.tabId].deleteRequest(data);
     } else {
-      console.log(data.tabId + ' tabId not found in deleteRequest');
+      logObject(data.tabId + ' tabId not found in deleteRequest', data);
     }
   } else {
-    console.log('malformed data in deleteRequest - no tabId');
+    logObject('malformed data in deleteRequest - no tabId', data);
   }
 };
 
@@ -115,8 +115,8 @@ LatencyData.prototype.tabRemoved = function(tabId, removeInfo) {
   if (tabId in this.tab) {
     delete this.tab[tabId];
   } else {
-    console.log('delete for missing tabId ' + tabId + 
-		' received in tabRemoved()');
+    logObject('missing tabId ' + tabId + ' received in tabRemoved()',
+	      removeInfo);
   }
 }
 
@@ -133,7 +133,7 @@ LatencyData.prototype.startNavigation = function(data) {
     }
     this.tab[data.tabId].startNavigation(data);
   } else {
-    console.log('malformed data in startNavigation - no tabId');
+    logObject('malformed data in startNavigation - no tabId', data);
   }
 };
 

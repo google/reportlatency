@@ -34,7 +34,7 @@ function onCompletedNavigation(data) {
 chrome.webNavigation.onCompleted.addListener(onCompletedNavigation);
 
 function onNavigationError(data) {
-  console.log('onNavigationError(' + data + ')');
+  logObject('onNavigationError()', data);
   latencyData.deleteNavigation(data);
 }
 chrome.webNavigation.onErrorOccurred.addListener(onNavigationError);
@@ -53,11 +53,18 @@ chrome.tabs.onRemoved.addListener(onTabRemoved);
 
 
 function onBeforeRequest(data) {
+  console.log('onBeforeRequest(' + data.requestId + ',' + data.timeStamp +
+	      ',' + data.url + ')');
   latencyData.startRequest(data);
 }
 chrome.webRequest.onBeforeRequest.addListener( onBeforeRequest,
 					       { urls: ['*://*/*'] });
-chrome.webRequest.onBeforeRedirect.addListener( onBeforeRequest,
+
+function onBeforeRedirect(data) {
+  logObject('onBeforeRedirect()', data);
+  latencyData.startRequest(data);
+}
+chrome.webRequest.onBeforeRedirect.addListener( onBeforeRedirect,
 						{ urls: ['*://*/*'] });
 
 
@@ -68,7 +75,7 @@ chrome.webRequest.onCompleted.addListener( onCompletedRequest,
 					   { urls: ['*://*/*'] });
 
 function onRequestError(data) {
-  console.log('onRequestError(' + data + ')');
+  logObject('onRequestError()', data);
   latencyData.deleteRequest(data);
 }
 chrome.webRequest.onErrorOccurred.addListener( onRequestError,
@@ -80,8 +87,7 @@ function onStartup() {
 chrome.runtime.onStartup.addListener( onStartup );
 
 function onInstalled(details) {
-  console.log('onInstalled(' + details.reason + ',' +
-	      details.perviousVersion + ')');
+  logObject('onInstalled()', details);
 }
 chrome.runtime.onInstalled.addListener( onInstalled );
 
@@ -91,7 +97,7 @@ function onSuspend() {
 chrome.runtime.onSuspend.addListener( onSuspend );
 
 function onUpdateAvailable(details) {
-  console.log('onUpdateAvailable(' + details.version + ')');
+  logObject('onUpdateAvailable()', details);
 }
 chrome.runtime.onInstalled.addListener( onUpdateAvailable );
 

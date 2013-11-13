@@ -42,8 +42,9 @@ TabData.prototype.startRequest = function(data) {
   debugLogObject('TabData.startRequest(data)', data);
   if ('requestId' in data) {
     if (data.requestId in this.request) {
-      console.log('interleaved requestId ' + data.requestId);
+      logObject('new interleaved requestId ' + data.requestId, data);
       var data1 = Object.create(this.request[data.requestId]);
+      logObject('old interleaved requestId ' + data1.requestId, data1);
       data1.timeStamp = data.timeStamp;
       data1.statusCode = data.statusCode;
       this.endRequest(data1);
@@ -71,12 +72,10 @@ TabData.prototype.endRequest = function(data) {
 	  if (name) {
 	    var delay = data.timeStamp -
 	      this.request[data.requestId].timeStamp;
-	    console.log('adding ' + delay + ' ms to ' + name +
-			' request stats');
+	    console.log(name + ' requests +' + delay + 'ms');
 	    this.stat.add(name, 'request', delay);
 	  } else {
-	    console.log('no service name from ' + data.url +
-			' in endRequest()');
+	    logObject('no service name in endRequest()', data);
 	  }
 	  delete this.request[data.requestId];
 	} else {
@@ -146,7 +145,7 @@ TabData.prototype.tabUpdated = function(changeInfo, tab) {
  *
  */
 TabData.prototype.startNavigation = function(data) {
-  debugLogObject('TabData.startNavigation(data)', data);
+  logObject('TabData.startNavigation()', data);
   if (('parentFrameId' in data) && (data.parentFrameId < 0)) {
     if ('service' in this) {
       delete this['service'];
@@ -165,7 +164,7 @@ TabData.prototype.startNavigation = function(data) {
       console.log('no url found in endNavigation() data');
     }
   } else {
-    // Meh.  Don't care about subframe navigation events.
+    console.log('  Meh.  Don\'t care about subframe navigation events.');
   }
 };
 
@@ -176,7 +175,7 @@ TabData.prototype.startNavigation = function(data) {
  *
  */
 TabData.prototype.endNavigation = function(data) {
-  debugLogObject('TabData.endNavigation(data)', data);
+  logObject('TabData.endNavigation()', data);
   if ('navigation' in this) {
     if (('frameId' in data)) {
       if (data.frameId == this.navigation.frameId) {
@@ -197,9 +196,7 @@ TabData.prototype.endNavigation = function(data) {
 	  console.log('no url found in endNavigation() data');
 	}
       } else {
-	// Meh. Don't care about subframes again
-	// console.log('data.frameId ' + data.frameId + 
-	//	    ' != this.navigation.frameId ' + this.navigation.frameId);
+	console.log('  Meh. Don\'t care about subframes again.');
       }
     } else {
       console.log('no frameId found');
@@ -210,14 +207,18 @@ TabData.prototype.endNavigation = function(data) {
 };
 
 /**
- * endNavigation() is a callback for when a Navigation event completes.
+ * deleteNavigation() is a callback for when a Navigation event completes
+ *   but should not be added to the statistics.  Use this for failures to
+ *   clean up.
  *
- * @param {object} data about the navigation from Chrome onCompletedNavigation().
+ * @param {object} data about the navigation from Chrome
  *
  */
 TabData.prototype.deleteNavigation = function(data) {
-  debugLogObject('TabData.deleteNavigation(data)', data);
+  logObject('TabData.deleteNavigation(data)', data);
   if ('navigation' in this) {
     delete this['navigation'];
+  } else {
+    console.log('  current navigation not found');
   }
 };
