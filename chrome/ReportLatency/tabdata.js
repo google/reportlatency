@@ -148,7 +148,7 @@ TabData.prototype.tabUpdated = function(changeInfo, tab) {
  */
 TabData.prototype.startNavigation = function(data) {
   if (('parentFrameId' in data) && (data.parentFrameId < 0)) {
-    logObject('TabData.startNavigation()', data);
+    debugLogObject('TabData.startNavigation()', data);
     if ('service' in this) {
       delete this['service'];
     }
@@ -177,10 +177,10 @@ TabData.prototype.startNavigation = function(data) {
  *
  */
 TabData.prototype.endNavigation = function(data) {
+  debugLogObject('TabData.endNavigation()', data);
   if ('navigation' in this) {
     if (('frameId' in data)) {
       if (data.frameId == this.navigation.frameId) {
-	logObject('TabData.endNavigation()', data);
 	if ('url' in data) {
 	  if (isWebUrl(data.url)) {
 	    if ('timeStamp' in data) {
