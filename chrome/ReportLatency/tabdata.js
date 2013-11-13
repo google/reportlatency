@@ -79,14 +79,15 @@ TabData.prototype.endRequest = function(data) {
 	  }
 	  delete this.request[data.requestId];
 	} else {
-	  console.log('missing or mismatched data.url in endRequest()');
+	  logObject('missing or mismatched data.url in endRequest()', data);
 	}
       }
     } else {
-      console.log('requestId ' + data.requestId + ' not found in endRequest');
+      logObject('requestId ' + data.requestId + ' not found in endRequest',
+		data);
     }
   } else {
-    console.log('missing requestId in endRequest() data');
+    logObject('missing requestId in endRequest()', data);
   }
 };
 
@@ -203,7 +204,7 @@ TabData.prototype.endNavigation = function(data) {
       console.log('no frameId found');
     }
   } else {
-    console.log('no existing navigation');
+    logObject('no existing navigation in endNavigation()', data);
   }
 };
 
