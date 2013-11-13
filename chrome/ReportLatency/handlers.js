@@ -34,6 +34,7 @@ function onCompletedNavigation(data) {
 chrome.webNavigation.onCompleted.addListener(onCompletedNavigation);
 
 function onNavigationError(data) {
+  console.log('onNavigationError(' + data + ')');
   latencyData.deleteNavigation(data);
 }
 chrome.webNavigation.onErrorOccurred.addListener(onNavigationError);
@@ -67,7 +68,30 @@ chrome.webRequest.onCompleted.addListener( onCompletedRequest,
 					   { urls: ['*://*/*'] });
 
 function onRequestError(data) {
+  console.log('onRequestError(' + data + ')');
   latencyData.deleteRequest(data);
 }
 chrome.webRequest.onErrorOccurred.addListener( onRequestError,
 					       { urls: ['*://*/*'] });
+
+function onStartup() {
+  console.log('onStartup()');
+}
+chrome.runtime.onStartup.addListener( onStartup );
+
+function onInstalled(details) {
+  console.log('onInstalled(' + details.reason + ',' +
+	      details.perviousVersion + ')');
+}
+chrome.runtime.onInstalled.addListener( onInstalled );
+
+function onSuspend() {
+  console.log('onSuspend()');
+}
+chrome.runtime.onSuspend.addListener( onSuspend );
+
+function onUpdateAvailable(details) {
+  console.log('onUpdateAvailable(' + details.version + ')');
+}
+chrome.runtime.onInstalled.addListener( onUpdateAvailable );
+
