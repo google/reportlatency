@@ -62,7 +62,7 @@ TabData.prototype.startRequest = function(data) {
  *
  */
 TabData.prototype.endRequest = function(data) {
-  debugLogObject('TabData.endRequest(data)', data);
+  debugLogObject('TabData(' + this.service + '.endRequest()', data);
   if ('requestId' in data) {
     if (data.requestId in this.request) {
       if (!data.fromCache) {
@@ -72,7 +72,8 @@ TabData.prototype.endRequest = function(data) {
 	  if (name) {
 	    var delay = data.timeStamp -
 	      this.request[data.requestId].timeStamp;
-	    console.log(name + ' requests +' + delay + 'ms');
+	    console.log(name + ' (' + this.service + ') requests +' +
+			delay + 'ms');
 	    this.stat.add(name, 'request', delay);
 	  } else {
 	    logObject('no service name in endRequest()', data);
