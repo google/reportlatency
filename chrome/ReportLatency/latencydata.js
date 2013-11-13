@@ -110,13 +110,12 @@ LatencyData.prototype.tabUpdated = function(tabId, changeInfo, tab) {
  *
  */
 LatencyData.prototype.tabRemoved = function(tabId, removeInfo) {
-  debugLogObject('LatencyData.tabRemoved(' + tabId + ',removeInfo)',
+  logObject('LatencyData.tabRemoved(' + tabId + ')',
 		 removeInfo);
   if (tabId in this.tab) {
     delete this.tab[tabId];
   } else {
-    logObject('missing tabId ' + tabId + ' received in tabRemoved()',
-	      removeInfo);
+    console.log('  missing tabId ' + tabId + ' received in tabRemoved()');
   }
 }
 
@@ -172,10 +171,10 @@ LatencyData.prototype.deleteNavigation = function(data) {
     if (data.tabId in this.tab) {
       this.tab[data.tabId].deleteNavigation(data);
     } else {
-      console.log(data.tabId + ' tabId not found in deleteNavigation()');
+      logObject(data.tabId + ' tabId not found in deleteNavigation()', data);
     }
   } else {
-    console.log('malformed data in deleteNavigation() - no tabId');
+    logObject('malformed data in deleteNavigation() - no tabId', data);
   }
 };
 

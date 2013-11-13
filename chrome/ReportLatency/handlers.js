@@ -24,6 +24,8 @@
 var latencyData = new LatencyData();
 
 function onBeforeNavigate(data) {
+  var d = new Date();
+  console.log('onBeforeNavigate(' + d.getTime() + ')');
   latencyData.startNavigation(data);
 }
 chrome.webNavigation.onBeforeNavigate.addListener(onBeforeNavigate);
@@ -53,22 +55,32 @@ chrome.tabs.onRemoved.addListener(onTabRemoved);
 
 
 function onBeforeRequest(data) {
-  console.log('onBeforeRequest(' + data.requestId + ',' + data.timeStamp +
-	      ',' + data.url + ')');
+  if (data.type == 'main_frame') {
+    var d = new Date();
+    logObject('onBeforeRequest(' + d.getTime() + ')', data);
+  } else {
+    console.log('onBeforeRequest(' + data.requestId + ')');
+  }
   latencyData.startRequest(data);
 }
 chrome.webRequest.onBeforeRequest.addListener( onBeforeRequest,
 					       { urls: ['*://*/*'] });
 
 function onBeforeRedirect(data) {
-  logObject('onBeforeRedirect()', data);
-  latencyData.startRequest(data);
+  if (data.type == 'main_frame') {
+    var d = new Date();
+    logObject('onBeforeRedirect(' + d.getTime() + ')', data);
+  } else {
+    console.log('onBeforeRedirect(' + data.requestId + ')');
+  }
+  latencyData.endRequest(data);
 }
 chrome.webRequest.onBeforeRedirect.addListener( onBeforeRedirect,
 						{ urls: ['*://*/*'] });
 
 
 function onCompletedRequest(data) {
+  console.log('onCompletedRequest(' + data.requestId + ')');
   latencyData.endRequest(data);
 }
 chrome.webRequest.onCompleted.addListener( onCompletedRequest,

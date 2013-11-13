@@ -145,8 +145,8 @@ TabData.prototype.tabUpdated = function(changeInfo, tab) {
  *
  */
 TabData.prototype.startNavigation = function(data) {
-  logObject('TabData.startNavigation()', data);
   if (('parentFrameId' in data) && (data.parentFrameId < 0)) {
+    logObject('TabData.startNavigation()', data);
     if ('service' in this) {
       delete this['service'];
     }
@@ -161,10 +161,10 @@ TabData.prototype.startNavigation = function(data) {
 	console.log('startNavigation(' + data.url + ') not web');
       }
     } else {
-      console.log('no url found in endNavigation() data');
+      console.log('no url found in startNavigation() data');
     }
   } else {
-    console.log('  Meh.  Don\'t care about subframe navigation events.');
+    // console.log('  Meh.  Don\'t care about subframe navigation events.');
   }
 };
 
@@ -175,16 +175,17 @@ TabData.prototype.startNavigation = function(data) {
  *
  */
 TabData.prototype.endNavigation = function(data) {
-  logObject('TabData.endNavigation()', data);
   if ('navigation' in this) {
     if (('frameId' in data)) {
       if (data.frameId == this.navigation.frameId) {
+	logObject('TabData.endNavigation()', data);
 	if ('url' in data) {
 	  if (isWebUrl(data.url)) {
 	    if ('timeStamp' in data) {
 	      var delay = data.timeStamp - this.navigation.timeStamp;
 	      var original_name = aggregateName(this.navigation.url);
 	      this.service = aggregateName(data.url);
+	      console.log(this.service + ' navigations +' + delay + 'ms'); 
 	      this.stat.add(original_name, 'navigation', delay);
 	    } else {
 	      console.log('missing timeStamp in endNavigation() data');
@@ -196,7 +197,7 @@ TabData.prototype.endNavigation = function(data) {
 	  console.log('no url found in endNavigation() data');
 	}
       } else {
-	console.log('  Meh. Don\'t care about subframes again.');
+	// console.log('  Meh. Don\'t care about subframes again.');
       }
     } else {
       console.log('no frameId found');
