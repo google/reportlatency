@@ -113,6 +113,8 @@ LatencyData.prototype.tabRemoved = function(tabId, removeInfo) {
   logObject('LatencyData.tabRemoved(' + tabId + ')',
 		 removeInfo);
   if (tabId in this.tab) {
+    console.log('  tab.service = ' + this.tab[tabId].service);
+    console.log('  tab.navigation.url = ' + this.tab[tabId].navigation.url);
     delete this.tab[tabId];
   } else {
     console.log('  missing tabId ' + tabId + ' received in tabRemoved()');

@@ -39,7 +39,7 @@ function TabData() {
  *
  */
 TabData.prototype.startRequest = function(data) {
-  debugLogObject('TabData.startRequest(data)', data);
+  debugLogObject('TabData(' + this.service + ').startRequest()', data);
   if ('requestId' in data) {
     if (data.requestId in this.request) {
       logObject('new interleaved requestId ' + data.requestId, data);
@@ -62,7 +62,7 @@ TabData.prototype.startRequest = function(data) {
  *
  */
 TabData.prototype.endRequest = function(data) {
-  debugLogObject('TabData(' + this.service + '.endRequest()', data);
+  debugLogObject('TabData(' + this.service + ').endRequest()', data);
   if ('requestId' in data) {
     if (data.requestId in this.request) {
       if (!data.fromCache) {
@@ -99,7 +99,7 @@ TabData.prototype.endRequest = function(data) {
  *
  */
 TabData.prototype.deleteRequest = function(data) {
-  debugLogObject('TabData.deleteRequest(data)', data);
+  debugLogObject('TabData(' + this.service + ').deleteRequest()', data);
   if ('requestId' in data) {
     if (data.requestId in this.request) {
       delete this.request[data.requestId];
@@ -113,12 +113,13 @@ TabData.prototype.deleteRequest = function(data) {
 };
 
 /**
- * Delete a request (due to an error).
+ * Count when a tab is updated.
  *
- * @param {object} data about the request from Chrome onErrorRequest().
+ * @param {object} data about the event from chrome.tabs.onUpdated.
  *
  */
 TabData.prototype.tabUpdated = function(changeInfo, tab) {
+  debugLogObject('TabData(' + this.service + ')');
   debugLogObject('TabData.tabUpdated(changeInfo)', changeInfo);
   debugLogObject('TabData.tabUpdated(tab)', tab);
   if (!isWebUrl(tab.url)) { return; }
@@ -205,7 +206,11 @@ TabData.prototype.endNavigation = function(data) {
       console.log('no frameId found');
     }
   } else {
-    logObject('no existing navigation in endNavigation()', data);
+    if (data.frameId == 0) {
+      logObject('no existing navigation in endNavigation()', data);
+    } else {
+      // console.log('  Meh. Don\'t care about subframes again.');
+    }
   }
 };
 
