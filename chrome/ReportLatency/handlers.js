@@ -102,3 +102,12 @@ function onUpdateAvailable(details) {
 }
 chrome.runtime.onInstalled.addListener( onUpdateAvailable );
 
+function onMessage(message, sender, sendResponse) {
+  if (sender.tab) {
+    logObject(sender.tab.url + ' sent ' + message, message);
+  } else {
+    logObject('extension sent ' + message, sender);
+  }
+  sendResponse({serviceGroup: serviceGroup});
+}
+chrome.extension.onMessage.addListener(onMessage);

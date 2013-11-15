@@ -47,8 +47,7 @@ function saveText(option) {
 }
 
 function saveServices() {
-  var services = JSON.parse(localStorage['services']);
-  for (var id in services) {
+  for (var id in serviceGroup) {
     saveCheckbox(id);
   }
 }
@@ -97,19 +96,18 @@ function restoreText(option) {
 }
 
 function restoreServices() {
-  var services = JSON.parse(localStorage['services']);
   var service_groups = document.getElementById('service_groups');
   var html = '';
-  for (var id in services) {
+  for (var id in serviceGroup) {
     html = html + '\n' + id +
         '<input type="checkbox" id="' + id + '" name="' + id +
         '">' + '\n<br>\n\n' +
-        localStorage[id + '_description'] + '\n<p>\n';
+        serviceGroup[id].description + '\n<p>\n';
   }
   service_groups.innerHTML = html;
 
 
-  for (var id in services) {
+  for (var id in serviceGroup) {
     restoreCheckbox(id);
   }
 }
@@ -132,5 +130,12 @@ function restoreOptions() {
   restoreCheckbox('debug_mode');
 }
 
-document.addEventListener('DOMContentLoaded', restoreOptions);
 document.querySelector('#save').addEventListener('click', saveOptions);
+
+chrome.runtime.sendMessage({ rpc: "get_options" },
+			   function(response) {
+			     console.log('sendResponse() ' +
+					 JSON.stringify(response));
+			     serviceGroup = response.serviceGroup;
+			     restoreOptions();
+			   });
