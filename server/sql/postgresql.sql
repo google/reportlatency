@@ -22,6 +22,7 @@ CREATE TABLE report (
   final_name	TEXT,
   tz		TEXT,
   version	TEXT,
+  options	INTEGER,
   tabupdate_dead	INTEGER,
   tabupdate_count	INTEGER,
   tabupdate_total	REAL,
@@ -93,3 +94,8 @@ CREATE TABLE domain (
   notmatch TEXT
 );
 CREATE INDEX idx12 ON domain(owner);
+
+CREATE TABLE options (
+  mask	INTEGER,
+  name	TEXT
+);
