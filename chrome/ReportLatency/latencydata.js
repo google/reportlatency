@@ -206,9 +206,11 @@ LatencyData.prototype.postLatency = function(skip) {
   if ('manifest' in this) {
     report.version = this.manifest.version;
   }
+  report.options = get_wire_options();
   report.tz = timeZone(Date());
   report.services = {};
   report.services[bestFinal] = bestService; // future: could be more than one
+  console.log(JSON.stringify(report))
   req.send(JSON.stringify(report));
   this.stats.delete(bestFinal);
   this.reportExtensionStats();

@@ -87,6 +87,22 @@ function registerService(id, description, callback) {
 }
 
 /**
+ * Return a list of the enabled wire protocol options.
+ **/
+function get_wire_options() {
+  var services = JSON.parse(localStorage['services']);
+  var options = [];
+  for (var id in services) {
+    if (id in localStorage) {
+      if (localStorage[id]) {
+	options.push(id);
+      }
+    }
+  }
+  return options;
+}
+
+/**
  * @param {string} hostname is the full hostname.
  * @return {string} top two levels in a domain name.
  **/
