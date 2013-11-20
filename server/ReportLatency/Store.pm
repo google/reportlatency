@@ -31,8 +31,26 @@ sub new {
 
   $self->{dbh} = (defined $p{dbh} ? $p{dbh} : latency_dbh() );
 
+  $self->init();
+
   return $self;
 }
+
+sub init {
+  my ($self) = @_;
+  if (!defined $self->{'option'}) {
+    my $sth = $self->{'dbh'}->prepare('SELECT name,mask FROM options;');
+    my %option;
+    $self->{'option'} = \%option;
+    while (my ($name,$mask) = $sth->fetchrow_array) {
+      next unless $mask =~ /^\d+$/;
+      next unless $name =~ /^[a-zA-Z]+$/;
+      $option{$name} = $mask;
+    }
+    $sth->finish();
+  }
+}
+
 
 sub aggregate_remote_address {
   my ($self,$remote_addr,$forwarded_for) = @_;
@@ -161,9 +179,20 @@ sub _insert_table_hash {
 	join(',', split(//,'?' x scalar(keys %{$hash}))) .
 	  ');';
 }
+sub option_bits {
+  my ($self,$options) = @_;
+  return undef unless defined $options;
+
+  my $bits = 0;
+  foreach my $option (@{$options}) {
+    $bits |= $self->{'option'}{$option};
+  }
+  return $bits;
+}
 
 sub add_name_stats {
-  my ($self,$service,$name,$location,$tz,$useragent,$version,$namestats) = @_;
+  my ($self,$service,$name,$location,$tz,$useragent,$version,$options,
+      $namestats) = @_;
   my (%sql);
   $sql{'name'} = $name if $name;
   $sql{'final_name'} = $service if $service;
@@ -171,7 +200,8 @@ sub add_name_stats {
   $sql{'remote_addr'} = $location if $location;
   $sql{'user_agent'} = $useragent if $useragent;
   $sql{'version'} = $version if $version;
-
+  $sql{'options'} = $options if $options;
+  
   foreach my $stattype (qw(navigation tabupdate request)) {
     my $stat = $namestats->{$stattype};
     if (defined $stat) {
@@ -193,10 +223,12 @@ sub add_name_stats {
 
 
 sub add_service_stats {
-  my ($self,$location,$tz,$useragent,$version,$service,$servicestats) = @_;
+  my ($self,$location,$tz,$useragent,$version,$options,$service,
+      $servicestats) = @_;
 
   foreach my $name (keys %{$servicestats}) {
     $self->add_name_stats($service,$name,$location,$tz,$useragent,$version,
+			  $options,
 			  $servicestats->{$name});
   }
 }
@@ -222,10 +254,11 @@ sub parse_json {
 
   my $tz = $obj->{tz};
   my $version = $obj->{version};
+  my $options = $self->option_bits($obj->{options});
 
   $dbh->begin_work or die $dbh->errstr;
   foreach my $service (keys %{$obj->{services}}) {
-    $self->add_service_stats($location,$tz,$user_agent,$version,
+    $self->add_service_stats($location,$tz,$user_agent,$version,$options,
 			     $service,$obj->{services}->{$service});
   }
   $dbh->commit or return $self->_error('commit',$dbh->errstr);

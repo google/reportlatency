@@ -1,3 +1,9 @@
+reportlatency (1.2.2) precise; urgency=low
+
+  * parse an options array with each JSON post
+
+ -- Drake Diedrich <dld@google.com>  Wed, 20 Nov 2013 11:01:42 -0800
+
 reportlatency (1.2.1) precise; urgency=low
 
   * Log extension version to database if sent

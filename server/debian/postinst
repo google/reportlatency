@@ -46,7 +46,7 @@ case "$1" in
     configure)
 	if [ ! -f  $DBFILE ] ; then
 	  sqlite3 $DBFILE <$PKGSHARE/sqlite3.sql
-	  for sql in $PKGSHARE/domain*.sql ; do
+	  for sql in $PKGSHARE/domain*.sql $PKGSHARE/option*.sql; do
 	      sqlite3 $DBFILE <$sql
 	  done
 	  chown www-data:www-data $DBFILE
