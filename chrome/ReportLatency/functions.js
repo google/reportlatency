@@ -83,14 +83,10 @@ function registerService(id, description, callback) {
  * Return a list of the enabled wire protocol options.
  **/
 function get_wire_options() {
-  console.log('get_wire_options()  localStorage[]=' +
-	      JSON.stringify(localStorage));
   var options = [];
   for (var id in serviceGroup) {
-    console.log('    id=' + id);
     if (id in localStorage) {
       if (localStorage[id]) {
-	console.log('      +');
 	options.push(id);
       }
     }
@@ -98,7 +94,6 @@ function get_wire_options() {
   if (localStorage['default_as_org']) {
     options.push('default_as_org');
   }
-  console.log('  options=' + JSON.stringify(options));
   return options;
 }
 

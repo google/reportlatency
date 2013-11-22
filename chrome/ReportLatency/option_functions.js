@@ -26,7 +26,6 @@
 function saveCheckbox(option) {
   var checkbox = document.getElementById(option);
   var value = checkbox.checked;
-  console.log('saveCheckbox(' + option + ') localStorage=' + value);
   localStorage[option] = value;
 }
 
@@ -41,14 +40,12 @@ function saveText(option) {
 }
 
 function saveServices() {
-  console.log('saveServices()');
   for (var id in serviceGroup) {
     saveCheckbox(id);
   }
 }
 
 function saveOptions() {
-  console.log('saveOptions()');
   saveText('report_to');
   saveCheckbox('default_as_org');
   saveServices();
@@ -59,20 +56,24 @@ function saveOptions() {
   setTimeout(function() {
     status.innerHTML = '';
   }, 750);
-
-  console.log('localStorage[] = ' + JSON.stringify(localStorage));
 }
 
 
+function string_to_bool(val) {
+  if (val == 'true') {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 function restoreCheckbox(option) {
-  console.log('restoreCheckbox(' + option + ')');
   var value = localStorage[option];
   var checkbox = document.getElementById(option);
-  checkbox.checked = value;
+  checkbox.checked = string_to_bool(value);
 }
 
 function restoreText(option) {
-  console.log('restoreText(' + option + ')');
   if (option in localStorage) {
     value = localStorage[option];
     var text = document.getElementById(option);
@@ -81,11 +82,9 @@ function restoreText(option) {
 }
 
 function restoreServices() {
-  console.log('restoreServices()');
   var service_groups = document.getElementById('service_groups');
   var html = '';
   for (var id in serviceGroup) {
-    console.log('  id = ' + id);
     html = html + '\n' + id +
         '<input type="checkbox" id="' + id + '" name="' + id +
         '">' + '\n<br>\n\n' +
@@ -99,20 +98,14 @@ function restoreServices() {
 }
 
 function restoreDefaults() {
-  console.log('restoreDefaults()');
   for (var option in optionDefault) {
-    console.log('  restoreDefaults(' + option + ')');
     var value = optionDefault[option];
-    console.log('value = ' + value);
     var option_text = document.getElementById('default_' + option);
     option_text.innerHTML = '[ defaults to ' + value + ' ]';
   }
-  console.log('  restoreDefaults() done');
 }
 
 function restoreOptions() {
-  console.log('restoreOptions()');
-  console.log('  serviceGroup = ' + JSON.stringify(serviceGroup));
   restoreServices();
   restoreDefaults();
   restoreText('report_to');
@@ -124,8 +117,6 @@ document.querySelector('#save').addEventListener('click', saveOptions);
 
 chrome.runtime.sendMessage({ rpc: "get_options" },
 			   function(response) {
-			     console.log('sendMessage response( ' +
-					 JSON.stringify(response) + ')');
 			     serviceGroup = response.serviceGroup;
 			     restoreOptions();
 			   });
