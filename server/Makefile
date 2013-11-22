@@ -15,7 +15,13 @@
 all:
 
 test:
-	cd batch && prove t
-	cd cgi && prove t
-	cd ReportLatency && prove t
-	cd sql && prove t
+	cd ReportLatency && make test
+	cd sql && make test
+	cd batch && make test
+	cd cgi && make test
+
+clean:
+	cd ReportLatency && make clean
+	cd sql && make clean
+	cd batch && make clean
+	cd cgi && make clean

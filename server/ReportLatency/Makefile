@@ -12,13 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-all:
+DATA_OBJS:=$(shell echo data/*.pm)
 
-test:
+all: data.pm
+
+data.pm: ${DATA_OBJS}
+	cat $^ > $@
+
+test: data.pm
 	prove t
 
 clean:
-	rm -rf cover_db
+	rm -rf cover_db data.pm
 
-coverage:
+coverage: data.pm
 	cover -test

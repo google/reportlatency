@@ -15,13 +15,17 @@
 package ReportLatency::Store;
 
 use strict;
-use vars qw($VERSION);
+use vars qw($VERSION %options);
 use ReportLatency::utils;
 use IO::String;
 use URI::Escape;
 use JSON;
 
 $VERSION     = 0.1;
+%options = ();
+
+require ReportLatency::data;
+
 
 sub new {
   my $class = shift;
@@ -31,24 +35,12 @@ sub new {
 
   $self->{dbh} = (defined $p{dbh} ? $p{dbh} : latency_dbh() );
 
-  $self->init();
-
   return $self;
 }
 
-sub init {
-  my ($self) = @_;
-  if (!defined $self->{'option'}) {
-    my $sth = $self->{'dbh'}->prepare('SELECT name,mask FROM options;');
-    my %option;
-    $self->{'option'} = \%option;
-    while (my ($name,$mask) = $sth->fetchrow_array) {
-      next unless $mask =~ /^\d+$/;
-      next unless $name =~ /^[a-zA-Z]+$/;
-      $option{$name} = $mask;
-    }
-    $sth->finish();
-  }
+sub register_option {
+  my ($opt,$mask) = @_;
+  $options{$opt} = $mask;
 }
 
 
@@ -179,13 +171,16 @@ sub _insert_table_hash {
 	join(',', split(//,'?' x scalar(keys %{$hash}))) .
 	  ');';
 }
+
 sub option_bits {
   my ($self,$options) = @_;
   return undef unless defined $options;
 
   my $bits = 0;
-  foreach my $option (@{$options}) {
-    $bits |= $self->{'option'}{$option};
+  foreach my $opt (@{$options}) {
+    if ($ReportLatency::Store::options{$opt}) {
+      $bits |= $ReportLatency::Store::options{$opt};
+    }
   }
   return $bits;
 }

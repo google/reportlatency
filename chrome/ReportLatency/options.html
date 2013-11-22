@@ -35,20 +35,18 @@ limitations under the License.
 
       <p>
 
-    Report non-whitelisted URLs as:
-    <select id="default_as">
-      <option value=".">.</option>
-      <option value="domain">Organization domain name</option>
-    </select>
-    <br>
+	default_as_org
+	<input type="checkbox" id="default_as_org" name="default_as_org"
+	  value="false">
+	<br>
 
 	URLs are reduced to a service name to prevent security issues.
-	Selecting "." here is more private - it aggregates all
-	requests that are not otherwise whitelisted to ".",
-	representing the whole internet.  Examples of 2nd/3rd level
-	domain name are <tt>company.com</tt> or <tt>city.st.us</tt>
-	depending on the typical organization of each top level
-	domain.
+	The default service name '.' reflects the speed of the
+	Internet as a whole, but by enabling <i>default_as_org</i>,
+	the organization's domain name will be used if no other
+	enabled rule is matched.  Examples: <tt>company.com</tt>,
+	<tt>ci.city.st.us</tt>.  Only enable this if you're
+	comfortable reporting the organization's domain names.
 
       <p>
 
