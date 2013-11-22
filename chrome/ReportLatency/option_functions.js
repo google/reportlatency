@@ -23,12 +23,6 @@
 
 'use strict';
 
-function saveSelect(option) {
-  var select = document.getElementById(option);
-  var value = select.children[select.selectedIndex].value;
-  localStorage[option] = value;
-}
-
 function saveCheckbox(option) {
   var checkbox = document.getElementById(option);
   var value = checkbox.checked;
@@ -47,14 +41,16 @@ function saveText(option) {
 }
 
 function saveServices() {
+  console.log('saveServices()');
   for (var id in serviceGroup) {
     saveCheckbox(id);
   }
 }
 
 function saveOptions() {
+  console.log('saveOptions()');
   saveText('report_to');
-  saveSelect('default_as');
+  saveCheckbox('default_as_org');
   saveServices();
   saveCheckbox('debug_mode');
 
@@ -63,31 +59,20 @@ function saveOptions() {
   setTimeout(function() {
     status.innerHTML = '';
   }, 750);
+
+  console.log('localStorage[] = ' + JSON.stringify(localStorage));
 }
 
-
-function restoreSelect(option) {
-  var value = localStorage[option];
-  if (!value) {
-    return;
-  }
-  var select = document.getElementById(option);
-  for (var i = 0; i < select.children.length; i++) {
-    var child = select.children[i];
-    if (child.value == value) {
-      child.selected = 'true';
-      break;
-    }
-  }
-}
 
 function restoreCheckbox(option) {
+  console.log('restoreCheckbox(' + option + ')');
   var value = localStorage[option];
   var checkbox = document.getElementById(option);
   checkbox.checked = value;
 }
 
 function restoreText(option) {
+  console.log('restoreText(' + option + ')');
   if (option in localStorage) {
     value = localStorage[option];
     var text = document.getElementById(option);
@@ -96,9 +81,11 @@ function restoreText(option) {
 }
 
 function restoreServices() {
+  console.log('restoreServices()');
   var service_groups = document.getElementById('service_groups');
   var html = '';
   for (var id in serviceGroup) {
+    console.log('  id = ' + id);
     html = html + '\n' + id +
         '<input type="checkbox" id="' + id + '" name="' + id +
         '">' + '\n<br>\n\n' +
@@ -106,27 +93,30 @@ function restoreServices() {
   }
   service_groups.innerHTML = html;
 
-
   for (var id in serviceGroup) {
     restoreCheckbox(id);
   }
 }
 
 function restoreDefaults() {
+  console.log('restoreDefaults()');
   for (var option in optionDefault) {
-    console.log('restoreDefaults(' + option + ')');
+    console.log('  restoreDefaults(' + option + ')');
     var value = optionDefault[option];
     console.log('value = ' + value);
     var option_text = document.getElementById('default_' + option);
     option_text.innerHTML = '[ defaults to ' + value + ' ]';
   }
+  console.log('  restoreDefaults() done');
 }
 
 function restoreOptions() {
+  console.log('restoreOptions()');
+  console.log('  serviceGroup = ' + JSON.stringify(serviceGroup));
+  restoreServices();
   restoreDefaults();
   restoreText('report_to');
-  restoreSelect('default_as');
-  restoreServices();
+  restoreCheckbox('default_as_org');
   restoreCheckbox('debug_mode');
 }
 
@@ -134,8 +124,8 @@ document.querySelector('#save').addEventListener('click', saveOptions);
 
 chrome.runtime.sendMessage({ rpc: "get_options" },
 			   function(response) {
-			     console.log('sendResponse() ' +
-					 JSON.stringify(response));
+			     console.log('sendMessage response( ' +
+					 JSON.stringify(response) + ')');
 			     serviceGroup = response.serviceGroup;
 			     restoreOptions();
 			   });

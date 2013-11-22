@@ -21,9 +21,6 @@
  */
 
 
-// Registered services storage, shared within extension
-localStorage['services'] = JSON.stringify({});
-
 
 /**
  * debugLog() is a console.log wrapper that the browser can enable.
@@ -79,26 +76,29 @@ function registerService(id, description, callback) {
             'callback': callback };
   serviceGroup[id] = o;
 
-  var services = JSON.parse(localStorage['services']);
-  services[id] = true;
-  localStorage['services'] = JSON.stringify(services);
   localStorage[id] = true;
-  localStorage[id + '_description'] = description;
 }
 
 /**
  * Return a list of the enabled wire protocol options.
  **/
 function get_wire_options() {
-  var services = JSON.parse(localStorage['services']);
+  console.log('get_wire_options()  localStorage[]=' +
+	      JSON.stringify(localStorage));
   var options = [];
-  for (var id in services) {
+  for (var id in serviceGroup) {
+    console.log('    id=' + id);
     if (id in localStorage) {
       if (localStorage[id]) {
+	console.log('      +');
 	options.push(id);
       }
     }
   }
+  if (localStorage['default_as_org']) {
+    options.push('default_as_org');
+  }
+  console.log('  options=' + JSON.stringify(options));
   return options;
 }
 
@@ -260,14 +260,13 @@ function aggregateName(url) {
   var host = url.substr(hostIndex, pathIndex);
   var path = url.substr(pathIndex + hostIndex + 1);
 
-  var services = JSON.parse(localStorage['services']);
-  for (var id in services) {
+  for (var id in serviceGroup) {
     var cb = serviceGroup[id]['callback'];
     var name = cb(host, path);
     if (name) return name;
   }
 
-  if (localStorage['default_as'] == 'domain') {
+  if (localStorage['default_as_org']) {
     return defaultDomain(host);
   }
 

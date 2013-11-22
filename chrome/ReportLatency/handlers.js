@@ -108,6 +108,11 @@ function onMessage(message, sender, sendResponse) {
   } else {
     logObject('extension sent ' + message, sender);
   }
+  var response;
+  if (message.rpc == 'get_options') {
+    response={serviceGroup: serviceGroup};
+  }
+  console.log('  response=' + JSON.stringify(response));
   sendResponse({serviceGroup: serviceGroup});
 }
 chrome.extension.onMessage.addListener(onMessage);
