@@ -88,8 +88,3 @@ CREATE TABLE domain (
   notmatch TEXT
 );
 CREATE INDEX idx12 ON domain(owner);
-
-CREATE TABLE options (
-  mask	INTEGER,
-  name	TEXT
-);
