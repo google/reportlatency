@@ -1,3 +1,9 @@
+reportlatency (1.2.3) precise; urgency=low
+
+  * Fix service image URLs when service has / in name
+
+ -- Drake Diedrich <dld@google.com>  Fri, 22 Nov 2013 16:13:48 -0800
+
 reportlatency (1.2.2) precise; urgency=low
 
   * parse an options array with each JSON post

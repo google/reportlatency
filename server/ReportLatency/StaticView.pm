@@ -410,7 +410,9 @@ EOF
 
 sub service_img_url {
   my ($self,$service) = @_;
-
+  if ($service =~ m%/([^/]+)$%) {
+    return "$1.png";
+  }
   return "$service.png";
 }
 
