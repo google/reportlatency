@@ -46,6 +46,22 @@ LatencyStats.prototype.add = function(latency, delta) {
   this.stat[latency].add(delta);
 };
 
+/**
+ * Increments a countable event
+ *
+ * @param {string} latency is the type of latency event.
+ * @param {string} result is the type of result instead of a latency
+ *
+ * Stats are further grouped by original and final service, but this
+ * isn't always known until after collection, so not part of this object.
+ */
+LatencyStats.prototype.increment = function(latency, result) {
+  if (!this.stat[latency]) {
+    this.stat[latency] = new Stat();
+  }
+  this.stat[latency].increment(result);
+};
+
 
 /**
  * Combine two measurements, zeroing one and transfering all counts to this

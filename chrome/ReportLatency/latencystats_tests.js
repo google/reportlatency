@@ -32,6 +32,16 @@ test('LatencyStats.add', function() {
   equal(s.stat['navigation'].total, 5 + 9, 'second total');
 });
 
+test('LatencyStats.increment', function() {
+  var s = new LatencyStats();
+
+  s.increment('navigation', 'tabclosed');
+  equal(s.stat['navigation'].tabclosed, 1, 'single tabclosed');
+
+  s.increment('navigation', 'tabclosed');
+  equal(s.stat['navigation'].tabclosed, 2, 'second tabclosed');
+});
+
 test('LatencyStats.transfer', function() {
   var s = new LatencyStats();
   var t = new LatencyStats();
