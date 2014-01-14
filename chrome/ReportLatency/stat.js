@@ -25,6 +25,7 @@
 
 /**
  * Class holding measurements that can reconstruct a range and average.
+ * Also holds count of errors and interrupts for different events.
  * @constructor
  */
 function Stat() {
@@ -61,6 +62,14 @@ Stat.prototype.add = function(delta) {
   }
 };
 
+Stat.prototype.increment = function(countable) {
+  if (countable in this) {
+    this[countable]++;
+  } else {
+    this[countable] = 1;
+  }
+}
+
 
 /**
  * Combine two measurements, zeroing one and transfering all counts to this
@@ -89,21 +98,15 @@ Stat.prototype.transfer = function(stat) {
     }
     delete stat['low'];
   }
-  if (stat.total) {
-    if (this.total) {
-      this.total += stat.total;
-    } else {
-      this.total = stat.total;
+  for (var n in stat) {
+    if (!(n in Stat.prototype)) {
+      if (n in this) {
+	this[n] += stat[n];
+      } else {
+	this[n] = stat[n];
+      }
+      delete stat[n];
     }
-    delete stat['total'];
-  }
-  if (stat.count) {
-    if (this.count) {
-      this.count += stat.count;
-    } else {
-      this.count = stat.count;
-    }
-    delete stat['count'];
   }
 };
 

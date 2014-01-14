@@ -41,6 +41,17 @@ test('Stat.add', function() {
 
 });
 
+test('Stat.increment', function() {
+  var s = new Stat();
+  equal(s.error, undefined, 'empty error');
+
+  s.increment('error');
+  equal(s.error, 1, 'single error');
+
+  s.increment('error');
+  equal(s.error, 2, 'double error');
+});
+
 test('Stat.transfer', function() {
   var s = new Stat();
   var t = new Stat();
@@ -48,30 +59,40 @@ test('Stat.transfer', function() {
   t.count = 1;
   t.total = 10;
   t.high = 10;
+  t.error = 1;
 
   s.transfer(t);
 
   equal(t.count, undefined, 'empty tmp count');
   equal(t.total, undefined, 'empty tmp total');
   equal(t.high, undefined, 'empty tmp high');
+  equal(t.error, undefined, 'empty tmp error');
 
   equal(s.count, 1, 'first transfer count');
   equal(s.total, 10, 'first transfer total');
   equal(s.high, 10, 'first transfer high');
+  equal(s.error, 1, 'first transfer error');
+
 
   t.count = 3;
   t.total = 24;
   t.high = 12;
+  t.error = 1;
+  s.interrupt = 1;
 
   s.transfer(t);
 
   equal(t.count, undefined, 'empty tmp count');
   equal(t.total, undefined, 'empty tmp total');
   equal(t.high, undefined, 'empty tmp high');
+  equal(t.error, undefined, 'empty tmp error');
+  equal(t.interrupt, undefined, 'empty tmp interrupt');
 
   equal(s.count, 4, 'second transfer count');
   equal(s.total, 34, 'second transfer total');
   equal(s.high, 12, 'second transfer high');
+  equal(s.error, 2, 'second transfer error');
+  equal(s.interrupt, 1, 'second transfer interrupt');
 
   t.count = 1;
   t.total = 2;
@@ -82,6 +103,8 @@ test('Stat.transfer', function() {
   equal(s.count, 5, 'third transfer count');
   equal(s.total, 36, 'third transfer total');
   equal(s.high, 12, 'third transfer high');
+  equal(s.error, 2, 'third transfer error');
+  equal(s.interrupt, 1, 'third transfer interrupt');
 });
 
 test('Stat.params', function() {
