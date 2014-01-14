@@ -91,6 +91,20 @@ NameStats.prototype.count = function(measurement) {
 
 /**
  *
+ * @param {string} measurement type of latency.
+ * @param {string} result name for latency type.
+ * @returns {number} the total number of events returning the result.
+ */
+NameStats.prototype.countable = function(measurement, result) {
+  var c = 0;
+  for (var s in this.stat) {
+    c += this.stat[s].countable(measurement, result);
+  }
+  return c;
+};
+
+/**
+ *
  * @param {string} measurement to aggregate.
  * @returns {number} the total of measurement reports.
  */

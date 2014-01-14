@@ -63,7 +63,19 @@ test('LatencyData.*Navigation', function() {
 
   data.timeStamp = 2000;
   ld.endNavigation(data);
-
   var ts = ld.tab[30].stat;
+
+  ld.tabRemoved(30, {});
+
   equal(ts.count('navigation'), 1, '1 navigation for tab 30');
+  equal(ts.countable('navigation','tabclosed'), 0,
+		     '0 tabclosed events for tab 30');
+
+  data.timeStamp = 3000;
+  data.url = 'http://host/spinsforever';
+  ld.startNavigation(data);
+  ts = ld.tab[30].stat;
+  ld.tabRemoved(30, {});
+  equal(ts.countable('navigation','tabclosed'), 1,
+	'1 tabclosed events for tab 30');
 });

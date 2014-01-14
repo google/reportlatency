@@ -107,6 +107,20 @@ LatencyStats.prototype.count = function(measurement) {
 
 /**
  * @param {string} measurement is the name to aggregate.
+ * @param {string} result is the result to aggregate.
+ * @returns {number} the count field for the requested measurement Stat
+ */
+LatencyStats.prototype.countable = function(measurement,result) {
+  if (measurement in this.stat) {
+    if (result in this.stat[measurement]) {
+      return this.stat[measurement][result];
+    }
+  }
+  return 0;
+};
+
+/**
+ * @param {string} measurement is the name to aggregate.
  * @returns {number} the total for the requested measurement Stat
  */
 LatencyStats.prototype.total = function(measurement) {
