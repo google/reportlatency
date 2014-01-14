@@ -30,6 +30,12 @@ test('NameStats.add', function() {
   equal(s.stat['name'].stat['navigation'].total, 5 + 9, 'second total');
 });
 
+test('NameStats.increment', function() {
+  var s = new NameStats();
+  s.increment('name', 'navigation', 'error');
+  equal(s.stat['name'].stat['navigation'].error, 1, 'single error');
+});
+
 test('NameStats.transfer', function() {
   var s = new NameStats();
   var t = new NameStats();
