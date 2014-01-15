@@ -45,6 +45,35 @@ ServiceStats.prototype.add = function(service, name, latency, delta) {
   this.stat[service].add(name, latency,  delta);
 };
 
+/**
+ * Increment a countable measurement return type
+ *
+ * @param {string} service is the final name this stat is for
+ * @param {string} name is the original request name this stat is for
+ * @param {string} latency is the type of latency.
+ * @param {string} delta is the new measurement to incorporate in the stat.
+ *
+ */
+ServiceStats.prototype.increment = function(service, name, latency, result) {
+  if (!this.stat[service]) {
+    this.stat[service] = new NameStats();
+  }
+  this.stat[service].increment(name, latency, result);
+};
+
+/**
+ *
+ * @param {string} measurement type of latency.
+ * @param {string} result name for latency type.
+ * @returns {number} the total number of events returning the result.
+ */
+ServiceStats.prototype.countable = function(measurement, result) {
+  var c = 0;
+  for (var s in this.stat) {
+    c += this.stat[s].countable(measurement, result);
+  }
+  return c;
+};
 
 /**
  * Combine two measurements, zeroing one and transfering all counts to this

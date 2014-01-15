@@ -110,11 +110,13 @@ LatencyData.prototype.tabUpdated = function(tabId, changeInfo, tab) {
  *
  */
 LatencyData.prototype.tabRemoved = function(tabId, removeInfo) {
-  logObject('LatencyData.tabRemoved(' + tabId + ')',
+  debugLogObject('LatencyData.tabRemoved(' + tabId + ')',
 		 removeInfo);
   if (tabId in this.tab) {
-    console.log('  tab.service = ' + this.tab[tabId].service);
-    console.log('  tab.navigation.url = ' + this.tab[tabId].navigation.url);
+    if (!('service' in this.tab[tabId])) {
+      var name = aggregateName(this.tab[tabId].navigation.url);
+      this.stats.increment(name,name,'navigation','tabclosed');
+    }
     delete this.tab[tabId];
   } else {
     console.log('  missing tabId ' + tabId + ' received in tabRemoved()');
@@ -230,3 +232,12 @@ LatencyData.prototype.reportExtensionStats = function() {
               ' pending service reports:' + services);
 }
 
+/**
+ *
+ * @param {string} measurement type of latency.
+ * @param {string} result name for latency type.
+ * @returns {number} the total number of events returning the result.
+ */
+LatencyData.prototype.countable = function(measurement, result) {
+  return this.stats.countable(measurement, result);
+};
