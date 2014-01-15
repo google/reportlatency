@@ -23,28 +23,22 @@ CREATE TABLE report (
   tz		TEXT,
   version	TEXT,
   options	INTEGER,
-  tabupdate_dead	INTEGER,
   tabupdate_count	INTEGER,
   tabupdate_total	REAL,
   tabupdate_high	REAL,
   tabupdate_low	REAL,
-  request_dead	INTEGER,
   request_count	INTEGER,
   request_total	REAL,
   request_high	REAL,
   request_low	REAL,
-  request_redirect_count	INTEGER,
-  request_redirect_total	REAL,
-  request_redirect_high		REAL,
-  navigation_dead	INTEGER,
+  request_tabclosed	INTEGER,
+  request_error	INTEGER,
   navigation_count	INTEGER,
   navigation_total	REAL,
   navigation_high	REAL,
   navigation_low	REAL,
-  navigation_committed_total	REAL,
-  navigation_committed_count	INTEGER,
-  navigation_committed_high	REAL,
-  navigation_committed_low	REAL
+  navigation_tabclosed	INTEGER,
+  navigation_error	INTEGER
 );
 
 CREATE INDEX idx1 ON report(timestamp);

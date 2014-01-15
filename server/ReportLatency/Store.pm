@@ -83,10 +83,10 @@ my @params = qw( name final_name tz
                  tabupdate_high tabupdate_low
                  request_count request_total
 		 request_high request_low
+		 request_tabclosed request_error
                  navigation_count navigation_total
                  navigation_high navigation_low
-                 navigation_committed_total navigation_committed_count
-                 navigation_committed_high
+		 navigation_tabclosed navigation_error
               );
 
 sub _insert_command {
@@ -129,39 +129,6 @@ EOF
   print join("\n\n",@_);
 }
 
-sub parse_www_form {
-  my ($self,$q) = @_;
-
-  my $insert = $self->_insert_post_command;
-  my $dbh = $self->{dbh};
-
-  my $remote_addr =
-    $self->aggregate_remote_address($ENV{'REMOTE_ADDR'},
-				    $ENV{'HTTP_X_FORWARDED_FOR'});
-  my $user_agent = aggregate_user_agent($ENV{'HTTP_USER_AGENT'});
-  my @insert_values;
-
-  foreach my $p (@params) {
-    my $val = $q->param($p);
-    $val='' unless defined $val;
-    push(@insert_values,$val);
-  }
-
-  if ($dbh->begin_work) {
-    if ($insert->execute($remote_addr,$user_agent,@insert_values)) {
-      if ($dbh->commit) {
-	$self->_thank_you();
-      } else {
-	$self->_error("commit failed", $dbh->errstr);
-      }
-    } else {
-      $self->_error("insert failed", $insert->errstr);
-    }
-  } else {
-    $self->_error("begin_work failed", $dbh->errstr);
-  }
-}
-
 sub _insert_table_hash {
   my ($self,$table,$hash) = @_;
 
@@ -201,7 +168,7 @@ sub add_name_stats {
     my $stat = $namestats->{$stattype};
     if (defined $stat) {
       if (ref($stat) eq 'HASH') {
-	foreach my $statfield (qw(count total high low)) {
+	foreach my $statfield (qw(count total high low tabclosed error)) {
 	  $sql{$stattype . '_' . $statfield} =
 	    $namestats->{$stattype}->{$statfield}
 	      if defined $namestats->{$stattype}->{$statfield};
@@ -265,10 +232,7 @@ sub post {
 
   if ($q->request_method() eq 'POST') {
     my $type = $q->content_type();
-    if ($type eq 'application/x-www-form-urlencoded' ||
-	$type eq 'multipart/form-data') {
-      return $self->parse_www_form($q);
-    } elsif ($type eq 'application/json') {
+    if ($type eq 'application/json') {
       return $self->parse_json($q);
     } else {
       return $self->_error("inappropriate Content-Type ", $type);
