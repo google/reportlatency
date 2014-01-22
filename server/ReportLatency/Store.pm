@@ -156,14 +156,21 @@ sub add_name_stats {
   my ($self,$service,$name,$location,$tz,$useragent,$version,$options,
       $namestats) = @_;
   my (%sql);
-  $sql{'name'} = $name if $name;
-  $sql{'final_name'} = $service if $service;
   $sql{'tz'} = $tz if $tz;
   $sql{'remote_addr'} = $location if $location;
   $sql{'user_agent'} = $useragent if $useragent;
   $sql{'version'} = $version if $version;
   $sql{'options'} = $options if $options;
   
+  my $sql = $self->_insert_table_hash('upload',\%sql);
+  my $upload_sth = $self->{dbh}->prepare($sql);
+  my $rv = $upload_sth->execute(map $sql{$_}, sort keys %sql);
+  $upload_sth->finish;
+
+  %sql = ();
+  $sql{'name'} = $name if $name;
+  $sql{'final_name'} = $service if $service;
+
   foreach my $stattype (qw(navigation tabupdate request)) {
     my $stat = $namestats->{$stattype};
     if (defined $stat) {
@@ -177,10 +184,6 @@ sub add_name_stats {
     }
   }
 
-  my $sql = $self->_insert_table_hash('report',\%sql);
-  my $insert = $self->{dbh}->prepare($sql);
-  my $rv = $insert->execute(map $sql{$_}, sort keys %sql);
-  $insert->finish;
 }
 
 

@@ -17,7 +17,7 @@
 # limitations under the License.
 
 use strict;
-use Test::More tests => 15;
+use Test::More tests => 11;
 use File::Temp qw/ tempfile tempdir /;
 use IO::String;
 use DBI;
@@ -86,26 +86,28 @@ $dbh = DBI->connect("dbi:SQLite:dbname=$dbfile",
 		    {AutoCommit => 0, RaiseError => 1}, '')
   or die $dbh->errstr;
 
-my $count_sth = $dbh->prepare("SELECT count(*) FROM report");
+my $count_sth = $dbh->prepare("SELECT count(*) FROM upload");
 $count_sth->execute();
 my ($count) = $count_sth->fetchrow_array;
 is($count, 1, '1 count');
 $count_sth->finish;
 
-my $report_sth =
-  $dbh->prepare("SELECT timestamp,remote_addr,name,final_name,navigation_count,navigation_total FROM report WHERE user_agent=?");
-$report_sth->execute("Other");
-my ($timestamp,$remote_addr,$name,$service,$nav_count,$nav_total) =
-  $report_sth->fetchrow_array;
+my $upload_sth =
+  $dbh->prepare("SELECT timestamp,remote_addr FROM upload WHERE user_agent=?");
+$upload_sth->execute("Other");
+my ($timestamp,$remote_addr) = $upload_sth->fetchrow_array;
 like($timestamp,qr/^\d{4}-/,'timestamp');
 is($remote_addr,'1.2.3.0','network address');
-is($name,'name','request name');
-is($service,'service_name','service name');
-is($nav_count,1,'navigation_count');
-is($nav_total,1000,'navigation_total');
 
-ok(!$report_sth->fetchrow_array,'  end of select');
-$report_sth->finish;
+#my $report_sth =
+#  $dbh->prepare("SELECT timestamp,remote_addr,name,final_name,navigation_count,navigation_total FROM report WHERE user_agent=?");
+#is($name,'name','request name');
+#is($service,'service_name','service name');
+#is($nav_count,1,'navigation_count');
+#is($nav_total,1000,'navigation_total');
+
+ok(!$upload_sth->fetchrow_array,'  end of select');
+$upload_sth->finish;
 
 chdir();
 ok(unlink($dbfile),"unlink $dbfile");
