@@ -1,5 +1,5 @@
 --
--- Copyright 2013 Google Inc. All Rights Reserved.
+-- Copyright 2013,2014 Google Inc. All Rights Reserved.
 --
 -- Licensed under the Apache License, Version 2.0 (the "License");
 -- you may not use this file except in compliance with the License.
@@ -14,52 +14,88 @@
 -- limitations under the License.
 
 
-CREATE TABLE report (
+CREATE TABLE upload (
+  id		INTEGER PRIMARY KEY AUTOINCREMENT,
+  collected_at	TEXT,
   timestamp	DATETIME,
   remote_addr	TEXT,
   user_agent	TEXT,
-  name	TEXT,
-  final_name	TEXT,
   tz		TEXT,
   version	TEXT,
-  options	INTEGER,
-  tabupdate_count	INTEGER,
-  tabupdate_total	REAL,
-  tabupdate_high	REAL,
-  tabupdate_low	REAL,
-  request_count	INTEGER,
-  request_total	REAL,
-  request_high	REAL,
-  request_low	REAL,
-  request_tabclosed	INTEGER,
-  request_error	INTEGER,
-  navigation_count	INTEGER,
-  navigation_total	REAL,
-  navigation_high	REAL,
-  navigation_low	REAL,
-  navigation_tabclosed	INTEGER,
-  navigation_error	INTEGER
+  options	INTEGER
 );
 
-CREATE INDEX idx1 ON report(timestamp);
-CREATE INDEX idx2 ON report(name);
-CREATE INDEX idx3 ON report(user_agent);
-CREATE INDEX idx4 ON report(remote_addr);
-CREATE INDEX idx5 ON report(timestamp,name);
-CREATE INDEX idx6 ON report(final_name);
+CREATE INDEX idx1 ON upload(collected_at);
+CREATE INDEX idx2 ON upload(timestamp);
+CREATE INDEX idx3 ON upload(remote_addr);
+CREATE INDEX idx4 ON upload(user_agent);
+CREATE INDEX idx5 ON upload(tz);
+CREATE INDEX idx6 ON upload(version);
+CREATE INDEX idx7 ON upload(options);
 
-CREATE TRIGGER report_timestamp AFTER  INSERT ON report
+CREATE TABLE service (
+  id	INTEGER PRIMARY KEY AUTOINCREMENT,
+  name	TEXT
+);
+
+CREATE INDEX idx8 ON service(name);
+
+
+CREATE TABLE request (
+  report	INTEGER,
+  name		INTEGER,
+  service	INTEGER,
+  count		INTEGER,
+  total		REAL,
+  high		REAL,
+  low		REAL,
+  tabclosed	INTEGER,
+  error		INTEGER,
+  FOREIGN KEY(report) REFERENCES upload(id),
+  FOREIGN KEY(name) REFERENCES service(id),
+  FOREIGN KEY(service) REFERENCES service(id)
+);
+
+CREATE TABLE navigation (
+  report	INTEGER,
+  name		INTEGER,
+  service	INTEGER,
+  count		INTEGER,
+  total		REAL,
+  high		REAL,
+  low		REAL,
+  tabclosed	INTEGER,
+  error		INTEGER,
+  FOREIGN KEY(report) REFERENCES upload(id),
+  FOREIGN KEY(name) REFERENCES service(id),
+  FOREIGN KEY(service) REFERENCES service(id)
+);
+
+CREATE TABLE tabupdate (
+  report	INTEGER,
+  name		INTEGER,
+  service	INTEGER,
+  count	INTEGER,
+  total	REAL,
+  high	REAL,
+  low	REAL,
+  FOREIGN KEY(report) REFERENCES upload(id),
+  FOREIGN KEY(name) REFERENCES service(id),
+  FOREIGN KEY(service) REFERENCES service(id)
+);
+
+CREATE TRIGGER upload_timestamp AFTER  INSERT ON upload
 BEGIN
-  UPDATE report SET timestamp = DATETIME('NOW')  WHERE rowid = new.rowid;
+  UPDATE upload SET timestamp = DATETIME('NOW')  WHERE rowid = new.rowid;
 END;
 
 -- tags to represent platform,owner, groups and other tech used for services
 CREATE TABLE tag (
-  name TEXT,
-  tag  TEXT
+  name	INTEGER,
+  tag  TEXT,
+  FOREIGN KEY(name) REFERENCES service(id)
 );
-CREATE INDEX idx14 on tag(name);
-CREATE INDEX idx15 on tag(tag);
+CREATE INDEX idx16 on tag(tag);
 
 -- For speed cache reverse DNS lookups on REMOTE_ADDR or HTTP_X_FORWARDED_FOR.
 -- Location defaults to the class C or subdomain if available,
@@ -71,9 +107,9 @@ CREATE TABLE location (
   rdns	TEXT,
   location TEXT
 );
-CREATE INDEX idx11 ON location(location);
-CREATE INDEX idx16 ON location(timestamp);
-CREATE INDEX idx17 ON location(ip);
+CREATE INDEX idx17 ON location(location);
+CREATE INDEX idx18 ON location(timestamp);
+CREATE INDEX idx19 ON location(ip);
 
 
 CREATE TABLE domain (
@@ -81,4 +117,7 @@ CREATE TABLE domain (
   match TEXT,
   notmatch TEXT
 );
-CREATE INDEX idx12 ON domain(owner);
+CREATE INDEX idx20 ON domain(owner);
+
+-- All other databases need to map last_insert_rowid() to their local
+-- function.  sqlite3 doesn't have a procedural language and can't map.

@@ -17,7 +17,7 @@
 # limitations under the License.
 
 use strict;
-use Test::More tests => 6;
+use Test::More tests => 10;
 use File::Temp qw/ tempfile tempdir /;
 
 my $dir = tempdir(CLEANUP => 1);
@@ -28,7 +28,11 @@ system("sqlite3 $dbfile < sqlite3.sql");
 
 my $tables=`sqlite3 $dbfile .tables`;
 chomp($tables);
-like($tables,qr/report/,'report table');
+like($tables,qr/upload/,'upload table');
+like($tables,qr/service/,'service table');
+like($tables,qr/request/,'update table');
+like($tables,qr/navigation/,'update table');
+like($tables,qr/tabupdate/,'tabupdate table');
 like($tables,qr/tag/,'tag table');
 like($tables,qr/location/,'location table');
 like($tables,qr/domain/,'domain table');
@@ -36,10 +40,10 @@ like($tables,qr/domain/,'domain table');
 my $before = time;
 sleep 1;
 system("sqlite3 $dbfile " .
-       "'INSERT INTO report(name) VALUES(\"service\")'");
+       "'INSERT INTO upload(user_agent) VALUES(\"Browser\")'");
 sleep 1;
 my $cmd =
-  "sqlite3 $dbfile 'SELECT strftime(\"%s\",timestamp) FROM report'";
+  "sqlite3 $dbfile 'SELECT strftime(\"%s\",timestamp) FROM upload'";
 my $mtime =`$cmd`;
 chomp($mtime);
 my $after = time;
