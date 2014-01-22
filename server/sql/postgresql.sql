@@ -14,19 +14,16 @@
 -- limitations under the License.
 
 
-CREATE SEQUENCE upload_id_seq;
-
 CREATE TABLE upload (
-  id		INTEGER NOT NULL default nextval('upload_id_seq'),
+  id		SERIAL UNIQUE,
   collected_at	TEXT,
-  timestamp	DATETIME,
+  timestamp	TIMESTAMP,
   remote_addr	TEXT,
   user_agent	TEXT,
   tz		TEXT,
   version	TEXT,
   options	INTEGER
 );
-ALTER SEQUENCE upload_id_seq OWNED BY upload.id;
 
 CREATE INDEX idx1 ON upload(collected_at);
 CREATE INDEX idx2 ON upload(timestamp);
@@ -48,12 +45,10 @@ CREATE TRIGGER upload_timestamp AFTER INSERT ON upload
    FOR EACH ROW EXECUTE PROCEDURE upload_timestamp();
 
 
-CREATE SEQUENCE service_id_seq;
 CREATE TABLE service (
-  id		INTEGER NOT NULL default nextval('service_id_seq'),
+  id	SERIAL UNIQUE,
   name	TEXT
 );
-ALTER SEQUENCE upload_id_seq OWNED BY service.id;
 
 CREATE INDEX idx8 ON service(name);
 
@@ -94,8 +89,8 @@ CREATE TABLE tabupdate (
 
 -- tags to represent platform,owner, groups and other tech used for services
 CREATE TABLE tag (
-  name INTEGER REFERENCES service(id),
-  tag  TEXT
+  service	INTEGER REFERENCES service(id),
+  tag		TEXT
 );
 CREATE INDEX idx9 on tag(tag);
 
