@@ -14,40 +14,29 @@
 -- limitations under the License.
 
 
-CREATE TABLE report (
-  timestamp	TIMESTAMP,
+CREATE SEQUENCE upload_id_seq;
+
+CREATE TABLE upload (
+  id		INTEGER NOT NULL default nextval('upload_id_seq'),
+  collected_at	TEXT,
+  timestamp	DATETIME,
   remote_addr	TEXT,
   user_agent	TEXT,
-  name	TEXT,
-  final_name	TEXT,
   tz		TEXT,
   version	TEXT,
-  options	INTEGER,
-  tabupdate_count	INTEGER,
-  tabupdate_total	REAL,
-  tabupdate_high	REAL,
-  tabupdate_low	REAL,
-  request_count	INTEGER,
-  request_total	REAL,
-  request_high	REAL,
-  request_low	REAL,
-  request_tabclosed	INTEGER,
-  navigation_count	INTEGER,
-  navigation_total	REAL,
-  navigation_high	REAL,
-  navigation_low	REAL,
-  navigation_tabclosed	INTEGER,
-  navigation_error	INTEGER
+  options	INTEGER
 );
+ALTER SEQUENCE upload_id_seq OWNED BY upload.id;
 
-CREATE INDEX idx1 ON report(timestamp);
-CREATE INDEX idx2 ON report(name);
-CREATE INDEX idx3 ON report(user_agent);
-CREATE INDEX idx4 ON report(remote_addr);
-CREATE INDEX idx5 ON report(timestamp,name);
-CREATE INDEX idx6 ON report(final_name);
+CREATE INDEX idx1 ON upload(collected_at);
+CREATE INDEX idx2 ON upload(timestamp);
+CREATE INDEX idx3 ON upload(remote_addr);
+CREATE INDEX idx4 ON upload(user_agent);
+CREATE INDEX idx5 ON upload(tz);
+CREATE INDEX idx6 ON upload(version);
+CREATE INDEX idx7 ON upload(options);
 
-CREATE OR REPLACE FUNCTION report_timestamp()
+CREATE OR REPLACE FUNCTION upload_timestamp()
 RETURNS TRIGGER AS $timestamp$
    BEGIN
       NEW.timestamp := current_timestamp;
@@ -55,16 +44,60 @@ RETURNS TRIGGER AS $timestamp$
    END;
 $timestamp$ LANGUAGE plpgsql;
 
-CREATE TRIGGER report_timestamp AFTER INSERT ON report
-   FOR EACH ROW EXECUTE PROCEDURE report_timestamp();
+CREATE TRIGGER upload_timestamp AFTER INSERT ON upload
+   FOR EACH ROW EXECUTE PROCEDURE upload_timestamp();
+
+
+CREATE SEQUENCE service_id_seq;
+CREATE TABLE service (
+  id		INTEGER NOT NULL default nextval('service_id_seq'),
+  name	TEXT
+);
+ALTER SEQUENCE upload_id_seq OWNED BY service.id;
+
+CREATE INDEX idx8 ON service(name);
+
+
+CREATE TABLE request (
+  upload	INTEGER REFERENCES upload(id),
+  name		INTEGER REFERENCES service(id),
+  service	INTEGER REFERENCES service(id),
+  count		INTEGER,
+  total		REAL,
+  high		REAL,
+  low		REAL,
+  tabclosed	INTEGER,
+  error		INTEGER
+);
+
+CREATE TABLE navigation (
+  upload	INTEGER REFERENCES upload(id),
+  name		INTEGER REFERENCES service(id),
+  service	INTEGER REFERENCES service(id),
+  count		INTEGER,
+  total		REAL,
+  high		REAL,
+  low		REAL,
+  tabclosed	INTEGER,
+  error		INTEGER
+);
+
+CREATE TABLE tabupdate (
+  upload	INTEGER REFERENCES upload(id),
+  name		INTEGER REFERENCES service(id),
+  service	INTEGER REFERENCES service(id),
+  count	INTEGER,
+  total	REAL,
+  high	REAL,
+  low	REAL
+);
 
 -- tags to represent platform,owner, groups and other tech used for services
 CREATE TABLE tag (
-  name TEXT,
+  name INTEGER REFERENCES service(id),
   tag  TEXT
 );
-CREATE INDEX idx14 on tag(name);
-CREATE INDEX idx15 on tag(tag);
+CREATE INDEX idx9 on tag(tag);
 
 -- For speed cache reverse DNS lookups on REMOTE_ADDR or HTTP_X_FORWARDED_FOR.
 -- Location defaults to the class C or subdomain if available,
@@ -76,9 +109,9 @@ CREATE TABLE location (
   rdns	TEXT,
   location TEXT
 );
-CREATE INDEX idx11 ON location(location);
-CREATE INDEX idx16 ON location(timestamp);
-CREATE INDEX idx17 ON location(ip);
+CREATE INDEX idx10 ON location(location);
+CREATE INDEX idx11 ON location(timestamp);
+CREATE INDEX idx12 ON location(ip);
 
 
 CREATE TABLE domain (
@@ -86,4 +119,4 @@ CREATE TABLE domain (
   match TEXT,
   notmatch TEXT
 );
-CREATE INDEX idx12 ON domain(owner);
+CREATE INDEX idx13 ON domain(owner);

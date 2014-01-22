@@ -42,7 +42,7 @@ CREATE INDEX idx8 ON service(name);
 
 
 CREATE TABLE request (
-  report	INTEGER,
+  upload	INTEGER,
   name		INTEGER,
   service	INTEGER,
   count		INTEGER,
@@ -51,13 +51,13 @@ CREATE TABLE request (
   low		REAL,
   tabclosed	INTEGER,
   error		INTEGER,
-  FOREIGN KEY(report) REFERENCES upload(id),
+  FOREIGN KEY(upload) REFERENCES upload(id),
   FOREIGN KEY(name) REFERENCES service(id),
   FOREIGN KEY(service) REFERENCES service(id)
 );
 
 CREATE TABLE navigation (
-  report	INTEGER,
+  upload	INTEGER,
   name		INTEGER,
   service	INTEGER,
   count		INTEGER,
@@ -66,20 +66,20 @@ CREATE TABLE navigation (
   low		REAL,
   tabclosed	INTEGER,
   error		INTEGER,
-  FOREIGN KEY(report) REFERENCES upload(id),
+  FOREIGN KEY(upload) REFERENCES upload(id),
   FOREIGN KEY(name) REFERENCES service(id),
   FOREIGN KEY(service) REFERENCES service(id)
 );
 
 CREATE TABLE tabupdate (
-  report	INTEGER,
+  upload	INTEGER,
   name		INTEGER,
   service	INTEGER,
   count	INTEGER,
   total	REAL,
   high	REAL,
   low	REAL,
-  FOREIGN KEY(report) REFERENCES upload(id),
+  FOREIGN KEY(upload) REFERENCES upload(id),
   FOREIGN KEY(name) REFERENCES service(id),
   FOREIGN KEY(service) REFERENCES service(id)
 );
@@ -95,7 +95,7 @@ CREATE TABLE tag (
   tag  TEXT,
   FOREIGN KEY(name) REFERENCES service(id)
 );
-CREATE INDEX idx16 on tag(tag);
+CREATE INDEX idx9 on tag(tag);
 
 -- For speed cache reverse DNS lookups on REMOTE_ADDR or HTTP_X_FORWARDED_FOR.
 -- Location defaults to the class C or subdomain if available,
@@ -107,9 +107,9 @@ CREATE TABLE location (
   rdns	TEXT,
   location TEXT
 );
-CREATE INDEX idx17 ON location(location);
-CREATE INDEX idx18 ON location(timestamp);
-CREATE INDEX idx19 ON location(ip);
+CREATE INDEX idx10 ON location(location);
+CREATE INDEX idx11 ON location(timestamp);
+CREATE INDEX idx12 ON location(ip);
 
 
 CREATE TABLE domain (
@@ -117,7 +117,7 @@ CREATE TABLE domain (
   match TEXT,
   notmatch TEXT
 );
-CREATE INDEX idx20 ON domain(owner);
+CREATE INDEX idx13 ON domain(owner);
 
 -- All other databases need to map last_insert_rowid() to their local
 -- function.  sqlite3 doesn't have a procedural language and can't map.
