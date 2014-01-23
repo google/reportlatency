@@ -16,7 +16,7 @@
 
 CREATE TABLE upload (
   id		SERIAL UNIQUE,
-  collected_at	TEXT,
+  collected_on	TEXT,
   timestamp	TIMESTAMP,
   remote_addr	TEXT,
   user_agent	TEXT,
@@ -25,13 +25,13 @@ CREATE TABLE upload (
   options	INTEGER
 );
 
-CREATE INDEX idx1 ON upload(collected_at);
-CREATE INDEX idx2 ON upload(timestamp);
-CREATE INDEX idx3 ON upload(remote_addr);
-CREATE INDEX idx4 ON upload(user_agent);
-CREATE INDEX idx5 ON upload(tz);
-CREATE INDEX idx6 ON upload(version);
-CREATE INDEX idx7 ON upload(options);
+CREATE INDEX upload_collected_on ON upload(collected_on);
+CREATE INDEX upload_timestamp ON upload(timestamp);
+CREATE INDEX upload_remote_addr ON upload(remote_addr);
+CREATE INDEX upload_user_agent ON upload(user_agent);
+CREATE INDEX upload_tz ON upload(tz);
+CREATE INDEX upload_version ON upload(version);
+CREATE INDEX upload_options ON upload(options);
 
 CREATE OR REPLACE FUNCTION upload_timestamp()
 RETURNS TRIGGER AS $timestamp$
@@ -45,18 +45,10 @@ CREATE TRIGGER upload_timestamp AFTER INSERT ON upload
    FOR EACH ROW EXECUTE PROCEDURE upload_timestamp();
 
 
-CREATE TABLE service (
-  id	SERIAL UNIQUE,
-  name	TEXT
-);
-
-CREATE INDEX idx8 ON service(name);
-
-
 CREATE TABLE request (
   upload	INTEGER REFERENCES upload(id),
-  name		INTEGER REFERENCES service(id),
-  service	INTEGER REFERENCES service(id),
+  name		TEXT,
+  service	TEXT,
   count		INTEGER,
   total		REAL,
   high		REAL,
@@ -64,11 +56,13 @@ CREATE TABLE request (
   tabclosed	INTEGER,
   error		INTEGER
 );
+CREATE INDEX request_name ON request(name);
+CREATE INDEX request_service ON request(service);
 
 CREATE TABLE navigation (
   upload	INTEGER REFERENCES upload(id),
-  name		INTEGER REFERENCES service(id),
-  service	INTEGER REFERENCES service(id),
+  name		TEXT,
+  service	TEXT,
   count		INTEGER,
   total		REAL,
   high		REAL,
@@ -76,23 +70,28 @@ CREATE TABLE navigation (
   tabclosed	INTEGER,
   error		INTEGER
 );
+CREATE INDEX navigation_name ON navigation(name);
+CREATE INDEX navigation_service ON navigation(service);
 
 CREATE TABLE tabupdate (
   upload	INTEGER REFERENCES upload(id),
-  name		INTEGER REFERENCES service(id),
-  service	INTEGER REFERENCES service(id),
-  count	INTEGER,
-  total	REAL,
-  high	REAL,
-  low	REAL
+  name		TEXT,
+  service	TEXT,
+  count		INTEGER,
+  total		REAL,
+  high		REAL,
+  low		REAL
 );
+CREATE INDEX tabupdate_name ON tabupdate(name);
+CREATE INDEX tabupdate_service ON tabupdate(service);
 
 -- tags to represent platform,owner, groups and other tech used for services
 CREATE TABLE tag (
-  service	INTEGER REFERENCES service(id),
+  service	TEXT,
   tag		TEXT
 );
-CREATE INDEX idx9 on tag(tag);
+CREATE INDEX tag_tag on tag(tag);
+CREATE INDEX tag_service on tag(service);
 
 -- For speed cache reverse DNS lookups on REMOTE_ADDR or HTTP_X_FORWARDED_FOR.
 -- Location defaults to the class C or subdomain if available,
@@ -104,9 +103,9 @@ CREATE TABLE location (
   rdns	TEXT,
   location TEXT
 );
-CREATE INDEX idx10 ON location(location);
-CREATE INDEX idx11 ON location(timestamp);
-CREATE INDEX idx12 ON location(ip);
+CREATE INDEX location_location ON location(location);
+CREATE INDEX location_timestamp ON location(timestamp);
+CREATE INDEX location_ip ON location(ip);
 
 
 CREATE TABLE domain (
@@ -114,4 +113,4 @@ CREATE TABLE domain (
   match TEXT,
   notmatch TEXT
 );
-CREATE INDEX idx13 ON domain(owner);
+CREATE INDEX domain_owner ON domain(owner);

@@ -17,7 +17,7 @@
 # limitations under the License.
 
 use strict;
-use Test::More tests => 10;
+use Test::More tests => 9;
 use File::Temp qw/ tempfile tempdir /;
 
 my $dir = tempdir(CLEANUP => 1);
@@ -29,7 +29,6 @@ system("sqlite3 $dbfile < sqlite3.sql");
 my $tables=`sqlite3 $dbfile .tables`;
 chomp($tables);
 like($tables,qr/upload/,'upload table');
-like($tables,qr/service/,'service table');
 like($tables,qr/request/,'update table');
 like($tables,qr/navigation/,'update table');
 like($tables,qr/tabupdate/,'tabupdate table');

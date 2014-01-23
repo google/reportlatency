@@ -16,7 +16,7 @@
 
 CREATE TABLE upload (
   id		INTEGER PRIMARY KEY AUTOINCREMENT,
-  collected_at	TEXT,
+  collected_on	TEXT,
   timestamp	DATETIME,
   remote_addr	TEXT,
   user_agent	TEXT,
@@ -25,64 +25,57 @@ CREATE TABLE upload (
   options	INTEGER
 );
 
-CREATE INDEX idx1 ON upload(collected_at);
-CREATE INDEX idx2 ON upload(timestamp);
-CREATE INDEX idx3 ON upload(remote_addr);
-CREATE INDEX idx4 ON upload(user_agent);
-CREATE INDEX idx5 ON upload(tz);
-CREATE INDEX idx6 ON upload(version);
-CREATE INDEX idx7 ON upload(options);
-
-CREATE TABLE service (
-  id	INTEGER PRIMARY KEY AUTOINCREMENT,
-  name	TEXT
-);
-
-CREATE INDEX idx8 ON service(name);
+CREATE INDEX upload_collected_on ON upload(collected_on);
+CREATE INDEX upload_timestamp ON upload(timestamp);
+CREATE INDEX upload_remote_addr ON upload(remote_addr);
+CREATE INDEX upload_user_agent ON upload(user_agent);
+CREATE INDEX upload_tz ON upload(tz);
+CREATE INDEX upload_version ON upload(version);
+CREATE INDEX upload_options ON upload(options);
 
 
 CREATE TABLE request (
   upload	INTEGER,
-  name		INTEGER,
-  service	INTEGER,
+  name		TEXT,
+  service	TEXT,
   count		INTEGER,
   total		REAL,
   high		REAL,
   low		REAL,
   tabclosed	INTEGER,
   error		INTEGER,
-  FOREIGN KEY(upload) REFERENCES upload(id),
-  FOREIGN KEY(name) REFERENCES service(id),
-  FOREIGN KEY(service) REFERENCES service(id)
+  FOREIGN KEY(upload) REFERENCES upload(id)
 );
+CREATE INDEX request_name ON request(name);
+CREATE INDEX request_service ON request(service);
 
 CREATE TABLE navigation (
   upload	INTEGER,
-  name		INTEGER,
-  service	INTEGER,
+  name		TEXT,
+  service	TEXT,
   count		INTEGER,
   total		REAL,
   high		REAL,
   low		REAL,
   tabclosed	INTEGER,
   error		INTEGER,
-  FOREIGN KEY(upload) REFERENCES upload(id),
-  FOREIGN KEY(name) REFERENCES service(id),
-  FOREIGN KEY(service) REFERENCES service(id)
+  FOREIGN KEY(upload) REFERENCES upload(id)
 );
+CREATE INDEX navigation_name ON navigation(name);
+CREATE INDEX navigation_service ON navigation(service);
 
 CREATE TABLE tabupdate (
   upload	INTEGER,
-  name		INTEGER,
-  service	INTEGER,
+  name		TEXT,
+  service	TEXT,
   count	INTEGER,
   total	REAL,
   high	REAL,
   low	REAL,
-  FOREIGN KEY(upload) REFERENCES upload(id),
-  FOREIGN KEY(name) REFERENCES service(id),
-  FOREIGN KEY(service) REFERENCES service(id)
+  FOREIGN KEY(upload) REFERENCES upload(id)
 );
+CREATE INDEX tabudpate_name ON tabupdate(name);
+CREATE INDEX tabudpate_service ON tabupdate(service);
 
 CREATE TRIGGER upload_timestamp AFTER  INSERT ON upload
 BEGIN
@@ -91,11 +84,11 @@ END;
 
 -- tags to represent platform,owner, groups and other tech used for services
 CREATE TABLE tag (
-  name	INTEGER,
-  tag  TEXT,
-  FOREIGN KEY(name) REFERENCES service(id)
+  service	TEXT,
+  tag  TEXT
 );
-CREATE INDEX idx9 on tag(tag);
+CREATE INDEX tag_tag on tag(tag);
+CREATE INDEX tag_service on tag(service);
 
 -- For speed cache reverse DNS lookups on REMOTE_ADDR or HTTP_X_FORWARDED_FOR.
 -- Location defaults to the class C or subdomain if available,
@@ -107,9 +100,9 @@ CREATE TABLE location (
   rdns	TEXT,
   location TEXT
 );
-CREATE INDEX idx10 ON location(location);
-CREATE INDEX idx11 ON location(timestamp);
-CREATE INDEX idx12 ON location(ip);
+CREATE INDEX location_location ON location(location);
+CREATE INDEX location_timestamp ON location(timestamp);
+CREATE INDEX location_ip ON location(ip);
 
 
 CREATE TABLE domain (
@@ -117,7 +110,7 @@ CREATE TABLE domain (
   match TEXT,
   notmatch TEXT
 );
-CREATE INDEX idx13 ON domain(owner);
+CREATE INDEX domain_owner ON domain(owner);
 
 -- All other databases need to map last_insert_rowid() to their local
 -- function.  sqlite3 doesn't have a procedural language and can't map.
