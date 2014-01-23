@@ -16,7 +16,7 @@
 -- limitations under the License.
 
 
-INSERT INTO domain(owner,match) VALUES('Google','google.com:%');
-INSERT INTO domain(owner,match) VALUES('Google','%.google.com');
-INSERT INTO domain(owner,match) VALUES('Google','%.google.com/%');
-INSERT INTO domain(owner,match) VALUES('Google','%.googleplex.com');
+INSERT INTO match(tag,re) VALUES('Google','google.com:%');
+INSERT INTO match(tag,re) VALUES('Google','%.google.com');
+INSERT INTO match(tag,re) VALUES('Google','%.google.com/%');
+INSERT INTO match(tag,re) VALUES('Google','%.googleplex.com');

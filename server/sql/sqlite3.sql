@@ -105,12 +105,16 @@ CREATE INDEX location_timestamp ON location(timestamp);
 CREATE INDEX location_ip ON location(ip);
 
 
-CREATE TABLE domain (
-  owner TEXT,
-  match TEXT,
+CREATE TABLE match (
+  tag TEXT,
+  re TEXT,
   notmatch TEXT
 );
-CREATE INDEX domain_owner ON domain(owner);
+
+CREATE TABLE notmatch (
+  tag TEXT,
+  re TEXT
+);
 
 -- All other databases need to map last_insert_rowid() to their local
 -- function.  sqlite3 doesn't have a procedural language and can't map.

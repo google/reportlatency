@@ -108,9 +108,12 @@ CREATE INDEX location_timestamp ON location(timestamp);
 CREATE INDEX location_ip ON location(ip);
 
 
-CREATE TABLE domain (
-  owner TEXT,
-  match TEXT,
-  notmatch TEXT
+CREATE TABLE match (
+  re	TEXT,
+  tag	TEXT
 );
-CREATE INDEX domain_owner ON domain(owner);
+
+CREATE TABLE notmatch (
+  re	TEXT,
+  tag	TEXT
+);
