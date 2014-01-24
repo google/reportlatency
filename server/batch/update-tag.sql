@@ -2,7 +2,7 @@
 -- run this transaction periodically to tag new services
 --
 --
--- Copyright 2013 Google Inc. All Rights Reserved.
+-- Copyright 2013,2014 Google Inc. All Rights Reserved.
 --
 -- Licensed under the Apache License, Version 2.0 (the "License");
 -- you may not use this file except in compliance with the License.
@@ -20,28 +20,28 @@ BEGIN;
 DELETE FROM tag;
 
 INSERT INTO tag
-  SELECT distinct report.name, domain.owner
-    FROM report,domain
-    LEFT JOIN tag t2 ON t2.name = report.name 
-    WHERE t2.name IS NULL AND report.name LIKE domain.match; 
+  SELECT distinct request.name, match.tag
+    FROM request,match
+    LEFT JOIN tag t2 ON t2.service = request.name 
+    WHERE t2.service IS NULL AND request.name LIKE match.re; 
 
 INSERT INTO tag
-  SELECT distinct report.final_name, domain.owner
-    FROM report,domain
-    LEFT JOIN tag t2 ON t2.name = report.final_name 
-    WHERE t2.name IS NULL AND report.final_name LIKE domain.match; 
+  SELECT distinct request.service, match.tag
+    FROM request,match
+    LEFT JOIN tag t2 ON t2.service = request.service 
+    WHERE t2.service IS NULL AND request.service LIKE match.re;
 
 INSERT INTO tag
-  SELECT distinct report.name, domain.owner
-    FROM report,domain
-    LEFT JOIN tag t2 ON t2.name = report.name 
-    WHERE t2.name IS NULL AND report.name NOT LIKE domain.notmatch; 
+  SELECT distinct request.name, notmatch.tag
+    FROM request,notmatch
+    LEFT JOIN tag t2 ON t2.service = request.name 
+    WHERE t2.service IS NULL AND request.name NOT LIKE notmatch.re;
 
 INSERT INTO tag
-  SELECT distinct report.final_name, domain.owner
-    FROM report,domain
-    LEFT JOIN tag t2 ON t2.name = report.final_name 
-    WHERE t2.name IS NULL AND report.final_name NOT LIKE domain.notmatch; 
+  SELECT distinct request.service, notmatch.tag
+    FROM request,notmatch
+    LEFT JOIN tag t2 ON t2.service = request.service 
+    WHERE t2.service IS NULL AND request.service NOT LIKE notmatch.re; 
 
 .read /var/lib/reportlatency/data/tag.sql
 
