@@ -18,7 +18,7 @@ CREATE TABLE upload (
   id		INTEGER PRIMARY KEY AUTOINCREMENT,
   collected_on	TEXT,
   timestamp	DATETIME,
-  remote_addr	TEXT,
+  location	TEXT,
   user_agent	TEXT,
   tz		TEXT,
   version	TEXT,
@@ -27,7 +27,7 @@ CREATE TABLE upload (
 
 CREATE INDEX upload_collected_on ON upload(collected_on);
 CREATE INDEX upload_timestamp ON upload(timestamp);
-CREATE INDEX upload_remote_addr ON upload(remote_addr);
+CREATE INDEX upload_location ON upload(location);
 CREATE INDEX upload_user_agent ON upload(user_agent);
 CREATE INDEX upload_tz ON upload(tz);
 CREATE INDEX upload_version ON upload(version);

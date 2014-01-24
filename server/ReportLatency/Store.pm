@@ -198,6 +198,35 @@ sub add_service_stats {
   }
 }
 
+sub new_upload {
+  my ($self,$obj) = @_;
+
+  $self->{upload_insert} =
+    $dbh->prepare("INSERT INTO upload " .
+		  "(collected_on,location,user_agent,tz,version,options)" .
+		  " VALUES(?,?,?,?,?,?,?)")
+      unless defined $self->{upload_insert};
+
+  $self->{last_select_rowid} =
+    $dbh->prepare("SELECT last_insert_rowid()")
+      unless defined $self->{last_insert_rowid};
+
+  if (! defined $self->{hostname}) {
+    $self->{hostname} = $ENV{HTTP_HOST} || $ENV{SERVER_ADDR};
+  }
+
+  my $upload_sth =
+    $upload_insert->execute($self->{hostname}, $obj->{location},
+			    $obj->{user_agent}, $obj->{tz}, $obj->{version},
+			    $obj->{options});
+  $upload_sth->finish();
+
+  my $sth = $self->{last_select_rowid}->execute();
+
+  my ($lastval) = $sth->fetchrow_array;
+  return $lastval;
+}
+
 sub parse_json {
   my ($self,$q) = @_;
 
@@ -217,14 +246,18 @@ sub parse_json {
     return $self->_error("unimplemented","parse_json()");
   };
 
-  my $tz = $obj->{tz};
-  my $version = $obj->{version};
   my $options = $self->option_bits($obj->{options});
+  $obj->{options} = $options;
+  $obj->{location} = $location;
+  $obj->{user_agent} = $user_agent;
 
   $dbh->begin_work or die $dbh->errstr;
+
+  my $upload_id = $self->new_upload($obj);
+
   foreach my $service (keys %{$obj->{services}}) {
-    $self->add_service_stats($location,$tz,$user_agent,$version,$options,
-			     $service,$obj->{services}->{$service});
+    $self->add_service_stats($upload_id, $service,
+			     $obj->{services}->{$service});
   }
   $dbh->commit or return $self->_error('commit',$dbh->errstr);
   $self->_thank_you();
