@@ -26,22 +26,10 @@ INSERT INTO tag
     WHERE t2.service IS NULL AND request.name LIKE match.re; 
 
 INSERT INTO tag
-  SELECT distinct request.service, match.tag
-    FROM request,match
-    LEFT JOIN tag t2 ON t2.service = request.service 
-    WHERE t2.service IS NULL AND request.service LIKE match.re;
-
-INSERT INTO tag
   SELECT distinct request.name, notmatch.tag
     FROM request,notmatch
     LEFT JOIN tag t2 ON t2.service = request.name 
     WHERE t2.service IS NULL AND request.name NOT LIKE notmatch.re;
-
-INSERT INTO tag
-  SELECT distinct request.service, notmatch.tag
-    FROM request,notmatch
-    LEFT JOIN tag t2 ON t2.service = request.service 
-    WHERE t2.service IS NULL AND request.service NOT LIKE notmatch.re; 
 
 .read /var/lib/reportlatency/data/tag.sql
 
