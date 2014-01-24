@@ -18,7 +18,7 @@
 
 use strict;
 use DBI;
-use Test::More tests => 4;
+use Test::More tests => 5;
 use File::Temp qw(tempfile tempdir);
 
 $ENV{'PATH'} = '/usr/bin';
@@ -45,9 +45,11 @@ my $dbfile="$dir/data/latency.sqlite3";
   open(my $sqlite3,"|-",'sqlite3',$dbfile)
     or die $!;
   print $sqlite3 <<EOF;
+INSERT INTO match(tag,re) VALUES('Company','%.company.com');
+INSERT INTO request(name) VALUES('host.company.com');
 EOF
 
-  ok(close($sqlite3),"latency data added");
+  ok(close($sqlite3),"request data added");
 }
 
 # update tags (the thing to really test)
@@ -63,6 +65,17 @@ EOF
 }
 
 # verify some results
+my $dbh;
+$dbh = DBI->connect("dbi:SQLite:dbname=$dbfile",
+                       {AutoCommit => 0}, '')
+  or die $dbh->errstr;
+
+my $count_sth = $dbh->prepare("SELECT count(*) FROM tag");
+$count_sth->execute();
+my ($count) = $count_sth->fetchrow_array;
+is($count, 1, '1 tag');
+$count_sth->finish;
+
 
 chdir($dir);
 

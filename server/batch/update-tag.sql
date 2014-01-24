@@ -23,7 +23,7 @@ INSERT INTO tag
   SELECT distinct request.name, match.tag
     FROM request,match
     LEFT JOIN tag t2 ON t2.service = request.name 
-    WHERE t2.service IS NULL AND request.name LIKE match.re; 
+    WHERE t2.service IS NULL AND request.name LIKE match.re;
 
 INSERT INTO tag
   SELECT distinct request.name, notmatch.tag
