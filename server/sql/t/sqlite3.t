@@ -17,7 +17,7 @@
 # limitations under the License.
 
 use strict;
-use Test::More tests => 9;
+use Test::More tests => 10;
 use File::Temp qw/ tempfile tempdir /;
 
 my $dir = tempdir(CLEANUP => 1);
@@ -34,7 +34,8 @@ like($tables,qr/navigation/,'update table');
 like($tables,qr/tabupdate/,'tabupdate table');
 like($tables,qr/tag/,'tag table');
 like($tables,qr/location/,'location table');
-like($tables,qr/domain/,'domain table');
+like($tables,qr/\smatch/,'match table');
+like($tables,qr/notmatch/,'notmatch table');
 
 my $before = time;
 sleep 1;
