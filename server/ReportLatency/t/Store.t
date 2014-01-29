@@ -2,7 +2,7 @@
 #
 # Test ReportLatency::Store.pm
 #
-# Copyright 2013 Google Inc. All Rights Reserved.
+# Copyright 2013,2014 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
 use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
-use Test::More tests => 13;
+use Test::More tests => 12;
 
 BEGIN { use lib '..'; }
 
@@ -59,10 +59,6 @@ is($store->aggregate_remote_address('0.0.0.1'),'0.0.0.0',
 
 
 $dbh->begin_work;
-
-is(ReportLatency::Store::_insert_command('name','value'),
-   'INSERT INTO report (remote_addr,user_agent,name,value) VALUES(?,?,?,?);',
-   'insert_command()');
 
 is($store->aggregate_remote_address('8.8.8.8'),'google.com.',
    'aggregate_remote_address(8.8.8.8)');

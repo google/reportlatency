@@ -79,34 +79,6 @@ sub aggregate_remote_address {
 }
 
 # process these form parameters and insert into same table columns
-my @params = qw( name final_name tz
-                 tabupdate_count tabupdate_total
-                 tabupdate_high tabupdate_low
-                 request_count request_total
-		 request_high request_low
-		 request_tabclosed request_error
-                 navigation_count navigation_total
-                 navigation_high navigation_low
-		 navigation_tabclosed navigation_error
-              );
-
-sub _insert_command {
-  my (@params) = @_;
-  return 'INSERT INTO report (remote_addr,user_agent,' .
-    join(',',@params) .
-    ') VALUES(?,?' . (',?' x scalar(@params)) . ');';
-}
-
-sub _insert_post_command {
-  my ($self) = @_;
-  my $insert = $self->{post_insert_command};
-  return $insert if defined $insert;
-
-  my $cmd = _insert_command(@params);
-  $insert = $self->{dbh}->prepare($cmd);
-  return $insert;
-}
-
 sub _thank_you {
   my $self = shift;
   print <<EOF;
