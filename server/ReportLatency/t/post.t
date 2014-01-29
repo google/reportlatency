@@ -21,7 +21,7 @@ use DBI;
 use CGI;
 use IO::String;
 use File::Temp qw(tempfile tempdir);
-use Test::More tests => 5;
+use Test::More tests => 10;
 
 BEGIN { use lib '..'; }
 
@@ -77,21 +77,19 @@ ok($store->post($q),"post()");
 
 $q->delete_all();
 
-my $count_sth = $dbh->prepare("SELECT count(*) FROM upload");
-$count_sth->execute();
-my ($count) = $count_sth->fetchrow_array;
-is($count, 1, '1 count');
-$count_sth->finish;
+my ($count) = $dbh->selectrow_array("SELECT count(*) FROM upload");
+is($count, 1, '1 upload');
 
 
-#my $report_sth =
-#  $dbh->prepare("SELECT timestamp,remote_addr,name,final_name FROM report");
-#$report_sth->execute();
-#my ($timestamp,$remote_addr,$name,$service) = $report_sth->fetchrow_array;
-#like($timestamp,qr/^\d{4}-/,'timestamp');
-#is($remote_addr,'1.2.3.0','network address');
-#is($name,'static.company.com','static.company.com name');
-#is($service,'service.company.com','service.company.com service name');
-#ok(!$report_sth->fetchrow_array,'  end of select');
-#$report_sth->finish;
+($count) = $dbh->selectrow_array("SELECT count(*) FROM request");
+is($count, 1, '1 request entry');
 
+
+my ($timestamp,$remote_addr,$name,$service) =
+  $dbh->selectrow_array("SELECT timestamp,remote_addr,name,final_name " .
+			"FROM report");
+
+like($timestamp,qr/^\d{4}-/,'timestamp');
+is($remote_addr,'1.2.3.0','network address');
+is($name,'w3.org','w3.org request name');
+is($service,'w3.org','w3.org service name');
