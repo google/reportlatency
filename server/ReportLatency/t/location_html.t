@@ -54,11 +54,14 @@ my $view = new ReportLatency::StaticView($store);
 my $tidy = new HTML::Tidy;
 
 ok($dbh->do(q{
-  INSERT INTO tag(tag,name) VALUES('Google','google.com');
+  INSERT INTO tag(tag,service) VALUES('Google','google.com');
 }),'INSERT Google tag');
 ok($dbh->do(q{
-  INSERT INTO report(timestamp,remote_addr,name,final_name,request_count,request_total) VALUES('9999','office.google.com.', 'google.com','google.com',1,1000);
-}), 'INSERT google.com report');
+  INSERT INTO upload(timestamp,location) VALUES('9999','office.google.com.');
+}), 'INSERT upload');
+ok($dbh->do(q{
+  INSERT INTO request(upload,name,service,count,total) VALUES(1, 'google.com','google.com',1,1000);
+}), 'INSERT google.com request');
 
 
 my $location_html = $view->location_html('office.google.com');

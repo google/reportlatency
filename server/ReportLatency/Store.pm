@@ -202,13 +202,13 @@ sub new_upload {
   my ($self,$obj) = @_;
 
   $self->{upload_insert} =
-    $dbh->prepare("INSERT INTO upload " .
+    $self->{dbh}->prepare("INSERT INTO upload " .
 		  "(collected_on,location,user_agent,tz,version,options)" .
 		  " VALUES(?,?,?,?,?,?,?)")
       unless defined $self->{upload_insert};
 
   $self->{last_select_rowid} =
-    $dbh->prepare("SELECT last_insert_rowid()")
+    $self->{dbh}->dbh->prepare("SELECT last_insert_rowid()")
       unless defined $self->{last_insert_rowid};
 
   if (! defined $self->{hostname}) {
@@ -216,9 +216,10 @@ sub new_upload {
   }
 
   my $upload_sth =
-    $upload_insert->execute($self->{hostname}, $obj->{location},
-			    $obj->{user_agent}, $obj->{tz}, $obj->{version},
-			    $obj->{options});
+    $self->{upload_insert}->execute($self->{hostname}, $obj->{location},
+				    $obj->{user_agent}, $obj->{tz},
+				    $obj->{version},
+				    $obj->{options});
   $upload_sth->finish();
 
   my $sth = $self->{last_select_rowid}->execute();

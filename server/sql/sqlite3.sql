@@ -116,5 +116,14 @@ CREATE TABLE notmatch (
   re TEXT
 );
 
+
+CREATE VIEW report AS
+  SELECT u.timestamp AS timestamp, u.location AS remote_addr,
+    u.user_agent AS user_agent, u.tz AS tz, u.version AS version,
+    u.options AS options, r.count AS request_count, r.total AS request_total,
+    r.high AS reuqest_high, r.low AS request_low,
+    r.name AS name, r.service AS final_name
+    FROM upload AS u JOIN request AS r ON u.id=r.upload;
+
 -- All other databases need to map last_insert_rowid() to their local
 -- function.  sqlite3 doesn't have a procedural language and can't map.
