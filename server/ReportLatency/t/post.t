@@ -55,7 +55,15 @@ $ENV{'CONTENT_TYPE'} = 'application/json';
 
 my $postdata = new IO::String();
 print $postdata <<EOF;
-service: 'service'
+{"version":"1.1.0",
+ "options":["default_as_org"],
+ "tz":"PST",
+ "services":{
+   "w3.org":{
+     "w3.org":{
+       "request":{
+         "count":4,
+         "total":461.09619140625}}}}}
 EOF
 $postdata->setpos(0);
 *STDIN = $postdata;
