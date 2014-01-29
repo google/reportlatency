@@ -20,6 +20,7 @@ use ReportLatency::utils;
 use IO::String;
 use URI::Escape;
 use JSON;
+use Data::Dumper;
 
 $VERSION     = 0.1;
 %options = ();
@@ -204,12 +205,8 @@ sub new_upload {
   $self->{upload_insert} =
     $self->{dbh}->prepare("INSERT INTO upload " .
 		  "(collected_on,location,user_agent,tz,version,options)" .
-		  " VALUES(?,?,?,?,?,?,?)")
+		  " VALUES(?,?,?,?,?,?)")
       unless defined $self->{upload_insert};
-
-  $self->{last_select_rowid} =
-    $self->{dbh}->dbh->prepare("SELECT last_insert_rowid()")
-      unless defined $self->{last_insert_rowid};
 
   if (! defined $self->{hostname}) {
     $self->{hostname} = $ENV{HTTP_HOST} || $ENV{SERVER_ADDR};
@@ -220,11 +217,10 @@ sub new_upload {
 				    $obj->{user_agent}, $obj->{tz},
 				    $obj->{version},
 				    $obj->{options});
-  $upload_sth->finish();
+#  $upload_sth->finish();
 
-  my $sth = $self->{last_select_rowid}->execute();
+  my ($lastval) = $self->{dbh}->selectrow_array("SELECT last_insert_rowid()");
 
-  my ($lastval) = $sth->fetchrow_array;
   return $lastval;
 }
 
