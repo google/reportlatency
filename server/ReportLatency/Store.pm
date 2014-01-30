@@ -102,16 +102,6 @@ EOF
   print join("\n\n",@_);
 }
 
-sub _insert_table_hash {
-  my ($self,$table,$hash) = @_;
-
-  return "INSERT INTO $table (" .
-    join(',',sort(keys %{$hash})) .
-      ') VALUES (' .
-	join(',', split(//,'?' x scalar(keys %{$hash}))) .
-	  ');';
-}
-
 sub option_bits {
   my ($self,$options) = @_;
   return undef unless defined $options;

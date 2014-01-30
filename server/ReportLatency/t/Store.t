@@ -19,7 +19,7 @@
 use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
-use Test::More tests => 12;
+use Test::More tests => 11;
 
 BEGIN { use lib '..'; }
 
@@ -66,11 +66,6 @@ is($store->aggregate_remote_address('8.8.8.8'),'google.com.',
    '2nd aggregate_remote_address(8.8.8.8)');
 is($store->aggregate_remote_address('0.0.0.1'),'0.0.0.0',
    'aggregate_remote_address(0.0.0.1)');
-
-my %hash = ( one => 1, two => 2, name => 'service');
-is($store->_insert_table_hash('report',\%hash),
-   "INSERT INTO report (name,one,two) VALUES (?,?,?);",
-   'convert hash to INSERT string');
 
 ok($dbh->rollback,'db rollback');
 
