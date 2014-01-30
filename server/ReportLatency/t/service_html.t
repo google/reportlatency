@@ -20,7 +20,7 @@ use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
 use HTML::Tidy;
-use Test::More tests => 7;
+use Test::More tests => 9;
 
 BEGIN { use lib '..'; }
 
@@ -64,7 +64,7 @@ ok($dbh->do(q{
 }), 'INSERT upload');
 ok($dbh->do(q{
   INSERT INTO request(upload,name,service,count,total)
-    VALUES(1,'google.com','google.com',1,1000);
+    VALUES(1,'google.com','google.com',1,1492);
 }), 'INSERT google.com request');
 
 
@@ -76,4 +76,7 @@ for my $message ( $tidy->messages ) {
   print $message->as_string . "\n";
 }
 $tidy->clear_messages();
+
+like($service_html, qr/1492/, '1492ms request latency found');
+like($service_html, qr/1\.2\.3\.0/, '1.2.3.0 location found');
 
