@@ -2,7 +2,7 @@
 #
 # Test ReportLatency::StaticView.pm's service_html()
 #
-# Copyright 2013 Google Inc. All Rights Reserved.
+# Copyright 2013,2014 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
 use HTML::Tidy;
-use Test::More tests => 6;
+use Test::More tests => 7;
 
 BEGIN { use lib '..'; }
 
@@ -60,8 +60,12 @@ $tidy->clear_messages();
 
 
 ok($dbh->do(q{
-  INSERT INTO report(name,final_name,request_count,request_total) VALUES('google.com','google.com',1,1000);
-}), 'INSERT google.com report');
+  INSERT INTO upload(location) VALUES("1.2.3.0");
+}), 'INSERT upload');
+ok($dbh->do(q{
+  INSERT INTO request(upload,name,service,count,total)
+    VALUES(1,'google.com','google.com',1,1000);
+}), 'INSERT google.com request');
 
 
 my $service_html = $view->service_html('google.com');
