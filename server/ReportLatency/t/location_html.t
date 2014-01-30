@@ -67,7 +67,7 @@ ok($dbh->do(q{
 }), 'INSERT google.com navigation');
 
 
-my $location_html = $view->location_html('office.google.com');
+my $location_html = $view->location_html('office.google.com.');
 is($tidy->parse('office',$location_html), undef,
    'tidy location_html(office.google.com)');
 
