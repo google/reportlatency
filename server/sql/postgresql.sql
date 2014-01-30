@@ -1,5 +1,5 @@
 --
--- Copyright 2013 Google Inc. All Rights Reserved.
+-- Copyright 2013,2014 Google Inc. All Rights Reserved.
 --
 -- Licensed under the Apache License, Version 2.0 (the "License");
 -- you may not use this file except in compliance with the License.
@@ -72,18 +72,6 @@ CREATE TABLE navigation (
 );
 CREATE INDEX navigation_name ON navigation(name);
 CREATE INDEX navigation_service ON navigation(service);
-
-CREATE TABLE tabupdate (
-  upload	INTEGER REFERENCES upload(id),
-  name		TEXT,
-  service	TEXT,
-  count		INTEGER,
-  total		REAL,
-  high		REAL,
-  low		REAL
-);
-CREATE INDEX tabupdate_name ON tabupdate(name);
-CREATE INDEX tabupdate_service ON tabupdate(service);
 
 -- tags to represent platform,owner, groups and other tech used for services
 CREATE TABLE tag (
