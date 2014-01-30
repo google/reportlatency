@@ -95,12 +95,10 @@ sub summary_html {
 <tr>
  <th colspan=2> Tag </th>
  <th colspan=2> Request </th>
- <th colspan=2> Tab Update </th>
  <th colspan=2> Navigation </th>
 </tr>
 <tr>
  <th>Name</th> <th>Services</th>
- <th>Count</th> <th>Latency (ms)</th>
  <th>Count</th> <th>Latency (ms)</th>
  <th>Count</th> <th>Latency (ms)</th>
 </tr>
@@ -159,12 +157,10 @@ EOF
 <tr>
  <th colspan=2> Location </th>
  <th colspan=2> Request </th>
- <th colspan=2> Tab Update </th>
  <th colspan=2> Navigation </th>
 </tr>
 <tr>
  <th>Name</th> <th>Services</th>
- <th>Count</th> <th>Latency (ms)</th>
  <th>Count</th> <th>Latency (ms)</th>
  <th>Count</th> <th>Latency (ms)</th>
 </tr>
@@ -248,12 +244,10 @@ EOF
 <tr>
  <th colspan=2> Service </th>
  <th colspan=2> Request </th>
- <th colspan=2> Tab Update </th>
  <th colspan=2> Navigation </th>
 </tr>
 <tr>
  <th>Name</th> <th>Dependencies</th>
- <th>Count</th> <th>Latency (ms)</th>
  <th>Count</th> <th>Latency (ms)</th>
  <th>Count</th> <th>Latency (ms)</th>
 </tr>
@@ -272,12 +266,10 @@ EOF
  <th> Service </th>
  <th> Service </th>
  <th colspan=2> Request </th>
- <th colspan=2> Tab Update </th>
  <th colspan=2> Navigation </th>
 </tr>
 <tr>
  <th></th> <th>Count</th>
- <th>Count</th> <th>Latency (ms)</th>
  <th>Count</th> <th>Latency (ms)</th>
  <th>Count</th> <th>Latency (ms)</th>
 </tr>
@@ -350,12 +342,10 @@ EOF
 <tr>
  <th colspan=2> Service </th>
  <th colspan=2> Request </th>
- <th colspan=2> Tab Update </th>
  <th colspan=2> Navigation </th>
 </tr>
 <tr>
  <th>Name</th> <th>Dependencies</th>
- <th>Count</th> <th>Latency (ms)</th>
  <th>Count</th> <th>Latency (ms)</th>
  <th>Count</th> <th>Latency (ms)</th>
 </tr>
@@ -379,12 +369,10 @@ EOF
  <th> Service </th>
  <th> Service </th>
  <th colspan=2> Request </th>
- <th colspan=2> Tab Update </th>
  <th colspan=2> Navigation </th>
 </tr>
 <tr>
  <th></th> <th>Count</th>
- <th>Count</th> <th>Latency (ms)</th>
  <th>Count</th> <th>Latency (ms)</th>
  <th>Count</th> <th>Latency (ms)</th>
 </tr>
@@ -468,11 +456,9 @@ sub service_found {
 <tr>
  <th rowspan=2> Request Name</th>
  <th colspan=2> Request </th>
- <th colspan=2> Tab Update </th>
  <th colspan=2> Navigation </th>
 </tr>
 <tr>
- <th>Count</th> <th>Latency (ms)</th>
  <th>Count</th> <th>Latency (ms)</th>
  <th>Count</th> <th>Latency (ms)</th>
 </tr>
@@ -484,8 +470,6 @@ EOF
     print $io " <td> $name </td>";
     print $io " <td align=right> " . mynum($row->{'request_count'}) . " </td>";
     print $io " <td align=right> " . myround($row->{'request_latency'}) . " </td>";
-    print $io " <td align=right> " . mynum($row->{'tabupdate_count'}) . " </td>";
-    print $io " <td align=right> " . myround($row->{'tabupdate_latency'}) . " </td>";
     print $io " <td align=right> " . mynum($row->{'navigation_count'}) . " </td>";
     print $io ' <td align=right> ' .
       myround($row->{'navigation_latency'}) . " </td>";
@@ -498,11 +482,9 @@ EOF
 <tr>
  <th rowspan=2> Request Name</th>
  <th colspan=2> Request </th>
- <th colspan=2> Tab Update </th>
  <th colspan=2> Navigation </th>
 </tr>
 <tr>
- <th>Count</th> <th>Latency (ms)</th>
  <th>Count</th> <th>Latency (ms)</th>
  <th>Count</th> <th>Latency (ms)</th>
 </tr>
@@ -512,11 +494,6 @@ EOF
     " </td>\n";
   print $io "  <td align=right> " .
     average($meta->{'request_total'},$meta->{'request_count'}) .
-      " </td>\n";
-  print $io "  <td align=right> " . mynum($meta->{'tabupdate_count'}) .
-    " </td>\n";
-  print $io "  <td align=right> " .
-    average($meta->{'tabupdate_total'},$meta->{'tabupdate_count'}) .
       " </td>\n";
   print $io "  <td align=right> " . mynum($meta->{'navigation_count'}) .
     " </td>\n";
@@ -534,11 +511,9 @@ EOF
 <tr>
  <th rowspan=2> Location </th>
  <th colspan=2> Request </th>
- <th colspan=2> Tab Update </th>
  <th colspan=2> Navigation </th>
 </tr>
 <tr>
- <th>Count</th> <th>Latency (ms)</th>
  <th>Count</th> <th>Latency (ms)</th>
  <th>Count</th> <th>Latency (ms)</th>
 </tr>
@@ -552,8 +527,6 @@ EOF
     print $io " <td> $location </td>";
     print $io " <td align=right> " . mynum($row->{'request_count'}) . " </td>";
     print $io " <td align=right> " . myround($row->{'request_latency'}) . " </td>";
-    print $io " <td align=right> " . mynum($row->{'tabupdate_count'}) . " </td>";
-    print $io " <td align=right> " . myround($row->{'tabupdate_latency'}) . " </td>";
     print $io " <td align=right> " . mynum($row->{'navigation_count'}) . " </td>";
     print $io ' <td align=right> ' .
       myround($row->{'navigation_latency'}) . " </td>";
@@ -659,12 +632,10 @@ EOF
 <tr>
  <th colspan=2> Service </th>
  <th colspan=2> Request </th>
- <th colspan=2> Tab Update </th>
  <th colspan=2> Navigation </th>
 </tr>
 <tr>
  <th>Name</th> <th>Dependencies</th>
- <th>Count</th> <th>Latency (ms)</th>
  <th>Count</th> <th>Latency (ms)</th>
  <th>Count</th> <th>Latency (ms)</th>
 </tr>
@@ -689,12 +660,10 @@ EOF
  <th> Service </th>
  <th> Service </th>
  <th colspan=2> Request </th>
- <th colspan=2> Tab Update </th>
  <th colspan=2> Navigation </th>
 </tr>
 <tr>
  <th></th> <th>Count</th>
- <th>Count</th> <th>Latency (ms)</th>
  <th>Count</th> <th>Latency (ms)</th>
  <th>Count</th> <th>Latency (ms)</th>
 </tr>

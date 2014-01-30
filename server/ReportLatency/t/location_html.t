@@ -20,7 +20,7 @@ use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
 use HTML::Tidy;
-use Test::More tests => 10;
+use Test::More tests => 12;
 
 BEGIN { use lib '..'; }
 
@@ -60,10 +60,10 @@ ok($dbh->do(q{
   INSERT INTO upload(timestamp,location) VALUES('9999','office.google.com.');
 }), 'INSERT upload');
 ok($dbh->do(q{
-  INSERT INTO request(upload,name,service,count,total) VALUES(1, 'google.com','google.com',1,1000);
+  INSERT INTO request(upload,name,service,count,total) VALUES(1, 'google.com','google.com',2,998);
 }), 'INSERT google.com request');
 ok($dbh->do(q{
-  INSERT INTO navigation(upload,name,service,count,total) VALUES(1, 'google.com','google.com',1,2000);
+  INSERT INTO navigation(upload,name,service,count,total) VALUES(1, 'google.com','google.com',1,2222);
 }), 'INSERT google.com navigation');
 
 
@@ -76,6 +76,8 @@ for my $message ( $tidy->messages ) {
 }
 $tidy->clear_messages();
 
+like($location_html, qr/499/, '499ms request latency found');
+like($location_html, qr/2222/, '2222ms navigation latency found');
+
 ok($dbh->rollback,'rollback transaction');
 
-print STDERR $location_html;
