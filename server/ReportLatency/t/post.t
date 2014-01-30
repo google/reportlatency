@@ -21,7 +21,7 @@ use DBI;
 use CGI;
 use IO::String;
 use File::Temp qw(tempfile tempdir);
-use Test::More tests => 10;
+use Test::More tests => 11;
 
 BEGIN { use lib '..'; }
 
@@ -63,7 +63,10 @@ print $postdata <<EOF;
      "w3.org":{
        "request":{
          "count":4,
-         "total":461.09619140625}}}}}
+         "total":461.09619140625},
+       "navigation":{
+         "count":1,
+         "total":900}}}}}
 EOF
 $postdata->setpos(0);
 *STDIN = $postdata;
@@ -80,9 +83,11 @@ $q->delete_all();
 my ($count) = $dbh->selectrow_array("SELECT count(*) FROM upload");
 is($count, 1, '1 upload');
 
-
 ($count) = $dbh->selectrow_array("SELECT count(*) FROM request");
 is($count, 1, '1 request entry');
+
+($count) = $dbh->selectrow_array("SELECT count(*) FROM navigation");
+is($count, 1, '1 navigation entry');
 
 
 my ($timestamp,$remote_addr,$name,$service) =

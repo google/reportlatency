@@ -141,6 +141,22 @@ sub add_request_stats {
 				    $requeststats->{'low'});
 }
 
+sub add_navigation_stats {
+  my ($self,$upload_id, $service, $name, $navstats) = @_;
+
+  $self->{insert_navigations} =
+    $self->{dbh}->prepare("INSERT INTO navigation " .
+			  "(upload, service, name, count, total, high, low) " .
+			  "VALUES(?,?,?,?,?,?,?);")
+      unless defined $self->{insert_navigations};
+
+  $self->{insert_navigations}->execute($upload_id, $service, $name,
+					$navstats->{'count'},
+					$navstats->{'total'},
+					$navstats->{'high'},
+					$navstats->{'low'});
+}
+
 
 sub add_name_stats {
   my ($self,$upload_id, $service, $name, $namestats) = @_;
@@ -148,6 +164,10 @@ sub add_name_stats {
   if (defined $namestats->{'request'}) {
     $self->add_request_stats($upload_id, $service, $name,
 			     $namestats->{'request'});
+  }
+  if (defined $namestats->{'navigation'}) {
+    $self->add_navigation_stats($upload_id, $service, $name,
+				$namestats->{'navigation'});
   }
 }
 
