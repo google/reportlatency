@@ -107,10 +107,16 @@ CREATE TABLE notmatch (
 CREATE VIEW report AS
   SELECT u.timestamp AS timestamp, u.location AS remote_addr,
     u.user_agent AS user_agent, u.tz AS tz, u.version AS version,
-    u.options AS options, r.count AS request_count, r.total AS request_total,
-    r.high AS reuqest_high, r.low AS request_low,
+    u.options AS options,
+    r.count AS request_count, r.total AS request_total,
+    r.high AS request_high, r.low AS request_low,
+    n.count AS navigation_count, n.total AS navigation_total,
+    n.high AS navigation_high, n.low AS navigation_low,
     r.name AS name, r.service AS final_name
-    FROM upload AS u JOIN request AS r ON u.id=r.upload;
+    FROM upload AS u 
+    INNER JOIN request AS r ON u.id=r.upload
+    LEFT JOIN navigation AS n ON u.id=n.upload
+      AND r.service=n.service AND r.name=n.name;
 
 -- All other databases need to map last_insert_rowid() to their local
 -- function.  sqlite3 doesn't have a procedural language and can't map.

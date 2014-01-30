@@ -2,7 +2,7 @@
 #
 # Test ReportLatency::Store.pm
 #
-# Copyright 2013 Google Inc. All Rights Reserved.
+# Copyright 2013,2014 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
 use HTML::Tidy;
-use Test::More tests => 8;
+use Test::More tests => 10;
 
 BEGIN { use lib '..'; }
 
@@ -62,6 +62,9 @@ ok($dbh->do(q{
 ok($dbh->do(q{
   INSERT INTO request(upload,name,service,count,total) VALUES(1, 'google.com','google.com',1,1000);
 }), 'INSERT google.com request');
+ok($dbh->do(q{
+  INSERT INTO navigation(upload,name,service,count,total) VALUES(1, 'google.com','google.com',1,2000);
+}), 'INSERT google.com navigation');
 
 
 my $location_html = $view->location_html('office.google.com');
@@ -74,3 +77,5 @@ for my $message ( $tidy->messages ) {
 $tidy->clear_messages();
 
 ok($dbh->rollback,'rollback transaction');
+
+print STDERR $location_html;
