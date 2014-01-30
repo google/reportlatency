@@ -125,49 +125,38 @@ sub option_bits {
   return $bits;
 }
 
+sub add_request_stats {
+  my ($self,$upload_id, $service, $name, $requeststats) = @_;
+
+  $self->{insert_requests} =
+    $self->{dbh}->prepare("INSERT INTO request " .
+			  "(upload, service, name, count, total, high, low) " .
+			  "VALUES(?,?,?,?,?,?,?);")
+      unless defined $self->{insert_requests};
+
+  $self->{insert_requests}->execute($upload_id, $service, $name,
+				    $requeststats->{'count'},
+				    $requeststats->{'total'},
+				    $requeststats->{'high'},
+				    $requeststats->{'low'});
+}
+
+
 sub add_name_stats {
-  my ($self,$service,$name,$location,$tz,$useragent,$version,$options,
-      $namestats) = @_;
-  my (%sql);
-  $sql{'tz'} = $tz if $tz;
-  $sql{'remote_addr'} = $location if $location;
-  $sql{'user_agent'} = $useragent if $useragent;
-  $sql{'version'} = $version if $version;
-  $sql{'options'} = $options if $options;
-  
-  my $sql = $self->_insert_table_hash('upload',\%sql);
-  my $upload_sth = $self->{dbh}->prepare($sql);
-  my $rv = $upload_sth->execute(map $sql{$_}, sort keys %sql);
-  $upload_sth->finish;
+  my ($self,$upload_id, $service, $name, $namestats) = @_;
 
-  %sql = ();
-  $sql{'name'} = $name if $name;
-  $sql{'final_name'} = $service if $service;
-
-  foreach my $stattype (qw(navigation tabupdate request)) {
-    my $stat = $namestats->{$stattype};
-    if (defined $stat) {
-      if (ref($stat) eq 'HASH') {
-	foreach my $statfield (qw(count total high low tabclosed error)) {
-	  $sql{$stattype . '_' . $statfield} =
-	    $namestats->{$stattype}->{$statfield}
-	      if defined $namestats->{$stattype}->{$statfield};
-	}
-      }
-    }
+  if (defined $namestats->{'request'}) {
+    $self->add_request_stats($upload_id, $service, $name,
+			     $namestats->{'request'});
   }
-
 }
 
 
 sub add_service_stats {
-  my ($self,$location,$tz,$useragent,$version,$options,$service,
-      $servicestats) = @_;
+  my ($self,$upload_id, $service, $servicestats) = @_;
 
   foreach my $name (keys %{$servicestats}) {
-    $self->add_name_stats($service,$name,$location,$tz,$useragent,$version,
-			  $options,
-			  $servicestats->{$name});
+    $self->add_name_stats($upload_id,$service, $name, $servicestats->{$name});
   }
 }
 
