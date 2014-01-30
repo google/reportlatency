@@ -64,19 +64,6 @@ CREATE TABLE navigation (
 CREATE INDEX navigation_name ON navigation(name);
 CREATE INDEX navigation_service ON navigation(service);
 
-CREATE TABLE tabupdate (
-  upload	INTEGER,
-  name		TEXT,
-  service	TEXT,
-  count	INTEGER,
-  total	REAL,
-  high	REAL,
-  low	REAL,
-  FOREIGN KEY(upload) REFERENCES upload(id)
-);
-CREATE INDEX tabudpate_name ON tabupdate(name);
-CREATE INDEX tabudpate_service ON tabupdate(service);
-
 CREATE TRIGGER upload_timestamp AFTER  INSERT ON upload
 BEGIN
   UPDATE upload SET timestamp = DATETIME('NOW')  WHERE rowid = new.rowid;

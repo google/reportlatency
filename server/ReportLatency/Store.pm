@@ -253,9 +253,6 @@ sub untagged_meta_sth {
     $dbh->prepare('SELECT count(distinct final_name) AS services,' .
 		  'min(timestamp) AS min_timestamp,' .
                   'max(timestamp) AS max_timestamp,' .
-                  'sum(tabupdate_count) AS tabupdate_count,' .
-                  'sum(tabupdate_total)/sum(tabupdate_count)' .
-                  ' AS tabupdate_latency,' .
                   'sum(request_count) AS request_count,' .
                   'sum(request_total)/sum(request_count)' .
                   ' AS request_latency,' .
@@ -279,9 +276,6 @@ sub tag_meta_sth {
     $dbh->prepare('SELECT count(distinct final_name) AS services,' .
 		  'min(timestamp) AS min_timestamp,' .
                   'max(timestamp) AS max_timestamp,' .
-                  'sum(tabupdate_count) AS tabupdate_count,' .
-                  'sum(tabupdate_total)/sum(tabupdate_count)' .
-                  ' AS tabupdate_latency,' .
                   'sum(request_count) AS request_count,' .
                   'sum(request_total)/sum(request_count)' .
                   ' AS request_latency,' .
@@ -303,9 +297,6 @@ sub tag_service_sth {
   my $sth =
     $dbh->prepare('SELECT final_name,' .
                   'count(distinct report.name) AS dependencies,' .
-                  'sum(tabupdate_count) AS tabupdate_count,' .
-                  'sum(tabupdate_total)/sum(tabupdate_count)' .
-                  ' AS tabupdate_latency,' .
                   'sum(request_count) AS request_count,' .
                   'sum(request_total)/sum(request_count)' .
                   ' AS request_latency,' .
@@ -329,9 +320,6 @@ sub untagged_service_sth {
   my $sth =
     $dbh->prepare('SELECT final_name,' .
                   'count(distinct report.name) AS dependencies,' .
-                  'sum(tabupdate_count) AS tabupdate_count,' .
-                  'sum(tabupdate_total)/sum(tabupdate_count)' .
-                  ' AS tabupdate_latency,' .
                   'sum(request_count) AS request_count,' .
                   'sum(request_total)/sum(request_count)' .
                   ' AS request_latency,' .
@@ -358,8 +346,6 @@ sub service_meta_sth {
 		  'min(timestamp) AS min_timestamp,' .
                   'max(timestamp) AS max_timestamp,' .
 		  "DATE('now') as date," .
-                  'sum(tabupdate_count) AS tabupdate_count,' .
-                  'sum(tabupdate_total) AS tabupdate_total,' .
                   'sum(request_count) AS request_count,' .
                   'sum(request_total) AS request_total,' .
                   'sum(navigation_count) AS navigation_count,' .
@@ -377,9 +363,6 @@ sub service_select_sth {
   my $dbh = $self->{dbh};
   my $sth =
     $dbh->prepare('SELECT name,' .
-                  'sum(tabupdate_count) AS tabupdate_count,' .
-                  'sum(tabupdate_total)/sum(tabupdate_count)' .
-                  ' AS tabupdate_latency,' .
                   'sum(request_count) AS request_count,' .
                   'sum(request_total)/sum(request_count)' .
                   ' AS request_latency,' .
@@ -401,9 +384,6 @@ sub service_location_sth {
   my $dbh = $self->{dbh};
   my $sth =
     $dbh->prepare('SELECT remote_addr,' .
-                  'sum(tabupdate_count) AS tabupdate_count,' .
-                  'sum(tabupdate_total)/sum(tabupdate_count)' .
-                  ' AS tabupdate_latency,' .
                   'sum(request_count) AS request_count,' .
                   'sum(request_total)/sum(request_count)' .
                   ' AS request_latency,' .
@@ -429,9 +409,6 @@ sub summary_meta_sth {
                   'count(distinct final_name) AS services,' .
                   'sum(request_count) AS request_count,' .
                   'sum(request_total)/sum(request_count) AS request_latency,' .
-                  'sum(tabupdate_count) AS tabupdate_count,' .
-                  'sum(tabupdate_total)/sum(tabupdate_count) ' .
-		  'AS tabupdate_latency,' .
                   'sum(navigation_count) AS navigation_count,' .
                   'sum(navigation_total)/sum(navigation_count) ' .
 		  'AS navigation_latency ' .
@@ -448,9 +425,6 @@ sub summary_tag_sth {
   my $sth =
     $dbh->prepare('SELECT tag.tag as tag,' .
                   'count(distinct final_name) AS services,' .
-                  'sum(tabupdate_count) AS tabupdate_count,' .
-                  'sum(tabupdate_total)/sum(tabupdate_count)' .
-                  ' AS tabupdate_latency,' .
                   'sum(request_count) AS request_count,' .
                   'sum(request_total)/sum(request_count)' .
                   ' AS request_latency,' .
@@ -473,9 +447,6 @@ sub summary_untagged_sth {
   my $sth =
     $dbh->prepare('SELECT ' .
                   'count(distinct final_name) AS services,' .
-                  'sum(tabupdate_count) AS tabupdate_count,' .
-                  'sum(tabupdate_total)/sum(tabupdate_count)' .
-                  ' AS tabupdate_latency,' .
                   'sum(request_count) AS request_count,' .
                   'sum(request_total)/sum(request_count)' .
                   ' AS request_latency,' .
@@ -497,9 +468,6 @@ sub summary_location_sth {
   my $sth =
     $dbh->prepare('SELECT remote_addr,' .
                   'count(distinct final_name) AS services,' .
-                  'sum(tabupdate_count) AS tabupdate_count,' .
-                  'sum(tabupdate_total)/sum(tabupdate_count)' .
-                  ' AS tabupdate_latency,' .
                   'sum(request_count) AS request_count,' .
                   'sum(request_total)/sum(request_count)' .
                   ' AS request_latency,' .
@@ -522,9 +490,6 @@ sub location_meta_sth {
     $dbh->prepare('SELECT count(distinct final_name) AS services,' .
 		  'min(timestamp) AS min_timestamp,' .
                   'max(timestamp) AS max_timestamp,' .
-                  'sum(tabupdate_count) AS tabupdate_count,' .
-                  'sum(tabupdate_total)/sum(tabupdate_count)' .
-                  ' AS tabupdate_latency,' .
                   'sum(request_count) AS request_count,' .
                   'sum(request_total)/sum(request_count)' .
                   ' AS request_latency,' .
@@ -545,9 +510,6 @@ sub location_service_sth {
   my $sth =
     $dbh->prepare('SELECT final_name,' .
                   'count(distinct report.name) AS dependencies,' .
-                  'sum(tabupdate_count) AS tabupdate_count,' .
-                  'sum(tabupdate_total)/sum(tabupdate_count)' .
-                  ' AS tabupdate_latency,' .
                   'sum(request_count) AS request_count,' .
                   'sum(request_total)/sum(request_count)' .
                   ' AS request_latency,' .
