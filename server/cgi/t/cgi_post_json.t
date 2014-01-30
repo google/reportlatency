@@ -93,11 +93,11 @@ is($count, 1, '1 count');
 $count_sth->finish;
 
 my $upload_sth =
-  $dbh->prepare("SELECT timestamp,remote_addr FROM upload WHERE user_agent=?");
+  $dbh->prepare("SELECT timestamp,location FROM upload WHERE user_agent=?");
 $upload_sth->execute("Other");
-my ($timestamp,$remote_addr) = $upload_sth->fetchrow_array;
+my ($timestamp,$location) = $upload_sth->fetchrow_array;
 like($timestamp,qr/^\d{4}-/,'timestamp');
-is($remote_addr,'1.2.3.0','network address');
+is($location,'1.2.3.0','network address');
 
 #my $report_sth =
 #  $dbh->prepare("SELECT timestamp,remote_addr,name,final_name,navigation_count,navigation_total FROM report WHERE user_agent=?");
