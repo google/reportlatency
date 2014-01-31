@@ -51,17 +51,17 @@ my $store = new ReportLatency::Store(dbh => $dbh);
 my $view = new ReportLatency::StaticView($store);
 
 
-my $tidy = new HTML::Tidy;
-my $summary_html = $view->summary_html();
-
 ok($dbh->do(q{
-  INSERT INTO upload(timestamp,location) VALUES(9999,'office.google.com');
+  INSERT INTO upload(location) VALUES('office.google.com');
 }), 'INSERT google.com upload');
 
 ok($dbh->do(q{
   INSERT INTO request(upload,name,service,count,total) VALUES(1,'google.com','google.com',2,1998);
 }), 'INSERT google.com report');
 
+my $summary_html = $view->summary_html();
+
+my $tidy = new HTML::Tidy;
 is($tidy->parse('summary_html',$summary_html), undef, 'summary.html');
 for my $message ( $tidy->messages ) {
   print $message->as_string . "\n";
