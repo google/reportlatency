@@ -199,7 +199,7 @@ sub recent_tags {
   my $tags_sth =
       $dbh->prepare('SELECT DISTINCT tag.tag ' .
                     'FROM report ' .
-		    'INNER JOIN tag ON tag.name=report.final_name ' .
+		    'INNER JOIN tag ON tag.service=report.final_name ' .
                     "WHERE timestamp >= datetime('now',?);")
         or die "prepare failed";
 
@@ -334,7 +334,7 @@ sub untagged_graph {
     'navigation_low AS low,' .
     'navigation_total AS total ' .
     'FROM report ' .
-    'LEFT OUTER JOIN tag ON report.final_name = tag.name ' .
+    'LEFT OUTER JOIN tag ON report.final_name = tag.service ' .
     "WHERE timestamp <= datetime('now',?) AND " .
     "timestamp > datetime('now',?) AND " .
     'tag.tag IS NULL AND ' .

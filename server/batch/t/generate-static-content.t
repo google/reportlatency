@@ -45,13 +45,15 @@ my $dbfile="$dir/data/backup.sqlite3";
   open(my $sqlite3,"|-",'sqlite3',$dbfile)
     or die $!;
   print $sqlite3 <<EOF;
-INSERT INTO report(final_name,navigation_count,navigation_total) VALUES('service',3,666);
-INSERT INTO report(final_name,navigation_count,navigation_total) VALUES('service',3,999);
-UPDATE report SET timestamp=DATETIME('now','-1 days') WHERE navigation_total=999;
-INSERT INTO report(final_name,navigation_count,navigation_total) VALUES('service',3,333);
-UPDATE report SET timestamp=DATETIME('now','-2 days') WHERE navigation_total=333;
-INSERT INTO report(final_name,navigation_count,navigation_total) VALUES('slow',1,6666);
-UPDATE report SET timestamp=DATETIME('now','-1 days') WHERE navigation_total=6666;
+INSERT INTO upload(location) VALUES('office.google.com');
+INSERT INTO upload(location) VALUES('office.google.com');
+INSERT INTO upload(location) VALUES('office.google.com');
+UPDATE upload SET timestamp=DATETIME('now','-2 days') WHERE id=1;
+UPDATE upload SET timestamp=DATETIME('now','-1 days') WHERE id=2;
+INSERT INTO navigation(upload,service,count,total) VALUES(1,'service',3,333);
+INSERT INTO navigation(upload,service,count,total) VALUES(2,'service',3,999);
+INSERT INTO navigation(upload,service,count,total) VALUES(3,'service',3,666);
+INSERT INTO navigation(upload,service,count,total) VALUES(3,'slow',1,6666);
 EOF
 
   ok(close($sqlite3),"latency data added");
