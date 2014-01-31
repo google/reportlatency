@@ -2,7 +2,7 @@
 #
 # Test ReportLatency::Store.pm
 #
-# Copyright 2013 Google Inc. All Rights Reserved.
+# Copyright 2013,2014 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ use strict;
 use CGI;
 use DBI;
 use File::Temp qw(tempfile tempdir);
-use Test::More tests => 5;
+use Test::More tests => 6;
 use HTML::Tidy;
 
 BEGIN {
@@ -55,7 +55,11 @@ my $tidy = new HTML::Tidy;
 my $summary_html = $view->summary_html();
 
 ok($dbh->do(q{
-  INSERT INTO report(timestamp,name,final_name,request_count,request_total) VALUES(9999,'google.com','google.com',1,1000);
+  INSERT INTO upload(timestamp,location) VALUES(9999,'office.google.com');
+}), 'INSERT google.com upload');
+
+ok($dbh->do(q{
+  INSERT INTO request(upload,name,service,count,total) VALUES(1,'google.com','google.com',2,1998);
 }), 'INSERT google.com report');
 
 is($tidy->parse('summary_html',$summary_html), undef, 'summary.html');
