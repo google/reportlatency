@@ -2,7 +2,7 @@
 #
 # Test ReportLatency::StaticView.pm tag_html()
 #
-# Copyright 2013 Google Inc. All Rights Reserved.
+# Copyright 2013,2014 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
 use HTML::Tidy;
-use Test::More tests => 12;
+use Test::More tests => 14;
 
 BEGIN { use lib '..'; }
 
@@ -62,11 +62,14 @@ $tidy->clear_messages();
 
 ok($dbh->begin_work,'begin');
 ok($dbh->do(q{
-  INSERT INTO tag(tag,name) VALUES('Google','google.com');
+  INSERT INTO tag(tag,service) VALUES('Google','google.com');
 }),'INSERT Google tag');
 ok($dbh->do(q{
-  INSERT INTO report(name,final_name,request_count,request_total) VALUES('google.com','google.com',1,1000);
-}), 'INSERT google.com report');
+  INSERT INTO upload(location) VALUES('office.google.com');
+}), 'INSERT google.com upload');
+ok($dbh->do(q{
+  INSERT INTO request(upload,name,service,count,total) VALUES(1,'google.com','google.com',3,999);
+}), 'INSERT google.com request');
 ok($dbh->commit,'commit');
 
 
@@ -78,5 +81,8 @@ for my $message ( $tidy->messages ) {
   print $message->as_string . "\n";
 }
 $tidy->clear_messages();
+
+like($tag_html, qr/333/, '333ms avg request latency found');
+
 ok($dbh->rollback,'rollback');
 

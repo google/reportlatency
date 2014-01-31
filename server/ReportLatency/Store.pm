@@ -284,7 +284,7 @@ sub tag_meta_sth {
                   ' AS navigation_latency ' .
                   'FROM report ' .
                   'INNER JOIN tag ' .
-                  'ON report.final_name = tag.name ' .
+                  'ON report.final_name = tag.service ' .
                   "WHERE timestamp >= datetime('now','-14 days') " .
 		  'AND tag.tag = ?;')
       or die "prepare failed";
@@ -305,7 +305,7 @@ sub tag_service_sth {
                   ' AS navigation_latency ' .
                   'FROM report ' .
 		  'INNER JOIN tag ' .
-		  'ON report.final_name = tag.name ' .
+		  'ON report.final_name = tag.service ' .
                   'WHERE timestamp >= ? AND timestamp <= ? ' .
 		  'AND tag.tag = ? ' .
                   'GROUP BY final_name ' .
