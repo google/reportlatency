@@ -72,8 +72,8 @@ like($line,
 
 unlink($dbfile);
 rmdir("$dir/data");
-ok(unlink("$dir/locations/.png"),"unlink null location png");
-ok(unlink("$dir/locations/.html"),"unlink null location html");
+ok(unlink("$dir/locations/office.google.com.png"),"unlink location png");
+ok(unlink("$dir/locations/office.google.com..html"),"unlink location html");
 ok(rmdir("$dir/locations"),"rmdir locations/");
 ok(unlink("$dir/services/service.png"),"rmdir service/service.png");
 ok(unlink("$dir/services/service.html"),"unlink service.html");
@@ -84,4 +84,5 @@ ok(unlink("$dir/tags/untagged.html"),"unlink untagged.html");
 ok(unlink("$dir/tags/untagged.png"),"unlink untagged.png");
 ok(rmdir("$dir/tags"),"rmdir tags/");
 ok(rmdir($dir),"rmdir tmpdir");
+
 
