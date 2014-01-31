@@ -261,7 +261,7 @@ sub untagged_meta_sth {
                   ' AS navigation_latency ' .
                   'FROM report ' .
                   'LEFT OUTER JOIN tag ' .
-                  'ON report.final_name = tag.name ' .
+                  'ON report.final_name = tag.service ' .
                   "WHERE timestamp >= datetime('now','-14 days') " .
 		  'AND tag.tag IS NULL;')
       or die "prepare failed";
@@ -328,7 +328,7 @@ sub untagged_service_sth {
                   ' AS navigation_latency ' .
                   'FROM report ' .
 		  'LEFT OUTER JOIN tag ' .
-		  'ON report.final_name = tag.name ' .
+		  'ON report.final_name = tag.service ' .
                   'WHERE timestamp >= ? AND timestamp <= ? ' .
 		  'AND tag.tag IS NULL ' .
                   'GROUP BY final_name ' .

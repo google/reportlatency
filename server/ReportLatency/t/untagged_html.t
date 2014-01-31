@@ -2,7 +2,7 @@
 #
 # Test ReportLatency::StaticView.pm's untagged_html()
 #
-# Copyright 2013 Google Inc. All Rights Reserved.
+# Copyright 2013,2014 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ use strict;
 use CGI;
 use DBI;
 use File::Temp qw(tempfile tempdir);
-use Test::More tests => 6;
+use Test::More tests => 8;
 use HTML::Tidy;
 
 BEGIN {
@@ -56,8 +56,11 @@ isa_ok($view, 'ReportLatency::StaticView');
 my $tidy = new HTML::Tidy;
 
 ok($dbh->do(q{
-  INSERT INTO report(timestamp,name,final_name,request_count,request_total) VALUES(9999,'google.com','google.com',1,1000);
-}), 'INSERT google.com report');
+  INSERT INTO upload(location) VALUES('office.google.com');
+}), 'INSERT google.com upload');
+ok($dbh->do(q{
+  INSERT INTO request(upload,name,service,count,total) VALUES(1,'company.com','company.com',4,888);
+}), 'INSERT company.com request');
 
 my $untagged_html = $view->untagged_html();
 
@@ -66,3 +69,5 @@ for my $message ( $tidy->messages ) {
   print $message->as_string . "\n";
 }
 $tidy->clear_messages();
+
+like($untagged_html, qr/222/, '222ms avg request latency found');
