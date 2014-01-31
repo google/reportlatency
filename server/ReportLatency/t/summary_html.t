@@ -20,7 +20,7 @@ use strict;
 use CGI;
 use DBI;
 use File::Temp qw(tempfile tempdir);
-use Test::More tests => 6;
+use Test::More tests => 7;
 use HTML::Tidy;
 
 BEGIN {
@@ -67,3 +67,5 @@ for my $message ( $tidy->messages ) {
   print $message->as_string . "\n";
 }
 $tidy->clear_messages();
+
+like($summary_html, qr/999/, '999ms avg request latency found');
