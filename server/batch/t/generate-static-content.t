@@ -2,7 +2,7 @@
 #
 # Test generate-static-content.pl
 #
-# Copyright 2013 Google Inc. All Rights Reserved.
+# Copyright 2013,2014 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 
 use strict;
 use DBI;
-use Test::More tests => 16;
+use Test::More tests => 18;
 use File::Temp qw(tempfile tempdir);
 
 $ENV{'PATH'} = '/usr/bin';
@@ -45,9 +45,9 @@ my $dbfile="$dir/data/backup.sqlite3";
   open(my $sqlite3,"|-",'sqlite3',$dbfile)
     or die $!;
   print $sqlite3 <<EOF;
-INSERT INTO upload(location) VALUES('office.google.com');
-INSERT INTO upload(location) VALUES('office.google.com');
-INSERT INTO upload(location) VALUES('office.google.com');
+INSERT INTO upload(location) VALUES('office.google.com.');
+INSERT INTO upload(location) VALUES('office.google.com.');
+INSERT INTO upload(location) VALUES('office.google.com.');
 UPDATE upload SET timestamp=DATETIME('now','-2 days') WHERE id=1;
 UPDATE upload SET timestamp=DATETIME('now','-1 days') WHERE id=2;
 INSERT INTO navigation(upload,service,count,total) VALUES(1,'service',3,333);
@@ -72,18 +72,19 @@ like($line,
 
 unlink($dbfile);
 rmdir("$dir/data");
-ok(unlink("$dir/locations/office.google.com.png"),"unlink location png");
-ok(unlink("$dir/locations/office.google.com.html"),"unlink location html");
+ok(unlink("$dir/locations/office.google.com..png"),"unlink location png");
+ok(unlink("$dir/locations/office.google.com..html"),"unlink location html");
 ok(rmdir("$dir/locations"),"rmdir locations/");
 ok(unlink("$dir/services/service.png"),"rmdir service/service.png");
 ok(unlink("$dir/services/service.html"),"unlink service.html");
+ok(unlink("$dir/services/slow.png"),"rmdir service/slow.png");
+ok(unlink("$dir/services/slow.html"),"unlink slow.html");
 ok(rmdir("$dir/services"),"unlink services/");
 ok(unlink("$dir/tags/summary.png"),"unlink summary.png");
 ok(unlink("$dir/tags/summary.html"),"unlink summary.html");
 ok(unlink("$dir/tags/untagged.html"),"unlink untagged.html");
 ok(unlink("$dir/tags/untagged.png"),"unlink untagged.png");
 ok(rmdir("$dir/tags"),"rmdir tags/");
-system('/bin/ls','-lR',$dir);
 ok(rmdir($dir),"rmdir tmpdir");
 
 
