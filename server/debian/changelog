@@ -1,3 +1,9 @@
+reportlatency (1.3.0) precise; urgency=low
+
+  * Rebuild with new schema and only a report view
+
+ -- Drake Diedrich <dld@google.com>  Mon, 03 Feb 2014 15:13:04 -0800
+
 reportlatency (1.2.3) precise; urgency=low
 
   * Fix service image URLs when service has / in name

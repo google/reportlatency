@@ -1,4 +1,5 @@
 etc/reportlatency
+etc/reportlatency/match.d
 etc/reportlatency/tag.d
 usr/share/perl5/ReportLatency
 usr/lib/cgi-bin/reportlatency
@@ -7,5 +8,4 @@ var/lib/reportlatency
 var/lib/reportlatency/data
 var/lib/reportlatency/tag.d
 var/lib/reportlatency/www
-var/lib/reportlatency/www/graphs
 var/lib/reportlatency/www/data

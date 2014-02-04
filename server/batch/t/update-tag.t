@@ -45,8 +45,10 @@ my $dbfile="$dir/data/latency.sqlite3";
   open(my $sqlite3,"|-",'sqlite3',$dbfile)
     or die $!;
   print $sqlite3 <<EOF;
+BEGIN;
 INSERT INTO match(tag,re) VALUES('Company','%.company.com');
 INSERT INTO request(name) VALUES('host.company.com');
+END;
 EOF
 
   ok(close($sqlite3),"request data added");
