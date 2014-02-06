@@ -23,16 +23,16 @@ $VERSION     = 0.1;
 sub service_img_url {
   my ($self,$service) = @_;
 
-  return "services/$service.png";
+  return ".../../reportlatency/services/$service.png";
 }
 
 sub untagged_img_url {
-  return "tags/untagged.png";
+  return "../../reportlatency/tags/untagged.png";
 }
 
 sub tag_img_url {
   my ($self,$tag) = @_;
-  return "tags/$tag.png";
+  return "../../reportlatency/tags/$tag.png";
 }
 
 sub service_url {
@@ -56,7 +56,7 @@ sub location_url_from_tag { return location_url(@_); }
 
 sub location_img_url {
   my ($self,$name) = @_;
-  return "locations/$name.png";
+  return "../../reportlatency/locations/$name.png";
 }
 1;
 
