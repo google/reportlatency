@@ -48,6 +48,9 @@ my $dbfile="$dir/data/latency.sqlite3";
 BEGIN;
 INSERT INTO match(tag,re) VALUES('Company','%.company.com');
 INSERT INTO update_request(name) VALUES('host.company.com');
+INSERT INTO update_request(name) VALUES('plus.google.com');
+INSERT INTO navigation_request(name) VALUES('host.company.com');
+INSERT INTO navigation_request(name) VALUES('www.company.com');
 END;
 EOF
 
@@ -75,7 +78,7 @@ $dbh = DBI->connect("dbi:SQLite:dbname=$dbfile",
 my $count_sth = $dbh->prepare("SELECT count(*) FROM tag");
 $count_sth->execute();
 my ($count) = $count_sth->fetchrow_array;
-is($count, 1, '1 tag');
+is($count, 2, '2 tag');
 $count_sth->finish;
 
 

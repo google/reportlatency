@@ -21,9 +21,21 @@ DELETE FROM tag;
 
 INSERT INTO tag
   SELECT distinct r.name, match.tag
+    FROM navigation_request r,match
+    LEFT JOIN tag t2 ON t2.service = r.name 
+    WHERE t2.service IS NULL AND r.name LIKE match.re;
+
+INSERT INTO tag
+  SELECT distinct r.name, match.tag
     FROM update_request r,match
     LEFT JOIN tag t2 ON t2.service = r.name 
     WHERE t2.service IS NULL AND r.name LIKE match.re;
+
+INSERT INTO tag
+  SELECT distinct r.name, nm.tag
+    FROM navigation_request r,notmatch nm
+    LEFT JOIN tag t2 ON t2.service = r.name 
+    WHERE t2.service IS NULL AND r.name NOT LIKE nm.re;
 
 INSERT INTO tag
   SELECT distinct r.name, nm.tag
