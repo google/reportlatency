@@ -47,7 +47,7 @@ my $dbfile="$dir/data/latency.sqlite3";
   print $sqlite3 <<EOF;
 BEGIN;
 INSERT INTO match(tag,re) VALUES('Company','%.company.com');
-INSERT INTO request(name) VALUES('host.company.com');
+INSERT INTO update_request(name) VALUES('host.company.com');
 END;
 EOF
 

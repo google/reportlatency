@@ -20,16 +20,16 @@ BEGIN;
 DELETE FROM tag;
 
 INSERT INTO tag
-  SELECT distinct request.name, match.tag
-    FROM request,match
-    LEFT JOIN tag t2 ON t2.service = request.name 
-    WHERE t2.service IS NULL AND request.name LIKE match.re;
+  SELECT distinct r.name, match.tag
+    FROM update_request r,match
+    LEFT JOIN tag t2 ON t2.service = r.name 
+    WHERE t2.service IS NULL AND r.name LIKE match.re;
 
 INSERT INTO tag
-  SELECT distinct request.name, notmatch.tag
-    FROM request,notmatch
-    LEFT JOIN tag t2 ON t2.service = request.name 
-    WHERE t2.service IS NULL AND request.name NOT LIKE notmatch.re;
+  SELECT distinct r.name, nm.tag
+    FROM update_request r,notmatch nm
+    LEFT JOIN tag t2 ON t2.service = r.name 
+    WHERE t2.service IS NULL AND r.name NOT LIKE nm.re;
 
 .read /var/lib/reportlatency/data/tag.sql
 
