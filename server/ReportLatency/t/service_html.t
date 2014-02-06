@@ -63,7 +63,7 @@ ok($dbh->do(q{
   INSERT INTO upload(location) VALUES("1.2.3.0");
 }), 'INSERT upload');
 ok($dbh->do(q{
-  INSERT INTO request(upload,name,service,count,total)
+  INSERT INTO update_request(upload,name,service,count,total)
     VALUES(1,'google.com','google.com',1,1492);
 }), 'INSERT google.com request');
 

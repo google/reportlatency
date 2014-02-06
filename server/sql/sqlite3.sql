@@ -125,12 +125,12 @@ CREATE VIEW report AS
     u.user_agent AS user_agent, u.tz AS tz, u.version AS version,
     u.options AS options,
     r.name AS name, r.service AS final_name,
-    r.count AS navigation_request_count, r.total AS navigation_request_total,
-    r.high AS navigation_request_high, r.low AS navigation_request_low,
+    r.count AS request_count, r.total AS request_total,
+    r.high AS request_high, r.low AS request_low,
     NULL AS navigation_count, NULL AS navigation_total,
     NULL AS navigation_high, NULL AS navigation_low
     FROM upload AS u 
-    JOIN navigation_request AS r ON u.id=r.upload
+    JOIN update_request AS r ON u.id=r.upload
   UNION ALL
   SELECT u.timestamp AS timestamp, u.location AS remote_addr,
     u.user_agent AS user_agent, u.tz AS tz, u.version AS version,

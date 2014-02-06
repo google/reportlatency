@@ -60,8 +60,8 @@ ok($dbh->do(q{
   INSERT INTO upload(timestamp,location) VALUES('9999','office.google.com.');
 }), 'INSERT upload');
 ok($dbh->do(q{
-  INSERT INTO request(upload,name,service,count,total) VALUES(1, 'google.com','google.com',2,998);
-}), 'INSERT google.com request');
+  INSERT INTO update_request(upload,name,service,count,total) VALUES(1, 'google.com','google.com',2,998);
+}), 'INSERT google.com navigation_request');
 ok($dbh->do(q{
   INSERT INTO navigation(upload,name,service,count,total) VALUES(1, 'google.com','google.com',1,2222);
 }), 'INSERT google.com navigation');

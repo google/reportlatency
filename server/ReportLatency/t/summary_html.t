@@ -56,7 +56,7 @@ ok($dbh->do(q{
 }), 'INSERT google.com upload');
 
 ok($dbh->do(q{
-  INSERT INTO request(upload,name,service,count,total) VALUES(1,'google.com','google.com',2,1998);
+  INSERT INTO update_request(upload,name,service,count,total) VALUES(1,'google.com','google.com',2,1998);
 }), 'INSERT google.com report');
 
 my $summary_html = $view->summary_html();

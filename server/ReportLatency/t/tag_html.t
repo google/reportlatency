@@ -68,7 +68,7 @@ ok($dbh->do(q{
   INSERT INTO upload(location) VALUES('office.google.com');
 }), 'INSERT google.com upload');
 ok($dbh->do(q{
-  INSERT INTO request(upload,name,service,count,total) VALUES(1,'google.com','google.com',3,999);
+  INSERT INTO update_request(upload,name,service,count,total) VALUES(1,'google.com','google.com',3,999);
 }), 'INSERT google.com request');
 ok($dbh->commit,'commit');
 

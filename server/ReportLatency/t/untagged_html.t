@@ -59,7 +59,7 @@ ok($dbh->do(q{
   INSERT INTO upload(location) VALUES('office.google.com');
 }), 'INSERT google.com upload');
 ok($dbh->do(q{
-  INSERT INTO request(upload,name,service,count,total) VALUES(1,'company.com','company.com',4,888);
+  INSERT INTO update_request(upload,name,service,count,total) VALUES(1,'company.com','company.com',4,888);
 }), 'INSERT company.com request');
 
 my $untagged_html = $view->untagged_html();
