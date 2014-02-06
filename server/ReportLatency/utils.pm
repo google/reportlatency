@@ -221,8 +221,8 @@ sub reverse_dns {
 sub aggregate_user_agent($) {
   my ($browser) = @_;
 
-  if ($browser =~ /Chrome\//) {
-    return "Chrome";
+  if ($browser =~ /Chrome\/(\d+)/) {
+    return "Chrome $1";
   }
 
   if ($browser =~ /(Firefox|Gecko\/)/) {

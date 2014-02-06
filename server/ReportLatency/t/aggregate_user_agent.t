@@ -2,7 +2,7 @@
 #
 # Test post.pl's user agent aggregation
 #
-# Copyright 2013 Google Inc. All Rights Reserved.
+# Copyright 2013,2014 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ foreach my $ua
   ('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1312.52 Safari/537.17',
   'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1312.52 Safari/537.17'
   ) {
-  is(aggregate_user_agent($ua),'Chrome', "Chrome  $ua");
+  is(aggregate_user_agent($ua),'Chrome 24', "Chrome 24  $ua");
 }
 
 foreach my $ua

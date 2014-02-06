@@ -2,7 +2,7 @@
 #
 # Test whether schema is syntactically valid
 #
-# Copyright 2013 Google Inc. All Rights Reserved.
+# Copyright 2013,2014 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 # limitations under the License.
 
 use strict;
-use Test::More tests => 9;
+use Test::More tests => 10;
 use File::Temp qw/ tempfile tempdir /;
 
 my $dir = tempdir(CLEANUP => 1);
@@ -29,8 +29,9 @@ system("sqlite3 $dbfile < sqlite3.sql");
 my $tables=`sqlite3 $dbfile .tables`;
 chomp($tables);
 like($tables,qr/upload/,'upload table');
-like($tables,qr/request/,'update table');
-like($tables,qr/navigation/,'update table');
+like($tables,qr/navigation_request/,'navigation_request table');
+like($tables,qr/update_request/,'update_request table');
+like($tables,qr/\snavigation\s/,'navigation table');
 like($tables,qr/tag/,'tag table');
 like($tables,qr/location/,'location table');
 like($tables,qr/\smatch/,'match table');
