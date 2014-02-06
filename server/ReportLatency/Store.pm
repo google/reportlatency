@@ -115,11 +115,27 @@ sub option_bits {
   return $bits;
 }
 
-sub add_request_stats {
+sub add_navigation_request_stats {
   my ($self,$upload_id, $service, $name, $requeststats) = @_;
 
   $self->{insert_requests} =
-    $self->{dbh}->prepare("INSERT INTO request " .
+    $self->{dbh}->prepare("INSERT INTO navigation_request " .
+			  "(upload, service, name, count, total, high, low) " .
+			  "VALUES(?,?,?,?,?,?,?);")
+      unless defined $self->{insert_requests};
+
+  $self->{insert_requests}->execute($upload_id, $service, $name,
+				    $requeststats->{'count'},
+				    $requeststats->{'total'},
+				    $requeststats->{'high'},
+				    $requeststats->{'low'});
+}
+
+sub add_update_request_stats {
+  my ($self,$upload_id, $service, $name, $requeststats) = @_;
+
+  $self->{insert_requests} =
+    $self->{dbh}->prepare("INSERT INTO update__request " .
 			  "(upload, service, name, count, total, high, low) " .
 			  "VALUES(?,?,?,?,?,?,?);")
       unless defined $self->{insert_requests};
@@ -151,11 +167,17 @@ sub add_navigation_stats {
 sub add_name_stats {
   my ($self,$upload_id, $service, $name, $namestats) = @_;
 
-  if (defined $namestats->{'request'}) {
-    $self->add_request_stats($upload_id, $service, $name,
-			     $namestats->{'request'});
+  if (defined $namestats->{'navigation_request'}) {
+    $self->add_navigation_request_stats($upload_id, $service, $name,
+					$namestats->{'navigation_request'});
+  } elsif (defined $namestats->{'request'}) { # older extension
+    $self->add_navigation_request_stats($upload_id, $service, $name,
+					$namestats->{'request'});
   }
-  if (defined $namestats->{'navigation'}) {
+  if (defined $namestats->{'update_request'}) {
+    $self->add_update_request_stats($upload_id, $service, $name,
+				    $namestats->{'update_request'});
+  }  if (defined $namestats->{'navigation'}) {
     $self->add_navigation_stats($upload_id, $service, $name,
 				$namestats->{'navigation'});
   }

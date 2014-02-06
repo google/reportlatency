@@ -83,7 +83,7 @@ $q->delete_all();
 my ($count) = $dbh->selectrow_array("SELECT count(*) FROM upload");
 is($count, 1, '1 upload');
 
-($count) = $dbh->selectrow_array("SELECT count(*) FROM request");
+($count) = $dbh->selectrow_array("SELECT count(*) FROM navigation_request");
 is($count, 1, '1 request entry');
 
 ($count) = $dbh->selectrow_array("SELECT count(*) FROM navigation");
