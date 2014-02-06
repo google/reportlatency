@@ -183,8 +183,6 @@ sub latency_summary_row {
   $html .= "  <td align=right> $count </td> ";
   $html .=" <td align=right> " . mynum($row->{'request_count'}) . " </td>";
   $html .= " <td align=right> " . myround($row->{'request_latency'}) . " </td>";
-  $html .= " <td align=right> " . mynum($row->{'tabupdate_count'}) . " </td>";
-  $html .= " <td align=right> " . myround($row->{'tabupdate_latency'}) . " </td>";
   $html .= "   <td align=right> " . mynum($row->{'navigation_count'}) . " </td>";
   $html .= "   <td align=right> " . myround($row->{'navigation_latency'}) . " </td>";
   $html .= "  </tr>\n";
