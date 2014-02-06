@@ -14,16 +14,12 @@
 
 all:
 
-test: local_module_paths
+test:
 	prove t
 
 clean:
 	rm -rf cover_db ReportLatency
 
-coverage: local_module_paths
+coverage:
 	cover -test
 
-local_module_paths: ReportLatency
-
-ReportLatency:
-	ln -s ../ReportLatency ReportLatency
