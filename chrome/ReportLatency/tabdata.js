@@ -74,7 +74,12 @@ TabData.prototype.endRequest = function(data) {
 	      this.request[data.requestId].timeStamp;
 	    console.log(name + ' (' + this.service + ') requests +' +
 			delay + 'ms');
-	    this.stat.add(name, 'request', delay);
+	    var request_type = 'navigation_request';
+	    if (this.service) {
+	      this.stat.add(name, 'update_request', delay);
+	    } else {
+	      this.stat.add(name, 'navigation_request', delay);
+	    }
 	  } else {
 	    logObject('no service name in endRequest()', data);
 	  }

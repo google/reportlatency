@@ -35,7 +35,7 @@ test('LatencyData.*Request', function() {
   ld.endRequest(data);
 
   var ts = ld.tab[1].stat;
-  equal(ts.count('request'), 1, '1 request for tab 1');
+  equal(ts.count('navigation_request'), 1, '1 request for tab 1');
 });
 
 test('LatencyData.*Navigation', function() {
@@ -66,3 +66,30 @@ test('LatencyData.*Navigation', function() {
   equal(ld.countable('navigation','tabclosed'), 1,
 	'1 tabclosed events');
 });
+
+test('LatencyData.Navigation_Request', function() {
+  var ld = new LatencyData();
+  var navdata = { frameId:0, parentFrameId:-1, processId:2999, tabId:30,
+	          timeStamp:1000, url:'http://host/' };
+
+  ld.startNavigation(navdata);
+
+  var reqdata = {
+    url: 'http://host/path',
+    tabId: 30,
+    requestId: 20,
+    timeStamp: 2010
+  };
+  ld.startRequest(reqdata);
+
+  reqdata.timeStamp = 2310;
+  ld.endRequest(reqdata);
+
+  navdata.timeStamp = 2000;
+  ld.endNavigation(navdata);
+
+  var ts = ld.tab[30].stat;
+  equal(ts.count('navigation_request'), 1, '1 navigation request for tab 30');
+  equal(ts.count('update_request'), 0, '0 update request for tab 30');
+});
+
