@@ -115,20 +115,41 @@ sub option_bits {
   return $bits;
 }
 
+sub insert_stats {
+  my ($self, $insert, $upload_id, $service, $name, $stats) = @_;
+  my ($error400, $error500);
+
+  if (defined $stats->{"error"}) {
+    my ($key,$val);
+    while ( ($key,$val) = each %{$stats->{"error"}}) {
+      if ($key >= 400 && $key < 500) {
+	$error400 += $val;
+      } elsif ($key >= 500 && $key < 500) {
+	$error500 += $val;
+      }
+    }
+  }
+
+  $insert->execute($upload_id, $service, $name,
+		   $stats->{'count'},
+		   $stats->{'total'},
+		   $stats->{'high'},
+		   $stats->{'low'},
+		   $stats->{'tabclosed'}, $error400, $error500);
+}
+
 sub add_navigation_request_stats {
   my ($self,$upload_id, $service, $name, $requeststats) = @_;
 
   $self->{insert_navigation_requests} =
     $self->{dbh}->prepare("INSERT INTO navigation_request " .
-			  "(upload, service, name, count, total, high, low) " .
-			  "VALUES(?,?,?,?,?,?,?);")
+			  "(upload, service, name, count, total, high, low, ".
+			  "tabclosed, error400, error500) " .
+			  "VALUES(?,?,?,?,?,?,?,?,?,?);")
       unless defined $self->{insert_navigation_requests};
 
-  $self->{insert_navigation_requests}->execute($upload_id, $service, $name,
-				    $requeststats->{'count'},
-				    $requeststats->{'total'},
-				    $requeststats->{'high'},
-				    $requeststats->{'low'});
+  $self->insert_stats($self->{insert_navigation_requests},
+		      $upload_id, $service, $name, $requeststats);
 }
 
 sub add_update_request_stats {
@@ -136,15 +157,13 @@ sub add_update_request_stats {
 
   $self->{insert_update_requests} =
     $self->{dbh}->prepare("INSERT INTO update_request " .
-			  "(upload, service, name, count, total, high, low) " .
-			  "VALUES(?,?,?,?,?,?,?);")
+			  "(upload, service, name, count, total, high, low, " .
+			  "tabclosed, error400, error500 ) " .
+			  "VALUES(?,?,?,?,?,?,?,?,?,?);")
       unless defined $self->{insert_update_requests};
 
-  $self->{insert_update_requests}->execute($upload_id, $service, $name,
-					   $requeststats->{'count'},
-					   $requeststats->{'total'},
-					   $requeststats->{'high'},
-					   $requeststats->{'low'});
+  $self->insert_stats($self->{insert_update_requests},
+		      $upload_id, $service, $name, $requeststats);
 }
 
 sub add_navigation_stats {
@@ -152,22 +171,18 @@ sub add_navigation_stats {
 
   $self->{insert_navigations} =
     $self->{dbh}->prepare("INSERT INTO navigation " .
-			  "(upload, service, name, count, total, high, low) " .
-			  "VALUES(?,?,?,?,?,?,?);")
+			  "(upload, service, name, count, total, high, low, " .
+			  "tabclosed, error400, error500) " .
+			  "VALUES(?,?,?,?,?,?,?,?,?,?);")
       unless defined $self->{insert_navigations};
 
-  $self->{insert_navigations}->execute($upload_id, $service, $name,
-					$navstats->{'count'},
-					$navstats->{'total'},
-					$navstats->{'high'},
-					$navstats->{'low'});
+  $self->insert_stats($self->{insert_navigations},
+		      $upload_id, $service, $name, $navstats);
 }
 
 
 sub add_name_stats {
   my ($self,$upload_id, $service, $name, $namestats) = @_;
-
-  print STDERR Dumper($namestats);
 
   if (defined $namestats->{'navigation_request'}) {
     $self->add_navigation_request_stats($upload_id, $service, $name,
