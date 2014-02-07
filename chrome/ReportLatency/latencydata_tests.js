@@ -5,7 +5,7 @@
  * object - the top data object used in ReportLatency.
  * @author dld@google.com (DrakeDiedrich)
  *
- * Copyright 2013 Google Inc. All Rights Reserved.
+ * Copyright 2013,2014 Google Inc. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,22 +36,6 @@ test('LatencyData.*Request', function() {
 
   var ts = ld.tab[1].stat;
   equal(ts.count('request'), 1, '1 request for tab 1');
-});
-
-test('LatencyData.tabUpdated', function() {
-  var ld = new LatencyData();
-  var tab = {
-    status: 'loading',
-    url: 'http://server/path',
-    tabId: 1,
-  };
-  var changeInfo = {};
-  ld.tabUpdated(1, changeInfo, tab);
-  tab.status = 'complete';
-  ld.tabUpdated(1, changeInfo, tab);
-
-  var ts = ld.tab[1].stat;
-  equal(ts.count('tabupdate'), 1, '1 tabupdate for tab 1');
 });
 
 test('LatencyData.*Navigation', function() {

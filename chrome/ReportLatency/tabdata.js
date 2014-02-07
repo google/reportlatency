@@ -5,7 +5,7 @@
  *   a ServiceStats object.
  * @author dld@google.com (DrakeDiedrich)
  *
- * Copyright 2013 Google Inc. All Rights Reserved.
+ * Copyright 2013,2014 Google Inc. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -109,34 +109,6 @@ TabData.prototype.deleteRequest = function(data) {
     }
   } else {
     console.log('missing requestId in deleteRequest() data');
-  }
-};
-
-/**
- * Count when a tab is updated.
- *
- * @param {object} data about the event from chrome.tabs.onUpdated.
- *
- */
-TabData.prototype.tabUpdated = function(changeInfo, tab) {
-  debugLogObject('TabData(' + this.service + ')');
-  debugLogObject('TabData.tabUpdated(changeInfo)', changeInfo);
-  debugLogObject('TabData.tabUpdated(tab)', tab);
-  if (!isWebUrl(tab.url)) { return; }
-  var d = new Date();
-
-  if (tab.status == 'loading') {
-    this.tabupdate = {};
-    this.tabupdate.changeInfo = changeInfo;
-    this.tabupdate.start = d.getTime();
-  } else if (tab.status == 'complete') {
-    if ('start' in this.tabupdate) {
-      var delay = d.getTime() - this.tabupdate.start;
-      debugLog('tab ' + tab.tabId + ' (' + tab.url + ') updated in ' +
-          delay + 'ms' + ' at ' + d.getTime());
-      var name = aggregateName(tab.url);
-      this.stat.add(name, 'tabupdate', delay);
-    }
   }
 };
 

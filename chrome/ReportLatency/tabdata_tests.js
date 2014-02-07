@@ -3,7 +3,7 @@
  * @fileoverview This file contains QUnit tests for a TabData object.
  * @author dld@google.com (DrakeDiedrich)
  *
- * Copyright 2013 Google Inc. All Rights Reserved.
+ * Copyright 2013,2014 Google Inc. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,22 +84,6 @@ test('TabData.endRequest', function() {
 	'redirected endRequest left 33-34 ms of requests');
 
 
-});
-
-test('TabData.tabUpdated', function() {
-  var t = new TabData();
-
-  var tab = {
-    status: 'loading',
-    url: 'http://server/path',
-    tabId: 1,
-  };
-  var changeInfo = {};
-  t.tabUpdated(changeInfo, tab);
-  tab.status = 'complete';
-  t.tabUpdated(changeInfo, tab);
-
-  equal(t.stat.count('tabupdate'), 1, 'tabUpdated left 1 recorded tabupdate');
 });
 
 

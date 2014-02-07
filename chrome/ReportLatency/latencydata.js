@@ -3,7 +3,7 @@
  * @fileoverview LatencyData is the top level data object for ReportLatency.
  * @author dld@google.com (DrakeDiedrich)
  *
- * Copyright 2013 Google Inc. All Rights Reserved.
+ * Copyright 2013,2014 Google Inc. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,20 +87,6 @@ LatencyData.prototype.deleteRequest = function(data) {
     logObject('malformed data in deleteRequest - no tabId', data);
   }
 };
-
-/**
- * Forward starts and completions of tabupdates to the appropriate
- * TabData object.
- *
- * @param {object} data is the callback data for Chrome's onBeforeRequest()
- *
- */
-LatencyData.prototype.tabUpdated = function(tabId, changeInfo, tab) {
-  if (!(tabId in this.tab)) {
-    this.tab[tabId] = new TabData();
-  }
-  this.tab[tabId].tabUpdated(changeInfo, tab);
-}
 
 /**
  * Delete the appropriate TabData object when tab is removed.

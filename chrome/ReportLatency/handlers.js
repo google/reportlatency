@@ -5,7 +5,7 @@
  *   only called from the production eventPage.js code.
  * @author dld@google.com (DrakeDiedrich)
  *
- * Copyright 2013 Google Inc. All Rights Reserved.
+ * Copyright 2013,2014 Google Inc. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,11 +41,6 @@ function onNavigationError(data) {
 chrome.webNavigation.onErrorOccurred.addListener(onNavigationError);
 
 
-
-function onTabUpdated(tabId, changeInfo, tab) {
-  latencyData.tabUpdated(tabId, changeInfo, tab);
-}
-chrome.tabs.onUpdated.addListener(onTabUpdated);
 
 function onTabRemoved(tabId, removeInfo) {
   latencyData.tabRemoved(tabId, removeInfo);
