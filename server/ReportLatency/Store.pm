@@ -187,7 +187,8 @@ sub add_name_stats {
   if (defined $namestats->{'navigation_request'}) {
     $self->add_navigation_request_stats($upload_id, $service, $name,
 					$namestats->{'navigation_request'});
-  } elsif (defined $namestats->{'request'}) { # older extension
+  } 
+  if (defined $namestats->{'request'}) { # older extension
     $self->add_navigation_request_stats($upload_id, $service, $name,
 					$namestats->{'request'});
   }

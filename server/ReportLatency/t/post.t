@@ -107,4 +107,3 @@ like($timestamp,qr/^\d{4}-/,'timestamp');
 is($remote_addr,'1.2.3.0','network address');
 is($name,'w3.org','w3.org request name');
 is($service,'w3.org','w3.org service name');
-
