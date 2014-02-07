@@ -118,13 +118,13 @@ sub option_bits {
 sub add_navigation_request_stats {
   my ($self,$upload_id, $service, $name, $requeststats) = @_;
 
-  $self->{insert_requests} =
+  $self->{insert_navigation_requests} =
     $self->{dbh}->prepare("INSERT INTO navigation_request " .
 			  "(upload, service, name, count, total, high, low) " .
 			  "VALUES(?,?,?,?,?,?,?);")
-      unless defined $self->{insert_requests};
+      unless defined $self->{insert_navigation_requests};
 
-  $self->{insert_requests}->execute($upload_id, $service, $name,
+  $self->{insert_navigation_requests}->execute($upload_id, $service, $name,
 				    $requeststats->{'count'},
 				    $requeststats->{'total'},
 				    $requeststats->{'high'},
@@ -134,17 +134,17 @@ sub add_navigation_request_stats {
 sub add_update_request_stats {
   my ($self,$upload_id, $service, $name, $requeststats) = @_;
 
-  $self->{insert_requests} =
-    $self->{dbh}->prepare("INSERT INTO update__request " .
+  $self->{insert_update_requests} =
+    $self->{dbh}->prepare("INSERT INTO update_request " .
 			  "(upload, service, name, count, total, high, low) " .
 			  "VALUES(?,?,?,?,?,?,?);")
-      unless defined $self->{insert_requests};
+      unless defined $self->{insert_update_requests};
 
-  $self->{insert_requests}->execute($upload_id, $service, $name,
-				    $requeststats->{'count'},
-				    $requeststats->{'total'},
-				    $requeststats->{'high'},
-				    $requeststats->{'low'});
+  $self->{insert_update_requests}->execute($upload_id, $service, $name,
+					   $requeststats->{'count'},
+					   $requeststats->{'total'},
+					   $requeststats->{'high'},
+					   $requeststats->{'low'});
 }
 
 sub add_navigation_stats {
@@ -167,6 +167,8 @@ sub add_navigation_stats {
 sub add_name_stats {
   my ($self,$upload_id, $service, $name, $namestats) = @_;
 
+  print STDERR Dumper($namestats);
+
   if (defined $namestats->{'navigation_request'}) {
     $self->add_navigation_request_stats($upload_id, $service, $name,
 					$namestats->{'navigation_request'});
@@ -177,7 +179,8 @@ sub add_name_stats {
   if (defined $namestats->{'update_request'}) {
     $self->add_update_request_stats($upload_id, $service, $name,
 				    $namestats->{'update_request'});
-  }  if (defined $namestats->{'navigation'}) {
+  }
+  if (defined $namestats->{'navigation'}) {
     $self->add_navigation_stats($upload_id, $service, $name,
 				$namestats->{'navigation'});
   }

@@ -21,7 +21,7 @@ use DBI;
 use CGI;
 use IO::String;
 use File::Temp qw(tempfile tempdir);
-use Test::More tests => 11;
+use Test::More tests => 12;
 
 BEGIN { use lib '..'; }
 
@@ -61,9 +61,12 @@ print $postdata <<EOF;
  "services":{
    "w3.org":{
      "w3.org":{
-       "request":{
+       "navigation_request":{
          "count":4,
          "total":461.09619140625},
+       "update_request":{
+         "count":2,
+         "total":64000},
        "navigation":{
          "count":1,
          "total":900}}}}}
@@ -83,6 +86,9 @@ $q->delete_all();
 my ($count) = $dbh->selectrow_array("SELECT count(*) FROM upload");
 is($count, 1, '1 upload');
 
+($count) = $dbh->selectrow_array("SELECT count(*) FROM update_request");
+is($count, 1, '1 request entry');
+
 ($count) = $dbh->selectrow_array("SELECT count(*) FROM navigation_request");
 is($count, 1, '1 request entry');
 
@@ -98,3 +104,4 @@ like($timestamp,qr/^\d{4}-/,'timestamp');
 is($remote_addr,'1.2.3.0','network address');
 is($name,'w3.org','w3.org request name');
 is($service,'w3.org','w3.org service name');
+
