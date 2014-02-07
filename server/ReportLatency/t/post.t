@@ -64,6 +64,9 @@ print $postdata <<EOF;
        "navigation_request":{
          "count":4,
          "total":461.09619140625},
+       "request":{
+         "count":1,
+         "total":333.3},
        "update_request":{
          "count":2,
          "total":64000},
@@ -87,10 +90,10 @@ my ($count) = $dbh->selectrow_array("SELECT count(*) FROM upload");
 is($count, 1, '1 upload');
 
 ($count) = $dbh->selectrow_array("SELECT count(*) FROM update_request");
-is($count, 1, '1 request entry');
+is($count, 1, '1 update request entry');
 
 ($count) = $dbh->selectrow_array("SELECT count(*) FROM navigation_request");
-is($count, 1, '1 request entry');
+is($count, 2, '2 navigation request entry');
 
 ($count) = $dbh->selectrow_array("SELECT count(*) FROM navigation");
 is($count, 1, '1 navigation entry');
