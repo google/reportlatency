@@ -1,4 +1,4 @@
-# Copyright 2013 Google Inc. All Rights Reserved.
+# Copyright 2013,2014 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -184,19 +184,23 @@ sub add_navigation_stats {
 sub add_name_stats {
   my ($self,$upload_id, $service, $name, $namestats) = @_;
 
-  if (defined $namestats->{'navigation_request'}) {
+  if (defined $namestats->{'nreq'}) {
     $self->add_navigation_request_stats($upload_id, $service, $name,
-					$namestats->{'navigation_request'});
+					$namestats->{'nreq'});
   } 
-  if (defined $namestats->{'request'}) { # older extension
+  if (defined $namestats->{'request'}) { # older extension.  delete soon.
     $self->add_navigation_request_stats($upload_id, $service, $name,
 					$namestats->{'request'});
   }
-  if (defined $namestats->{'update_request'}) {
+  if (defined $namestats->{'ureq'}) {
     $self->add_update_request_stats($upload_id, $service, $name,
-				    $namestats->{'update_request'});
+				    $namestats->{'ureq'});
   }
-  if (defined $namestats->{'navigation'}) {
+  if (defined $namestats->{'nav'}) {
+    $self->add_navigation_stats($upload_id, $service, $name,
+				$namestats->{'nav'});
+  }
+  if (defined $namestats->{'navigation'}) { # older extension. delete soon.
     $self->add_navigation_stats($upload_id, $service, $name,
 				$namestats->{'navigation'});
   }

@@ -74,11 +74,10 @@ TabData.prototype.endRequest = function(data) {
 	      this.request[data.requestId].timeStamp;
 	    console.log(name + ' (' + this.service + ') requests +' +
 			delay + 'ms');
-	    var request_type = 'navigation_request';
 	    if (this.service) {
-	      this.stat.add(name, 'update_request', delay);
+	      this.stat.add(name, 'ureq', delay);
 	    } else {
-	      this.stat.add(name, 'navigation_request', delay);
+	      this.stat.add(name, 'nreq', delay);
 	    }
 	  } else {
 	    logObject('no service name in endRequest()', data);
@@ -166,7 +165,7 @@ TabData.prototype.endNavigation = function(data) {
 	      var original_name = aggregateName(this.navigation.url);
 	      this.service = aggregateName(data.url);
 	      console.log(this.service + ' navigations +' + delay + 'ms'); 
-	      this.stat.add(original_name, 'navigation', delay);
+	      this.stat.add(original_name, 'nav', delay);
 	    } else {
 	      console.log('missing timeStamp in endNavigation() data');
 	    }

@@ -39,8 +39,8 @@ test('TabData.endRequest', function() {
 		  url: 'http://host.example.com/' };
   t.endRequest(dataEnd);
 
-  equal(t.stat.count('navigation_request'), 1, 'endRequest left 1 recorded requests');
-  equal(t.stat.total('navigation_request'), 10, 'endRequest left 10 ms of requests');
+  equal(t.stat.count('nreq'), 1, 'endRequest left 1 recorded requests');
+  equal(t.stat.total('nreq'), 10, 'endRequest left 10 ms of requests');
 
   var dataStart2 = { requestId:2, timeStamp:1020,
 		    url: 'http://host.example.com/image.png' };
@@ -49,9 +49,9 @@ test('TabData.endRequest', function() {
 		  url: 'http://host.example.com/image.png' };
   t.endRequest(dataEnd2);
 
-  equal(t.stat.count('navigation_request'), 1,
+  equal(t.stat.count('nreq'), 1,
 	'cached endRequest left 1 recorded requests');
-  equal(t.stat.total('navigation_request'), 10,
+  equal(t.stat.total('nreq'), 10,
 	'cached endRequest left 10 ms of requests');
 
   // sometimes events in redirects are out of order and have sloppy timestamps.
@@ -75,11 +75,11 @@ test('TabData.endRequest', function() {
 		   url: 'http://host.example.com/v2' };
   t.endRequest(dataEnd4);
 
-  equal(t.stat.count('navigation_request'), 3,
+  equal(t.stat.count('nreq'), 3,
 	'redirected endRequest left 3 recorded requests');
 
   // Want 33, but accepting 34 for now as well.
-  var reqt = t.stat.total('navigation_request');
+  var reqt = t.stat.total('nreq');
   ok(reqt >=  10 + 9 + 14 && reqt <= 34,
 	'redirected endRequest left 33-34 ms of requests');
 
@@ -108,8 +108,8 @@ test('TabData.endNavigation', function() {
 	       timeStamp:1020, url:'http://host.example.com/' };
   t.endNavigation(dataEnd);
 
-  equal(t.stat.count('navigation'), 1, 'endNavigation left 1 count');
-  equal(t.stat.total('navigation'), 20, 'endNavigation 20 ms total');
+  equal(t.stat.count('nav'), 1, 'endNavigation left 1 count');
+  equal(t.stat.total('nav'), 20, 'endNavigation 20 ms total');
   equal(t.service, '.', "TabData.service == '.'");
 });
 

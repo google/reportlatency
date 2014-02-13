@@ -101,7 +101,7 @@ LatencyData.prototype.tabRemoved = function(tabId, removeInfo) {
   if (tabId in this.tab) {
     if (!('service' in this.tab[tabId])) {
       var name = aggregateName(this.tab[tabId].navigation.url);
-      this.stats.increment(name,name,'navigation','tabclosed');
+      this.stats.increment(name,name,'nav','tabclosed');
     }
     delete this.tab[tabId];
   } else {

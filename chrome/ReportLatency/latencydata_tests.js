@@ -35,7 +35,7 @@ test('LatencyData.*Request', function() {
   ld.endRequest(data);
 
   var ts = ld.tab[1].stat;
-  equal(ts.count('navigation_request'), 1, '1 request for tab 1');
+  equal(ts.count('nreq'), 1, '1 request for tab 1');
 });
 
 test('LatencyData.*Navigation', function() {
@@ -51,19 +51,19 @@ test('LatencyData.*Navigation', function() {
 
   ld.tabRemoved(30, {});
 
-  equal(ts.count('navigation'), 1, '1 navigation for tab 30');
-  equal(ts.countable('navigation','tabclosed'), 0,
+  equal(ts.count('nav'), 1, '1 navigation for tab 30');
+  equal(ts.countable('nav','tabclosed'), 0,
 		     '0 tabclosed events for tab 30');
-  equal(ld.countable('navigation','tabclosed'), 0,
+  equal(ld.countable('nav','tabclosed'), 0,
 	'0 global tabclosed events');
 
   data.timeStamp = 3000;
   data.url = 'http://host/spinsforever';
   ld.startNavigation(data);
   ts = ld.tab[30].stat;
-  equal(ts.count('navigation'), 0, '0 navigation for tab 30');
+  equal(ts.count('nav'), 0, '0 navigation for tab 30');
   ld.tabRemoved(30, {});
-  equal(ld.countable('navigation','tabclosed'), 1,
+  equal(ld.countable('nav','tabclosed'), 1,
 	'1 tabclosed events');
 });
 
@@ -89,7 +89,7 @@ test('LatencyData.Navigation_Request', function() {
   ld.endNavigation(navdata);
 
   var ts = ld.tab[30].stat;
-  equal(ts.count('navigation_request'), 1, '1 navigation request for tab 30');
-  equal(ts.count('update_request'), 0, '0 update request for tab 30');
+  equal(ts.count('nreq'), 1, '1 navigation request for tab 30');
+  equal(ts.count('ureq'), 0, '0 update request for tab 30');
 });
 

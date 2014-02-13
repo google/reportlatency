@@ -61,16 +61,16 @@ print $postdata <<EOF;
  "services":{
    "w3.org":{
      "w3.org":{
-       "navigation_request":{
+       "nreq":{
          "count":4,
          "total":461.09619140625},
        "request":{
          "count":1,
          "total":333.3},
-       "update_request":{
+       "ureq":{
          "count":2,
          "total":64000},
-       "navigation":{
+       "nav":{
          "count":1,
          "total":900}}}}}
 EOF
