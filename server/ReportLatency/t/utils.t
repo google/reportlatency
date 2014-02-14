@@ -2,7 +2,7 @@
 #
 # Test ReportLatency::utils.pm
 #
-# Copyright 2013 Google Inc. All Rights Reserved.
+# Copyright 2013,2014 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 # limitations under the License.
 
 use strict;
-use Test::More tests => 42;
+use Test::More tests => 43;
 
 BEGIN { use lib '..'; }
 
@@ -50,6 +50,9 @@ foreach my $good ('sub.example.com.', 'sub.example.com. proxy' ) {
   is(sanitize($good),$good,"sanitize($good)");
 }
 
+foreach my $good ('127.0.0.0') {
+  is(sanitize_location($good),$good,"$good location");
+}
 
 is(service_path("news.google.com",".png"),
    "news.google.com.png");

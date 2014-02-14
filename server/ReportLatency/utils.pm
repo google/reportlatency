@@ -101,12 +101,17 @@ sub sanitize_service($) {
   }
 }
 
+my $ipv4_re = $RE{net}{IPv4};
 sub sanitize_location {
   my ($location) = @_;
+  print STDERR "sanitize_location($location)\n";
   return undef unless defined $location;
-  if ($location =~ /^($domain_re\.)(.*)/) {
+  if ($location =~/^($ipv4_re)$/) {
+    return $location;
+  } elsif ($location =~ /^($domain_re\.)(.*)/) {
     my $domain = $1;
     my $rest = $2;
+    print STDERR "  domain_re $domain $rest\n";
     if ($rest =~ /^\s+[A-Za-z0-9]+$/) {
       return "$domain$rest";
     } else {
