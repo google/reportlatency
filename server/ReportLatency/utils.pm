@@ -1,4 +1,4 @@
-# Copyright 2013 Google Inc. All Rights Reserved.
+# Copyright 2013,2014 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -104,14 +104,12 @@ sub sanitize_service($) {
 my $ipv4_re = $RE{net}{IPv4};
 sub sanitize_location {
   my ($location) = @_;
-  print STDERR "sanitize_location($location)\n";
   return undef unless defined $location;
   if ($location =~/^($ipv4_re)$/) {
     return $location;
   } elsif ($location =~ /^($domain_re\.)(.*)/) {
     my $domain = $1;
     my $rest = $2;
-    print STDERR "  domain_re $domain $rest\n";
     if ($rest =~ /^\s+[A-Za-z0-9]+$/) {
       return "$domain$rest";
     } else {
