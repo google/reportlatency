@@ -53,12 +53,12 @@ test('ServiceStats.transfer', function() {
 test('ServiceStats.best', function() {
   var s = new ServiceStats();
 
-  s.add('service', 'server', 'navigation', 5);
-  s.add('service', 'redirector', 'navigation', 10);
-  s.add('content', 'server2', 'request', 1);
-  s.add('current', 'server3', 'navigation', 1);
-  s.add('current', 'server3', 'navigation', 2);
-  s.add('current', 'server3', 'navigation', 3);
+  s.add('service', 'server', 'nav', 5);
+  s.add('service', 'redirector', 'nav', 10);
+  s.add('content', 'server2', 'nreq', 1);
+  s.add('current', 'server3', 'nav', 1);
+  s.add('current', 'server3', 'nav', 2);
+  s.add('current', 'server3', 'nav', 3);
 
   equal(s.best('current'), 'service',
 	'service that isn\'t in use with most navigations chosen');

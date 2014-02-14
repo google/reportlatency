@@ -3,7 +3,7 @@
  * @fileoverview ServiceStats is a container for all named services' stats
  * @author dld@google.com (DrakeDiedrich)
  *
- * Copyright 2013 Google Inc. All Rights Reserved.
+ * Copyright 2013,2014 Google Inc. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,13 +107,13 @@ ServiceStats.prototype.best = function(last) {
   var b;
   for (var s in this.stat) {
     if (s != last) {
-      var nc = this.stat[s].count('navigation');
+      var nc = this.stat[s].count('nav');
       if (nc > navigations) {
 	navigations = nc;
-	requests = this.stat[s].count('request');
+	requests = this.stat[s].count('nreq') +  this.stat[s].count('ureq');
 	b = s;
       } else if (nc == navigations) {
-	var nr = this.stat[s].count('request');
+	var nr = this.stat[s].count('nreq') +  this.stat[s].count('ureq');
 	if (nr > requests) {
 	  requests = nr;
 	  b = s;

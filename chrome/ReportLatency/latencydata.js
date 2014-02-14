@@ -176,10 +176,12 @@ LatencyData.prototype.deleteNavigation = function(data) {
  * @param {string} skip is a servicename to skip reports for
  **/
 LatencyData.prototype.postLatency = function(skip) {
-  debugLog('postLatency(! ' + skip + ')');
+  console.log('postLatency(! ' + skip + ')');
 
   var bestFinal = this.stats.best(skip);
   if (!bestFinal) {
+    debugLog('  no best service to return');
+    this.reportExtensionStats();
     return;
   }
   var bestService = this.stats.service(bestFinal);
