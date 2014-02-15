@@ -293,30 +293,18 @@ sub all_locations {
 }
 
 sub tag_graph {
-  my ($dbh,$name,$options) = @_;
+  my ($store,$name,$options) = @_;
 
-  my $statement='SELECT strftime("%s",timestamp) AS timestamp,' .
-    'navigation_count AS count,' .
-    'navigation_high AS high,' .
-    'navigation_low AS low,' .
-    'navigation_total AS total ' .
-    'FROM report ' .
-    'INNER JOIN tag ON report.final_name = tag.name ' .
-    "WHERE timestamp <= datetime('now',?) AND " .
-    "timestamp > datetime('now',?) AND " .
-    'tag.tag = ? AND ' .
-    "navigation_count IS NOT NULL AND navigation_count != '' AND " .
-    "navigation_count>0;";
-  my $latency_sth = $dbh->prepare($statement) or die $!;
-  my $latency_rc = $latency_sth->execute('0 seconds', -$duration . " seconds",
-					$name);
+  my $dbh = $store->{dbh};
+  my $sth = $store->tag_nav_latencies_sth;
+  my $latency_rc = $sth->execute('0 seconds', -$duration . " seconds", $name);
   my $spectrum = new ReportLatency::Spectrum( width => $width,
 					      height => $height,
 					      duration => $duration,
 					      ceiling => $latency_ceiling,
 					      border => 24 );
   
-  while (my $row = $latency_sth->fetchrow_hashref) {
+  while (my $row = $sth->fetchrow_hashref) {
     $spectrum->add_row($row);
   }
 
@@ -394,7 +382,7 @@ sub main() {
 
   foreach my $tag (@tags) {
     print "tag $tag\n";
-    tag_graph($dbh,$tag,\%options);
+    tag_graph($store,$tag,\%options);
     tag_report($view,$tag,\%options);
   }
 

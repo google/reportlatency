@@ -314,6 +314,30 @@ sub untagged_meta_sth {
   return $sth;
 }
 
+sub tag_nav_latencies_sth {
+  my ($self) = @_;
+
+  my $sth = $self->{tag_nav_latencies_sth};
+  if (! defined $sth) {
+    my $dbh = $self->{dbh};
+    my $statement='SELECT strftime("%s",timestamp) AS timestamp,' .
+      'navigation_count AS count,' .
+      'navigation_high AS high,' .
+      'navigation_low AS low,' .
+      'navigation_total AS total ' .
+      'FROM report ' .
+       'INNER JOIN tag ON report.final_name = tag.service ' .
+       "WHERE timestamp <= datetime('now',?) AND " .
+       "timestamp > datetime('now',?) AND " .
+       'tag.tag = ? AND ' .
+       "navigation_count IS NOT NULL AND navigation_count != '' AND " .
+       "navigation_count>0;";
+    $sth = $dbh->prepare($statement) or die $!;
+  }
+
+  return $sth;
+}
+
 sub tag_meta_sth {
   my ($self) = @_;
   my $dbh = $self->{dbh};
