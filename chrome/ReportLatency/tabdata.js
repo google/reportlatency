@@ -160,13 +160,19 @@ TabData.prototype.startNavigation = function(data) {
 	if ('timeStamp' in data) {
 	  this.navigation = data;
 	} else {
-	  console.log('missing timeStamp in startNavigation() data');
+	  if (localStorage['debug_navigations'] == 'true') {
+	    console.log('missing timeStamp in startNavigation() data');
+	  }
 	}
       } else {
-	console.log('startNavigation(' + data.url + ') not web');
+	if (localStorage['debug_navigations'] == 'true') {
+	  console.log('startNavigation(' + data.url + ') not web');
+	}
       }
     } else {
-      console.log('no url found in startNavigation() data');
+      if (localStorage['debug_navigations'] == 'true') {
+	console.log('no url found in startNavigation() data');
+      }
     }
   } else {
     // console.log('  Meh.  Don\'t care about subframe navigation events.');
