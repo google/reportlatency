@@ -104,7 +104,7 @@ LatencyData.prototype.deleteRequest = function(data) {
  *
  */
 LatencyData.prototype.tabRemoved = function(tabId, removeInfo) {
-  if (localStorage['debug_tabs']) {
+  if (localStorage['debug_tabs'] == 'true') {
     logObject('LatencyData.tabRemoved(' + tabId + ')',
 	      removeInfo);
   }
@@ -115,7 +115,7 @@ LatencyData.prototype.tabRemoved = function(tabId, removeInfo) {
     }
     delete this.tab[tabId];
   } else {
-    if (localStorage['debug_tabs']) {
+    if (localStorage['debug_tabs'] == 'true') {
       console.log('  missing tabId ' + tabId + ' received in tabRemoved()');
     }
   }
@@ -196,8 +196,8 @@ LatencyData.prototype.postLatency = function(skip) {
   if (!bestFinal) { 
     if (localStorage['debug_posts'] == 'true') {
       console.log('  no best service to return');
+      this.reportExtensionStats();
     }
-    this.reportExtensionStats();
     return;
   }
   var bestService = this.stats.service(bestFinal);
@@ -223,7 +223,6 @@ LatencyData.prototype.postLatency = function(skip) {
   }
   req.send(JSON.stringify(report));
   this.stats.delete(bestFinal);
-  this.reportExtensionStats();
 }
 
 /**
@@ -237,7 +236,7 @@ LatencyData.prototype.reportExtensionStats = function() {
     services = services.concat(' ' + n );
   }
   console.log('  ' + Object.keys(this.stats.stat).length +
-              ' pending service reports:' + services);
+	      ' pending service reports:' + services);
 }
 
 /**
