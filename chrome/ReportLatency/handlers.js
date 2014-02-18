@@ -82,30 +82,42 @@ chrome.webRequest.onErrorOccurred.addListener( onRequestError,
 					       { urls: ['*://*/*'] });
 
 function onStartup() {
-  console.log('onStartup()');
+  if (localStorage['debug_extension'] == 'true') {
+    console.log('onStartup()');
+  }
 }
 chrome.runtime.onStartup.addListener( onStartup );
 
 function onInstalled(details) {
-  logObject('onInstalled()', details);
+  if (localStorage['debug_extension'] == 'true') {
+    logObject('onInstalled()', details);
+  }
 }
 chrome.runtime.onInstalled.addListener( onInstalled );
 
 function onSuspend() {
-  console.log('onSuspend()');
+  if (localStorage['debug_extension'] == 'true') {
+    console.log('onSuspend()');
+  }
 }
 chrome.runtime.onSuspend.addListener( onSuspend );
 
 function onUpdateAvailable(details) {
-  logObject('onUpdateAvailable()', details);
+  if (localStorage['debug_extension'] == 'true') {
+    logObject('onUpdateAvailable()', details);
+  }
 }
 chrome.runtime.onInstalled.addListener( onUpdateAvailable );
 
 function onMessage(message, sender, sendResponse) {
   if (sender.tab) {
-    logObject(sender.tab.url + ' sent ' + message, message);
+    if (localStorage['debug_extension'] == 'true') {
+      logObject(sender.tab.url + ' sent ' + message, message);
+    }
   } else {
-    logObject('extension sent ' + message, sender);
+    if (localStorage['debug_extension'] == 'true') {
+      logObject('extension sent ' + message, sender);
+    }
   }
   var response;
   if (message.rpc == 'get_options') {

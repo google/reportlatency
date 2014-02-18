@@ -46,8 +46,10 @@ function logObject(str, o) {
  * @param {function} callback is the URL-claiming function for the service.
  **/
 function registerService(id, description, callback) {
-  console.log('registerService(' + id + ',' +
-	      description + ',' + callback + ')');
+  if (localStorage['debug_extension'] == 'true') {
+    console.log('registerService(' + id + ',' +
+		description + ',' + callback + ')');
+  }
 
   var o = { 'description': description,
             'callback': callback };

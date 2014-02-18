@@ -56,6 +56,7 @@ function saveOptions() {
   saveCheckbox('debug_tabs');
   saveCheckbox('debug_requests');
   saveCheckbox('debug_posts');
+  saveCheckbox('debug_extension');
 
   var status = document.getElementById('status');
   status.innerHTML = 'Options Saved.';
@@ -123,6 +124,7 @@ function restoreOptions() {
   restoreCheckbox('debug_tabs');
   restoreCheckbox('debug_requests');
   restoreCheckbox('debug_posts');
+  restoreCheckbox('debug_extension');
 }
 
 document.querySelector('#save').addEventListener('click', saveOptions);
