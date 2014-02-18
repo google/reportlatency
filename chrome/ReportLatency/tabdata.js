@@ -199,7 +199,8 @@ TabData.prototype.endNavigation = function(data) {
 	      var original_name = aggregateName(this.navigation.url);
 	      this.service = aggregateName(data.url);
 	      if (localStorage['log_navigations'] == 'true') {
-		console.log(this.service + ' navigations +' + delay + ' ms');
+		console.log(original_name + ' (' + this.service +
+			    ') navigations +' + delay + ' ms');
 	      }
 	      this.stat.add(original_name, 'nav', delay);
 	    } else {
