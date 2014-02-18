@@ -158,6 +158,9 @@ TabData.prototype.startNavigation = function(data) {
     if ('url' in data) {
       if (isWebUrl(data.url)) {
 	if ('timeStamp' in data) {
+	  if (localStorage['debug_navigations'] == 'true') {
+	    console.log('  starting navigation');
+	  }
 	  this.navigation = data;
 	} else {
 	  if (localStorage['debug_navigations'] == 'true') {
@@ -186,12 +189,12 @@ TabData.prototype.startNavigation = function(data) {
  *
  */
 TabData.prototype.endNavigation = function(data) {
-  if (localStorage['debug_navigations'] == 'true') {
-    logObject('TabData.endNavigation()', data);
-  }
   if ('navigation' in this) {
     if (('frameId' in data)) {
       if (data.frameId == this.navigation.frameId) {
+	if (localStorage['debug_navigations'] == 'true') {
+	  logObject('TabData.endNavigation()', data);
+	}
 	if ('url' in data) {
 	  if (isWebUrl(data.url)) {
 	    if ('timeStamp' in data) {
@@ -220,7 +223,7 @@ TabData.prototype.endNavigation = function(data) {
 	}
       } else {
 	if (localStorage['debug_navigations'] == 'true') {
-	  console.log('  Meh. Don\'t care about subframes again.');
+	  // console.log('  Meh. Don\'t care about subframes again.');
 	}
       }
     } else {
@@ -235,7 +238,7 @@ TabData.prototype.endNavigation = function(data) {
       }
     } else {
       if (localStorage['debug_navigations'] == 'true') {
-	console.log('  Meh. Don\'t care about subframes again.');
+	//	console.log('  Meh. Don\'t care about subframes again.');
       }
     }
   }
@@ -250,14 +253,16 @@ TabData.prototype.endNavigation = function(data) {
  *
  */
 TabData.prototype.deleteNavigation = function(data) {
-  if (localStorage['debug_navigations'] == 'true') {
-    logObject('TabData.deleteNavigation(data)', data);
-  }
-  if ('navigation' in this) {
-    delete this['navigation'];
-  } else {
+  if (data.frameId == 0) {
     if (localStorage['debug_navigations'] == 'true') {
-      console.log('  current navigation not found');
+      logObject('TabData.deleteNavigation(data)', data);
+    }
+    if ('navigation' in this) {
+      delete this['navigation'];
+    } else {
+      if (localStorage['debug_navigations'] == 'true') {
+	console.log('  current navigation not found');
+      }
     }
   }
 };
