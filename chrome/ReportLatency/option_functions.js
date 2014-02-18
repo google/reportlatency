@@ -46,6 +46,7 @@ function saveServices() {
 }
 
 function saveOptions() {
+  console.log('saveOptions()');
   saveText('report_to');
   saveCheckbox('default_as_org');
   saveServices();
