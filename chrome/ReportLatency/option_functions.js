@@ -46,13 +46,12 @@ function saveServices() {
 }
 
 function saveOptions() {
-  console.log('saveOptions()');
   saveText('report_to');
   saveCheckbox('default_as_org');
   saveServices();
   saveCheckbox('log_navigations');
   saveCheckbox('log_requests');
-  saveCheckbox('log_postss');
+  saveCheckbox('log_posts');
   saveCheckbox('debug_navigations');
   saveCheckbox('debug_tabs');
   saveCheckbox('debug_requests');
