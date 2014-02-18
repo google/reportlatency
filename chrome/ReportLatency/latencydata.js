@@ -63,10 +63,14 @@ LatencyData.prototype.endRequest = function(data) {
     if (data.tabId in this.tab) {
       this.tab[data.tabId].endRequest(data);
     } else {
-      logObject(data.tabId + ' tabId not found in endRequest()', data);
+      if (localStorage['debug_requests'] == 'true') {
+	logObject(data.tabId + ' tabId not found in endRequest()', data);
+      }
     }
   } else {
-    logObject('malformed data in endRequest - no tabId', data);
+    if (localStorage['debug_requests'] == 'true') {
+      logObject('malformed data in endRequest - no tabId', data);
+    }
   }
 };
 
@@ -81,10 +85,14 @@ LatencyData.prototype.deleteRequest = function(data) {
     if (data.tabId in this.tab) {
       this.tab[data.tabId].deleteRequest(data);
     } else {
-      logObject(data.tabId + ' tabId not found in deleteRequest', data);
+      if (localStorage['debug_requests'] == 'true') {
+	logObject(data.tabId + ' tabId not found in deleteRequest', data);
+      }
     }
   } else {
-    logObject('malformed data in deleteRequest - no tabId', data);
+    if (localStorage['debug_requests'] == 'true') {
+      logObject('malformed data in deleteRequest - no tabId', data);
+    }
   }
 };
 

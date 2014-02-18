@@ -73,7 +73,9 @@ chrome.webRequest.onCompleted.addListener( onCompletedRequest,
 					   { urls: ['*://*/*'] });
 
 function onRequestError(data) {
-  logObject('onRequestError()', data);
+  if (localStorage['debug_requests'] == 'true') {
+    logObject('onRequestError()', data);
+  }
   latencyData.deleteRequest(data);
 }
 chrome.webRequest.onErrorOccurred.addListener( onRequestError,
