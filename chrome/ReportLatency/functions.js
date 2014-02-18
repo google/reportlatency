@@ -23,29 +23,6 @@
 
 
 /**
- * debugLog() is a console.log wrapper that the browser can enable.
- *
- * @param {string} str is the string to put in the Javascript console.
- **/
-function debugLog(str) {
-  if (localStorage['debug_mode'] == 'true') {
-    console.log(str);
-  }
-}
-
-/**
- * debugLogObject() is a console.log wrapper that the browser can enable.
- *
- * @param {string} str is the string to put in the Javascript console.
- * @param {object} o is an object to write to the Javascript console.
- **/
-function debugLogObject(str, o) {
-  if (localStorage['debug_mode'] == 'true') {
-    logObject(str, o);
-  }
-}
-
-/**
  * logObject() write object fields as strings to a function (typically
  * Javascript's console).
  *
@@ -69,8 +46,8 @@ function logObject(str, o) {
  * @param {function} callback is the URL-claiming function for the service.
  **/
 function registerService(id, description, callback) {
-  debugLog('registerService(' + id + ',' +
-           description + ',' + callback + ')');
+  console.log('registerService(' + id + ',' +
+	      description + ',' + callback + ')');
 
   var o = { 'description': description,
             'callback': callback };

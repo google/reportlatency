@@ -96,8 +96,10 @@ LatencyData.prototype.deleteRequest = function(data) {
  *
  */
 LatencyData.prototype.tabRemoved = function(tabId, removeInfo) {
-  debugLogObject('LatencyData.tabRemoved(' + tabId + ')',
-		 removeInfo);
+  if (localStorage['debug_tabs']) {
+    logObject('LatencyData.tabRemoved(' + tabId + ')',
+	      removeInfo);
+  }
   if (tabId in this.tab) {
     if (!('service' in this.tab[tabId])) {
       var name = aggregateName(this.tab[tabId].navigation.url);
@@ -105,7 +107,9 @@ LatencyData.prototype.tabRemoved = function(tabId, removeInfo) {
     }
     delete this.tab[tabId];
   } else {
-    console.log('  missing tabId ' + tabId + ' received in tabRemoved()');
+    if (localStorage['debug_tabs']) {
+      console.log('  missing tabId ' + tabId + ' received in tabRemoved()');
+    }
   }
 }
 
@@ -176,11 +180,15 @@ LatencyData.prototype.deleteNavigation = function(data) {
  * @param {string} skip is a servicename to skip reports for
  **/
 LatencyData.prototype.postLatency = function(skip) {
-  console.log('postLatency(! ' + skip + ')');
+  if (localStorage['debug_posts'] == 'true') {
+    console.log('postLatency(! ' + skip + ')');
+  }
 
   var bestFinal = this.stats.best(skip);
-  if (!bestFinal) {
-    debugLog('  no best service to return');
+  if (!bestFinal) { 
+    if (localStorage['debug_posts'] == 'true') {
+      console.log('  no best service to return');
+    }
     this.reportExtensionStats();
     return;
   }
@@ -189,7 +197,9 @@ LatencyData.prototype.postLatency = function(skip) {
 
   var req = new XMLHttpRequest();
 
-  console.log('  posting ' + bestFinal);
+  if (localStorage['log_posts'] == 'true') {
+    console.log('  posting ' + bestFinal);
+  }
   req.open('POST', reportToUrl(), true);
   req.setRequestHeader('Content-type', 'application/json');
   var report={};
@@ -200,7 +210,9 @@ LatencyData.prototype.postLatency = function(skip) {
   report.tz = timeZone(Date());
   report.services = {};
   report.services[bestFinal] = bestService; // future: could be more than one
-  console.log(JSON.stringify(report))
+  if (localStorage['debug_posts'] == 'true') {
+    console.log(JSON.stringify(report));
+  }
   req.send(JSON.stringify(report));
   this.stats.delete(bestFinal);
   this.reportExtensionStats();

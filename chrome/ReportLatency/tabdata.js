@@ -39,19 +39,25 @@ function TabData() {
  *
  */
 TabData.prototype.startRequest = function(data) {
-  debugLogObject('TabData(' + this.service + ').startRequest()', data);
+  if (localStorage['debug_requests'] == 'true') {
+    logObject('TabData(' + this.service + ').startRequest()', data);
+  }
   if ('requestId' in data) {
     if (data.requestId in this.request) {
-      logObject('new interleaved requestId ' + data.requestId, data);
       var data1 = Object.create(this.request[data.requestId]);
-      logObject('old interleaved requestId ' + data1.requestId, data1);
+      if (localStorage['debug_requests'] == 'true') {
+	logObject('new interleaved requestId ' + data.requestId, data);
+	logObject('old interleaved requestId ' + data1.requestId, data1);
+      }
       data1.timeStamp = data.timeStamp;
       data1.statusCode = data.statusCode;
       this.endRequest(data1);
     }
     this.request[data.requestId] = data;
   } else {
-    console.log('missing requestId in startRequest() data');
+    if (localStorage['debug_requests'] == 'true') {
+      console.log('missing requestId in startRequest() data');
+    }
   }
 };
 
@@ -62,7 +68,9 @@ TabData.prototype.startRequest = function(data) {
  *
  */
 TabData.prototype.endRequest = function(data) {
-  debugLogObject('TabData(' + this.service + ').endRequest()', data);
+  if (localStorage['debug_requests'] == 'true') {
+    logObject('TabData(' + this.service + ').endRequest()', data);
+  }
   if ('requestId' in data) {
     if (data.requestId in this.request) {
       if (!data.fromCache) {
@@ -82,19 +90,27 @@ TabData.prototype.endRequest = function(data) {
 	      this.stat.add(name, 'nreq', delay);
 	    }
 	  } else {
-	    logObject('no service name in endRequest()', data);
+	    if (localStorage['debug_requests'] == 'true') {
+	      logObject('no service name in endRequest()', data);
+	    }
 	  }
 	  delete this.request[data.requestId];
 	} else {
-	  logObject('missing or mismatched data.url in endRequest()', data);
+	  if (localStorage['debug_requests'] == 'true') {
+	    logObject('missing or mismatched data.url in endRequest()', data);
+	  }
 	}
       }
     } else {
-      logObject('requestId ' + data.requestId + ' not found in endRequest',
-		data);
+      if (localStorage['debug_requests'] == 'true') {
+	logObject('requestId ' + data.requestId + ' not found in endRequest',
+		  data);
+      }
     }
   } else {
-    logObject('missing requestId in endRequest()', data);
+    if (localStorage['debug_requests'] == 'true') {
+      logObject('missing requestId in endRequest()', data);
+    }
   }
 };
 
@@ -105,16 +121,22 @@ TabData.prototype.endRequest = function(data) {
  *
  */
 TabData.prototype.deleteRequest = function(data) {
-  debugLogObject('TabData(' + this.service + ').deleteRequest()', data);
+  if (localStorage['debug_requests'] == 'true') {
+    logObject('TabData(' + this.service + ').deleteRequest()', data);
+  }
   if ('requestId' in data) {
     if (data.requestId in this.request) {
       delete this.request[data.requestId];
     } else {
-      console.log('requestId ' + data.requestId +
-		  ' not found in deleteRequest()');
+      if (localStorage['debug_requests'] == 'true') {
+	console.log('requestId ' + data.requestId +
+		    ' not found in deleteRequest()');
+      }
     }
   } else {
-    console.log('missing requestId in deleteRequest() data');
+    if (localStorage['debug_requests'] == 'true') {
+      console.log('missing requestId in deleteRequest() data');
+    }
   }
 };
 
@@ -127,7 +149,9 @@ TabData.prototype.deleteRequest = function(data) {
  */
 TabData.prototype.startNavigation = function(data) {
   if (('parentFrameId' in data) && (data.parentFrameId < 0)) {
-    debugLogObject('TabData.startNavigation()', data);
+    if (localStorage['debug_navigations'] == 'true') {
+      logObject('TabData.startNavigation()', data);
+    }
     if ('service' in this) {
       delete this['service'];
     }
@@ -156,7 +180,9 @@ TabData.prototype.startNavigation = function(data) {
  *
  */
 TabData.prototype.endNavigation = function(data) {
-  debugLogObject('TabData.endNavigation()', data);
+  if (localStorage['debug_navigations'] == 'true') {
+    logObject('TabData.endNavigation()', data);
+  }
   if ('navigation' in this) {
     if (('frameId' in data)) {
       if (data.frameId == this.navigation.frameId) {
@@ -171,25 +197,39 @@ TabData.prototype.endNavigation = function(data) {
 	      }
 	      this.stat.add(original_name, 'nav', delay);
 	    } else {
-	      console.log('missing timeStamp in endNavigation() data');
+	      if (localStorage['debug_navigations'] == 'true') {
+		console.log('missing timeStamp in endNavigation() data');
+	      }
 	    }
 	  } else {
-	    console.log('endNavigation(' + data.url + ') not web');
+	    if (localStorage['debug_navigations'] == 'true') {
+	      console.log('endNavigation(' + data.url + ') not web');
+	    }
 	  }
 	} else {
-	  console.log('no url found in endNavigation() data');
+	  if (localStorage['debug_navigations'] == 'true') {
+	    console.log('no url found in endNavigation() data');
+	  }
 	}
       } else {
-	// console.log('  Meh. Don\'t care about subframes again.');
+	if (localStorage['debug_navigations'] == 'true') {
+	  console.log('  Meh. Don\'t care about subframes again.');
+	}
       }
     } else {
-      console.log('no frameId found');
+      if (localStorage['debug_navigations'] == 'true') {
+	console.log('no frameId found');
+      }
     }
   } else {
     if (data.frameId == 0) {
-      logObject('no existing navigation in endNavigation()', data);
+      if (localStorage['debug_navigations'] == 'true') {
+	logObject('no existing navigation in endNavigation()', data);
+      }
     } else {
-      // console.log('  Meh. Don\'t care about subframes again.');
+      if (localStorage['debug_navigations'] == 'true') {
+	console.log('  Meh. Don\'t care about subframes again.');
+      }
     }
   }
 };
@@ -203,10 +243,14 @@ TabData.prototype.endNavigation = function(data) {
  *
  */
 TabData.prototype.deleteNavigation = function(data) {
-  logObject('TabData.deleteNavigation(data)', data);
+  if (localStorage['debug_navigations'] == 'true') {
+    logObject('TabData.deleteNavigation(data)', data);
+  }
   if ('navigation' in this) {
     delete this['navigation'];
   } else {
-    console.log('  current navigation not found');
+    if (localStorage['debug_navigations'] == 'true') {
+      console.log('  current navigation not found');
+    }
   }
 };

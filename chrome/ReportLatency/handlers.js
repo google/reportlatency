@@ -35,7 +35,9 @@ function onCompletedNavigation(data) {
 chrome.webNavigation.onCompleted.addListener(onCompletedNavigation);
 
 function onNavigationError(data) {
-  logObject('onNavigationError()', data);
+  if (localStorage['debug_navigations'] == 'true') {
+    logObject('onNavigationError()', data);
+  }
   latencyData.deleteNavigation(data);
 }
 chrome.webNavigation.onErrorOccurred.addListener(onNavigationError);

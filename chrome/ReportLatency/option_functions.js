@@ -49,9 +49,13 @@ function saveOptions() {
   saveText('report_to');
   saveCheckbox('default_as_org');
   saveServices();
-  saveCheckbox('debug_mode');
   saveCheckbox('log_navigations');
   saveCheckbox('log_requests');
+  saveCheckbox('log_postss');
+  saveCheckbox('debug_navigations');
+  saveCheckbox('debug_tabs');
+  saveCheckbox('debug_requests');
+  saveCheckbox('debug_posts');
 
   var status = document.getElementById('status');
   status.innerHTML = 'Options Saved.';
@@ -112,9 +116,13 @@ function restoreOptions() {
   restoreDefaults();
   restoreText('report_to');
   restoreCheckbox('default_as_org');
-  restoreCheckbox('debug_mode');
   restoreCheckbox('log_requests');
   restoreCheckbox('log_navigations');
+  restoreCheckbox('log_posts');
+  restoreCheckbox('debug_navigations');
+  restoreCheckbox('debug_tabs');
+  restoreCheckbox('debug_requests');
+  restoreCheckbox('debug_posts');
 }
 
 document.querySelector('#save').addEventListener('click', saveOptions);

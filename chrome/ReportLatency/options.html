@@ -58,20 +58,27 @@ limitations under the License.
     <input type="checkbox" id="log_navigations" name="log_navigations" value="true">
       Navigations<br>
     <input type="checkbox" id="log_requests" name="log_requests" value="true">
-      Requests<p>
+      Requests<br>
+    <input type="checkbox" id="log_postss" name="log_posts" value="true">
+      Posts to the collection service<p>
 
 
-    Debug Mode
-    <input type="checkbox" id="debug_mode" name="debug_mode" value="true">
-	<br>
-	Send a lot more information to the Javascript console
-	(background page) for the extension.  This logs the beginning
-	and ending of each event and much of the data provided with
-	each event.  It does not log content or cookies of events, but
-	does log the full URLs that this extension sees.  Use only if
-	developing, debugging, or curious about how the extension
-	works.
+    Debug Mode <br>
+    <input type="checkbox" id="debug_navigations" name="debug_navigations" value="true">
+	Log full callback and objects related to navigation events.
+      <br>
+    <input type="checkbox" id="debug_requests" name="debug_requests" value="true">
+	Log full callback and objects related to request events.
+	There are many of these events and the browser will be impacted.
+      <br>
+    <input type="checkbox" id="debug_tabs" name="debug_tabs" value="true">
+	Log full callback and objects related to tab events.
+      <br>
+    <input type="checkbox" id="debug_posts" name="debug_posts" value="true">
+	Log calls and full objects related to stats posts back to collection service.
       <p>
+
+	<i>Logs are sent to the extensions Javascript console (background page).</i>
 
     <button type="button" id="save">Save</button>
     <div id="status"></div>

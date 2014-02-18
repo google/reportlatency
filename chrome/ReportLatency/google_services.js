@@ -70,7 +70,6 @@ var google_exact_host_function_map = {
 
 
 function googleName(host, path) {
-  debugLog('googleName(' + host + ',' + path + ')');
   // if service name isn't just the hostname in the URL
   // mostly for redirectors and services that use multiple hostnames
   var foo = google_exact_host_function_map[host];
