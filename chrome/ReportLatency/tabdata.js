@@ -72,8 +72,10 @@ TabData.prototype.endRequest = function(data) {
 	  if (name) {
 	    var delay = data.timeStamp -
 	      this.request[data.requestId].timeStamp;
-	    console.log(name + ' (' + this.service + ') requests +' +
-			delay + 'ms');
+	    if (localStorage['log_requests'] == 'true') {
+	      console.log(name + ' (' + this.service + ') requests +' +
+			  delay + ' ms');
+	    }
 	    if (this.service) {
 	      this.stat.add(name, 'ureq', delay);
 	    } else {
@@ -164,7 +166,9 @@ TabData.prototype.endNavigation = function(data) {
 	      var delay = data.timeStamp - this.navigation.timeStamp;
 	      var original_name = aggregateName(this.navigation.url);
 	      this.service = aggregateName(data.url);
-	      console.log(this.service + ' navigations +' + delay + 'ms'); 
+	      if (localStorage['log_navigations'] == 'true') {
+		console.log(this.service + ' navigations +' + delay + ' ms');
+	      }
 	      this.stat.add(original_name, 'nav', delay);
 	    } else {
 	      console.log('missing timeStamp in endNavigation() data');

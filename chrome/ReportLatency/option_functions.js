@@ -50,6 +50,8 @@ function saveOptions() {
   saveCheckbox('default_as_org');
   saveServices();
   saveCheckbox('debug_mode');
+  saveCheckbox('log_navigations');
+  saveCheckbox('log_requests');
 
   var status = document.getElementById('status');
   status.innerHTML = 'Options Saved.';
@@ -111,6 +113,8 @@ function restoreOptions() {
   restoreText('report_to');
   restoreCheckbox('default_as_org');
   restoreCheckbox('debug_mode');
+  restoreCheckbox('log_requests');
+  restoreCheckbox('log_navigations');
 }
 
 document.querySelector('#save').addEventListener('click', saveOptions);
