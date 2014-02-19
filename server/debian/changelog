@@ -1,3 +1,12 @@
+reportlatency (1.4.0) precise; urgency=low
+
+  * Major refactoring
+  * JSON protocol
+  * Drop tabupdates, add update vs navigation requests.
+  * Incompatible schema.
+
+ -- Drake Diedrich <dld@google.com>  Wed, 19 Feb 2014 12:22:11 -0800
+
 reportlatency (1.3.0) precise; urgency=low
 
   * Rebuild with new schema and only a report view
