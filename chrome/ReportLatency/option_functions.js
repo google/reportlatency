@@ -46,6 +46,7 @@ function saveServices() {
 }
 
 function saveOptions() {
+  console.log('saveOptions()');
   saveText('report_to');
   saveCheckbox('default_as_org');
   saveServices();
@@ -59,9 +60,12 @@ function saveOptions() {
   saveCheckbox('debug_extension');
 
   var status = document.getElementById('status');
-  status.innerHTML = 'Options Saved.';
+  var status2 = document.getElementById('status2');
+  status.innerHTML = ' Options Saved';
+  status2.innerHTML = ' Options Saved';
   setTimeout(function() {
     status.innerHTML = '';
+    status2.innerHTML = '';
   }, 750);
 }
 
@@ -128,6 +132,7 @@ function restoreOptions() {
 }
 
 document.querySelector('#save').addEventListener('click', saveOptions);
+document.querySelector('#save2').addEventListener('click', saveOptions);
 
 chrome.runtime.sendMessage({ rpc: "get_options" },
 			   function(response) {
