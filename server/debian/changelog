@@ -1,3 +1,10 @@
+reportlatency (1.4.1) precise; urgency=low
+
+  * Get server's own view of server_name for collected_on, rather than
+    what the client thinks it sent the post to.  SSL cert name is best.
+
+ -- Drake Diedrich <dld@google.com>  Fri, 21 Feb 2014 12:30:15 -0800
+
 reportlatency (1.4.0) precise; urgency=low
 
   * Major refactoring
