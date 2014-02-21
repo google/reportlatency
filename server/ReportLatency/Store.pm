@@ -225,7 +225,7 @@ sub new_upload {
       unless defined $self->{upload_insert};
 
   if (! defined $self->{hostname}) {
-    $self->{hostname} = $ENV{HTTP_HOST} || $ENV{SERVER_ADDR};
+    $self->{hostname} = $ENV{SERVER_NAME} || $ENV{SERVER_ADDR};
   }
 
   my $upload_sth =
