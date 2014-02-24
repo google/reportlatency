@@ -1,3 +1,9 @@
+reportlatency (1.4.2) precise; urgency=low
+
+  * track schema change in static tag data
+
+ -- Drake Diedrich <dld@google.com>  Mon, 24 Feb 2014 11:33:56 -0800
+
 reportlatency (1.4.1) precise; urgency=low
 
   * Get server's own view of server_name for collected_on, rather than
