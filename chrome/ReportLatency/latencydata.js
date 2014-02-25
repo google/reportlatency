@@ -43,10 +43,11 @@ function LatencyData() {
  */
 LatencyData.prototype.startRequest = function(data) {
   if ('tabId' in data) {
-    if (!(data.tabId in this.tab)) {
-      this.tab[data.tabId] = new TabData();
+    if (data.tabId in this.tab) {
+      this.tab[data.tabId].startRequest(data);
+    } else {
+      console.log('tabId ' + data.tabId + ' not started');
     }
-    this.tab[data.tabId].startRequest(data);
   } else {
     console.log('malformed data in startRequest - no tabId');
   }
@@ -129,7 +130,7 @@ LatencyData.prototype.tabRemoved = function(tabId, removeInfo) {
  */
 LatencyData.prototype.startNavigation = function(data) {
   if ('tabId' in data) {
-    if (!(data.tabId in this.tab)) {
+    if (('parentFrameId' in data) && (data.parentFrameId < 0)) {
       this.tab[data.tabId] = new TabData();
     }
     this.tab[data.tabId].startNavigation(data);

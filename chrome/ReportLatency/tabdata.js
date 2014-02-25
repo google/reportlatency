@@ -158,10 +158,10 @@ TabData.prototype.startNavigation = function(data) {
     if ('url' in data) {
       if (isWebUrl(data.url)) {
 	if ('timeStamp' in data) {
+	  this.navigation = data;
 	  if (localStorage['debug_navigations'] == 'true') {
 	    console.log('  starting navigation');
 	  }
-	  this.navigation = data;
 	} else {
 	  if (localStorage['debug_navigations'] == 'true') {
 	    console.log('missing timeStamp in startNavigation() data');
@@ -189,8 +189,8 @@ TabData.prototype.startNavigation = function(data) {
  *
  */
 TabData.prototype.endNavigation = function(data) {
-  if ('navigation' in this) {
-    if (('frameId' in data)) {
+  if (('frameId' in data)) {
+    if ('navigation' in this) {
       if (data.frameId == this.navigation.frameId) {
 	if (localStorage['debug_navigations'] == 'true') {
 	  logObject('TabData.endNavigation()', data);
@@ -222,24 +222,17 @@ TabData.prototype.endNavigation = function(data) {
 	  }
 	}
       } else {
-	if (localStorage['debug_navigations'] == 'true') {
-	  // console.log('  Meh. Don\'t care about subframes again.');
-	}
+	// console.log('  Meh. Don\'t care about subframes again.');
       }
     } else {
       if (localStorage['debug_navigations'] == 'true') {
-	console.log('no frameId found');
+	console.log('no navigation found for tab ' + data.tabId +
+		    'frame ' + data.frameId);
       }
     }
   } else {
-    if (data.frameId == 0) {
-      if (localStorage['debug_navigations'] == 'true') {
-	logObject('no existing navigation in endNavigation()', data);
-      }
-    } else {
-      if (localStorage['debug_navigations'] == 'true') {
-	//	console.log('  Meh. Don\'t care about subframes again.');
-      }
+    if (localStorage['debug_navigations'] == 'true') {
+      console.log('no frameId found');
     }
   }
 };
