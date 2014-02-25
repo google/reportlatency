@@ -50,18 +50,21 @@ chrome.tabs.onRemoved.addListener(onTabRemoved);
 function onBeforeRequest(data) {
   latencyData.startRequest(data);
 }
-chrome.webRequest.onBeforeRequest.addListener( onBeforeRequest, { urls: ['*://*/*'] });
+chrome.webRequest.onBeforeRequest.addListener( onBeforeRequest,
+					       { urls: ['*://*/*'] });
 
 function onBeforeRedirect(data) {
   latencyData.endRequest(data);
 }
-chrome.webRequest.onBeforeRedirect.addListener( onBeforeRedirect, urls: ['*://*/*'] });
+chrome.webRequest.onBeforeRedirect.addListener( onBeforeRedirect,
+						{ urls: ['*://*/*'] });
 
 
 function onCompletedRequest(data) {
   latencyData.endRequest(data);
 }
-chrome.webRequest.onCompleted.addListener( onCompletedRequest, { urls: ['*://*/*'] });
+chrome.webRequest.onCompleted.addListener( onCompletedRequest,
+					   { urls: ['*://*/*'] });
 
 function onRequestError(data) {
   if (localStorage['debug_requests'] == 'true') {
@@ -69,7 +72,8 @@ function onRequestError(data) {
   }
   latencyData.deleteRequest(data);
 }
-chrome.webRequest.onErrorOccurred.addListener( onRequestError, { urls: ['*://*/*'] });
+chrome.webRequest.onErrorOccurred.addListener( onRequestError,
+					       { urls: ['*://*/*'] });
 
 
 function onStartup() {
