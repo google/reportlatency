@@ -22,6 +22,8 @@
 
 test('LatencyData.*Request', function() {
   var ld = new LatencyData();
+  var ts = ld.tab[1] = new TabData();
+
   var data = {
     url: 'http://server/path',
     tabId: 1,
