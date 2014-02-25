@@ -46,7 +46,9 @@ LatencyData.prototype.startRequest = function(data) {
     if (data.tabId in this.tab) {
       this.tab[data.tabId].startRequest(data);
     } else {
-      console.log('tabId ' + data.tabId + ' not started');
+      if (data.tabId >= 0) {
+	console.log('tabId ' + data.tabId + ' not started');
+      }
     }
   } else {
     console.log('malformed data in startRequest - no tabId');
