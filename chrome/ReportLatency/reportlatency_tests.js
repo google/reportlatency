@@ -62,5 +62,8 @@ test('timeZone', function() {
   equal(timeZone('Thu Mar 28 2013 15:02:56 GMT-0700 (PDT)'),
       'PDT',
       'PDT');
+  equal(timeZone(null),
+      null,
+      'NULL');
 
 });
