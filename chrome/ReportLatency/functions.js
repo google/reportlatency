@@ -5,7 +5,7 @@
  *   generating code.
  * @author dld@google.com (DrakeDiedrich)
  *
- * Copyright 2013 Google Inc. All Rights Reserved.
+ * Copyright 2013,2014 Google Inc. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -272,11 +272,13 @@ function reportToUrl() {
  **/
 
 function timeZone(date) {
-  var abbrev = date.match(/GMT(\+|\-)\d{4} \(([A-Z]{3,5})\)/)[2];
-  if (abbrev) { return abbrev; }
+  if (date) {
+    var abbrev = date.match(/GMT(\+|\-)\d{4} \(([A-Z]{3,5})\)/)[2];
+    if (abbrev) { return abbrev; }
 
-  var offset = date.match(/GMT(\+|\-)\d{4}/);
-  if (offset) { return offset; }
+    var offset = date.match(/GMT(\+|\-)\d{4}/);
+    if (offset) { return offset; }
+  }
 
   return null;
 }
