@@ -70,7 +70,7 @@ function get_wire_options() {
       }
     }
   }
-  if (localStorage['default_as_org']) {
+  if (localStorage['default_as_org'] == 'true') {
     options.push('default_as_org');
   }
   return options;
@@ -240,7 +240,7 @@ function aggregateName(url) {
     if (name) return name;
   }
 
-  if (localStorage['default_as_org']) {
+  if (localStorage['default_as_org'] == 'true') {
     return defaultDomain(host);
   }
 
