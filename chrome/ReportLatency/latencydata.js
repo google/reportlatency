@@ -112,32 +112,7 @@ LatencyData.prototype.tabRemoved = function(tabId, removeInfo) {
 	      removeInfo);
   }
   if (tabId in this.tab) {
-    if (!('service' in this.tab[tabId])) {
-      if (localStorage['debug_tabs'] == 'true') {
-	console.log('  tab.service not yet defined');
-      }
-      if ('navigation' in this.tab[tabId]) {
-	if ('url' in this.tab[tabId].navigation) {
-	  var name = aggregateName(this.tab[tabId].navigation.url);
-	  this.stats.increment(name,name,'nav','tabclosed');
-	  if (localStorage['debug_tabs'] == 'true') {
-	    console.log('  increment tabclosed for ' + name);
-	  }
-	} else {
-	  if (localStorage['debug_tabs'] == 'true') {
-	    console.log('  no navigation.url');
-	  }
-	}
-      } else {
-	if (localStorage['debug_tabs'] == 'true') {
-	  console.log('  no navigation');
-	}
-      }
-    } else {
-      if (localStorage['debug_tabs'] == 'true') {
-	console.log('  tab.service is already ' + this.tab[tabId].service);
-      }
-    }
+    this.tab[tabId].tabClosed(this.stats);
     delete this.tab[tabId];
   } else {
     if (localStorage['debug_tabs'] == 'true') {

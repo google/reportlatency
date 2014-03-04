@@ -251,6 +251,11 @@ TabData.prototype.deleteNavigation = function(data) {
       logObject('TabData.deleteNavigation(data)', data);
     }
     if ('navigation' in this) {
+      if ('error' in data) {
+	if (data.error == 'net::ERR_ABORTED') {
+	  this.nav_aborted = aggregateName(data.url);
+	}
+      }
       delete this['navigation'];
     } else {
       if (localStorage['debug_navigations'] == 'true') {
@@ -259,3 +264,47 @@ TabData.prototype.deleteNavigation = function(data) {
     }
   }
 };
+
+/**
+ * Callback when a tab is removed by the browser.  Increment tabclosed
+ * for the open requests and navigations.
+ *
+ */
+TabData.prototype.tabClosed = function(stats) {
+  if (!('service' in this)) {
+    if (localStorage['debug_tabs'] == 'true') {
+      console.log('  tab.service not yet defined');
+    }
+    if ('navigation' in this) {
+      if ('url' in this.navigation) {
+	// received before the deleteNavigation() event
+	var name = aggregateName(this.navigation.url);
+	stats.increment(name,name,'nav','tabclosed');
+	if (localStorage['debug_tabs'] == 'true') {
+	  console.log('  increment tabclosed for ' + name);
+	}
+      } else {
+	if (localStorage['debug_tabs'] == 'true') {
+	  console.log('  no navigation.url');
+	}
+      }
+    } else {
+      if ('nav_aborted' in this) {
+	// received after the deleteNavigation() event
+	var name = this.nav_aborted;
+	stats.increment(name,name,'nav','tabclosed');
+	if (localStorage['debug_tabs'] == 'true') {
+	  console.log('  increment tabclosed for ' + name);
+	}
+      } else {
+	if (localStorage['debug_tabs'] == 'true') {
+	  console.log('  no navigation');
+	}
+      }
+    }
+  } else {
+    if (localStorage['debug_tabs'] == 'true') {
+      console.log('  tab.service is already ' + this.service);
+   }
+  }
+}
