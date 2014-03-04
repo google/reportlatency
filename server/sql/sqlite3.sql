@@ -113,8 +113,7 @@ CREATE INDEX location_ip ON location(ip);
 
 CREATE TABLE match (
   tag TEXT,
-  re TEXT,
-  notmatch TEXT
+  re TEXT
 );
 
 CREATE TABLE notmatch (
