@@ -47,7 +47,10 @@ LatencyData.prototype.startRequest = function(data) {
       this.tab[data.tabId].startRequest(data);
     } else {
       if (data.tabId >= 0) {
-	console.log('tabId ' + data.tabId + ' not started');
+	if (localStorage['debug_tabs'] == 'true' ||
+	    localStorage['debug_requestss'] == 'true') {
+	  console.log('tabId ' + data.tabId + ' not started');
+	}
       }
     }
   } else {
