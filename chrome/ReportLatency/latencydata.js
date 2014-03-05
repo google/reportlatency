@@ -48,7 +48,7 @@ LatencyData.prototype.startRequest = function(data) {
     } else {
       if (data.tabId >= 0) {
 	if (localStorage['debug_tabs'] == 'true' ||
-	    localStorage['debug_requestss'] == 'true') {
+	    localStorage['debug_requests'] == 'true') {
 	  console.log('tabId ' + data.tabId + ' not started');
 	}
       }
