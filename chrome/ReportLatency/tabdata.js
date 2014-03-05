@@ -288,13 +288,27 @@ TabData.prototype.tabClosed = function(stats) {
 	  console.log('  no navigation.url');
 	}
       }
+      for (var r in this.request) {
+	var name = aggregateName(r.url);
+	stats.increment(name,name,'nreq','tabclosed');
+	if (localStorage['debug_tabs'] == 'true') {
+	  console.log('  increment nreq[' + name + '].tabclosed');
+	}
+      }
     } else {
       if ('nav_aborted' in this) {
 	// received after the deleteNavigation() event
 	var name = this.nav_aborted;
 	stats.increment(name,name,'nav','tabclosed');
 	if (localStorage['debug_tabs'] == 'true') {
-	  console.log('  increment tabclosed for ' + name);
+	  console.log('  increment navigation[' + name + '].tabclosed');
+	}
+	for (var r in this.request) {
+	  var name = aggregateName(r.url);
+	  stats.increment(name,name,'nreq','tabclosed');
+	  if (localStorage['debug_tabs'] == 'true') {
+	    console.log('  increment nreq[' + name + '].tabclosed');
+	  }
 	}
       } else {
 	if (localStorage['debug_tabs'] == 'true') {
@@ -305,6 +319,10 @@ TabData.prototype.tabClosed = function(stats) {
   } else {
     if (localStorage['debug_tabs'] == 'true') {
       console.log('  tab.service is already ' + this.service);
+   }
+   for (var r in this.request) {
+     var name = aggregateName(r.url);
+     stats.increment(name,name,'ureq','tabclosed');
    }
   }
 }
