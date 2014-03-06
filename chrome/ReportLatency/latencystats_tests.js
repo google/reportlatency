@@ -3,7 +3,7 @@
  * @fileoverview This file contains QUnit tests for the LatencyStats object.
  * @author dld@google.com (DrakeDiedrich)
  *
- * Copyright 2013 Google Inc. All Rights Reserved.
+ * Copyright 2013,2014 Google Inc. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,16 +59,6 @@ test('LatencyStats.transfer', function() {
   equal(t.stat['request'].count, 2, 'request count');
   equal(t.stat['tabupdate'].total, 1, 'tabupdate total');
   equal(t.stat['tabupdate'].count, 1, 'tabupdate count');
-});
-
-test('LatencyStats.params', function() {
-  var s = new LatencyStats();
-
-  s.add('navigation', 5);
-  equal(s.params(),
-      '&navigation_count=1&navigation_total=5' +
-      '&navigation_high=5&navigation_low=5',
-      'values');
 });
 
 test('LatencyStats.count', function() {

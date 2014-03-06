@@ -4,7 +4,7 @@
  *    latencies, each stored in a Stat object.
  * @author dld@google.com (DrakeDiedrich)
  *
- * Copyright 2013 Google Inc. All Rights Reserved.
+ * Copyright 2013,2014 Google Inc. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,20 +79,6 @@ LatencyStats.prototype.transfer = function(stats) {
   }
 };
 
-
-/**
- * Return a CGI form string used in reporting a Stat centrally.
- *
- * @param {string} name The name of this stat as reported to the server.
- * @return {string} CGI form string representing this Stat.
- */
-LatencyStats.prototype.params = function(name) {
-  var params = '';
-  for (var s in this.stat) {
-    params = params + this.stat[s].params(s);
-  }
-  return params;
-};
 
 /**
  * @param {string} measurement is the name to aggregate.

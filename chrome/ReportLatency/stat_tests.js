@@ -3,7 +3,7 @@
  * @fileoverview This file contains QUnit tests for the Stat object.
  * @author dld@google.com (DrakeDiedrich)
  *
- * Copyright 2013 Google Inc. All Rights Reserved.
+ * Copyright 2013,2014 Google Inc. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -105,15 +105,5 @@ test('Stat.transfer', function() {
   equal(s.high, 12, 'third transfer high');
   equal(s.error, 2, 'third transfer error');
   equal(s.interrupt, 1, 'third transfer interrupt');
-});
-
-test('Stat.params', function() {
-  var s = new Stat();
-  equal(s.params('f'), '', 'empty');
-
-  s.add(1);
-  equal(s.params('f'),
-      '&f_count=1&f_total=1&f_high=1&f_low=1',
-      'values');
 });
 

@@ -6,7 +6,7 @@
  *     average and range to be computed.
  * @author dld@google.com (DrakeDiedrich)
  *
- * Copyright 2013 Google Inc. All Rights Reserved.
+ * Copyright 2013,2014 Google Inc. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -110,27 +110,3 @@ Stat.prototype.transfer = function(stat) {
   }
 };
 
-
-/**
- * Return a CGI form string used in reporting a Stat centrally.
- *
- * @this {Stat}
- * @param {string} name The name of this stat as reported to the server.
- * @return {string} CGI form string representing this Stat.
- */
-Stat.prototype.params = function(name) {
-  var params = '';
-  if (this.count) {
-    params = params + '&' + name + '_count=' + this.count;
-  }
-  if (this.total) {
-    params = params + '&' + name + '_total=' + this.total;
-  }
-  if (this.high) {
-    params = params + '&' + name + '_high=' + this.high;
-  }
-  if (this.low) {
-    params = params + '&' + name + '_low=' + this.low;
-  }
-  return params;
-};
