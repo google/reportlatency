@@ -82,13 +82,23 @@ LatencyStats.prototype.transfer = function(stats) {
 
 /**
  * @param {string} measurement is the name to aggregate.
- * @returns {number} the count field for the requested measurement Stat
+ * @returns {number} the count and other countable fields for the
+ *    requested measurement Stat
  */
 LatencyStats.prototype.count = function(measurement) {
+  var count=0;
   if (measurement in this.stat) {
-    return this.stat[measurement].count;
+    count += this.stat[measurement].count;
+    for (var countable in this.stat[measurement]) {
+      if (!(countable in Stat.prototype)) {
+	if (countable != 'count' && countable != 'total' &&
+	    countable != 'high' && countable != 'low') {
+	  count += this.stat[measurement][countable];
+	}
+      }
+    }
   }
-  return 0;
+  return count;
 };
 
 /**
