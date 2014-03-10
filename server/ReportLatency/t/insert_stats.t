@@ -19,7 +19,7 @@
 use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
-use Test::More tests => 8;
+use Test::More tests => 10;
 
 BEGIN { use lib '..'; }
 
@@ -73,7 +73,7 @@ $store->add_update_request_stats($upload_id, 'service', 'server',
 				     $reqstats);
 ($avg) =
   $dbh->selectrow_array("SELECT sum(total)/count(*) FROM update_request");
-is($avg, 1000, '1000 ms average update request latency ');
+is($avg, 2000, '2000 ms average update request latency ');
 
 my $navstats = { count => 1, total => 1500 };
 $store->add_navigation_stats($upload_id, 'service', 'server',
