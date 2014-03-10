@@ -65,7 +65,7 @@ my ($redirs) =
   $dbh->selectrow_array("SELECT sum(response300) FROM navigation_request");
 is($redirs, 1, '1 redir response');
 
-$reqstats = { count => 1, total => 1000, response => { 200 => 1 } };
+$reqstats = { count => 1, total => 1000, response => { 200 => 1, 404 => 1 } };
 $store->add_navigation_request_stats($upload_id, 'service', 'service',
 				     $reqstats);
 ($avg) =
@@ -74,6 +74,9 @@ is($avg, 550, '550 ms average nav request latency ');
 my ($good) =
   $dbh->selectrow_array("SELECT sum(response200) FROM navigation_request");
 is($good, 1, '1 good response');
+my ($error) =
+  $dbh->selectrow_array("SELECT sum(response400) FROM navigation_request");
+is($error, 1, '1 error response');
 
 $reqstats = { count => 1, total => 2000 };
 $store->add_update_request_stats($upload_id, 'service', 'server',
@@ -89,14 +92,8 @@ my ($bad) =
   $dbh->selectrow_array("SELECT sum(response500) FROM update_request");
 is($bad, 1, '1 bad response');
 
-my $navstats = { count => 1, total => 1500, response => { 200 => 1} };
+my $navstats = { count => 1, total => 1500 };
 $store->add_navigation_stats($upload_id, 'service', 'server', $navstats);
 ($avg) = $dbh->selectrow_array("SELECT sum(total)/count(*) FROM navigation");
 is($avg, 1500, '1500 ms average update request latency ');
-
-$navstats = { response => { 404 => 1} };
-$store->add_navigation_stats($upload_id, 'service', 'server', $navstats);
-my ($error) =
-  $dbh->selectrow_array("SELECT sum(response400) FROM navigation");
-is($error, 1, '1 error response');
 

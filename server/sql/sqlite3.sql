@@ -80,10 +80,6 @@ CREATE TABLE navigation (
   high		REAL,
   low		REAL,
   tabclosed	INTEGER,
-  response200	INTEGER,
-  response300	INTEGER,
-  response400	INTEGER,
-  response500	INTEGER,
   FOREIGN KEY(upload) REFERENCES upload(id)
 );
 CREATE INDEX navigation_name ON navigation(name);

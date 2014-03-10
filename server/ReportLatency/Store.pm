@@ -178,13 +178,16 @@ sub add_navigation_stats {
   $self->{insert_navigations} =
     $self->{dbh}->prepare("INSERT INTO navigation " .
 			  "(upload, service, name, count, total, high, low, " .
-			  "tabclosed, response200, response300, " .
-			  "response400, response500) " .
-			  "VALUES(?,?,?,?,?,?,?,?,?,?,?,?);")
+			  "tabclosed) " .
+			  "VALUES(?,?,?,?,?,?,?,?);")
       unless defined $self->{insert_navigations};
 
-  $self->insert_stats($self->{insert_navigations},
-		      $upload_id, $service, $name, $navstats);
+  $self->{insert_navigations}->execute($upload_id, $service, $name,
+				       $navstats->{'count'},
+				       $navstats->{'total'},
+				       $navstats->{'high'},
+				       $navstats->{'low'},
+				       $navstats->{'tabclosed'});
 }
 
 
