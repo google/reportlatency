@@ -19,7 +19,7 @@
 use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
-use Test::More tests => 10;
+use Test::More tests => 13;
 
 BEGIN { use lib '..'; }
 
@@ -61,12 +61,25 @@ is($upload_id,1,'upload_id');
 my ($count) = $dbh->selectrow_array("SELECT count(*) FROM upload");
 is($count, 1, '1 upload');
 
-my $reqstats = { count => 1, total => 1000 };
+my $reqstats = { count => 1, total => 100, response => { 304 => 1 } };
 $store->add_navigation_request_stats($upload_id, 'service', 'server',
 				     $reqstats);
 my ($avg) =
   $dbh->selectrow_array("SELECT sum(total)/count(*) FROM navigation_request");
-is($avg, 1000, '1000 ms average nav request latency ');
+is($avg, 100, '100 ms average nav request latency ');
+my ($redirs) =
+  $dbh->selectrow_array("SELECT sum(response300) FROM navigation_request");
+is($redirs, 1, '1 redir response');
+
+$reqstats = { count => 1, total => 1000, response => { 200 => 1 } };
+$store->add_navigation_request_stats($upload_id, 'service', 'service',
+				     $reqstats);
+($avg) =
+  $dbh->selectrow_array("SELECT sum(total)/count(*) FROM navigation_request");
+is($avg, 550, '550 ms average nav request latency ');
+my ($good) =
+  $dbh->selectrow_array("SELECT sum(response200) FROM navigation_request");
+is($good, 1, '1 good response');
 
 $reqstats = { count => 1, total => 2000 };
 $store->add_update_request_stats($upload_id, 'service', 'server',
@@ -76,11 +89,10 @@ $store->add_update_request_stats($upload_id, 'service', 'server',
 is($avg, 2000, '2000 ms average update request latency ');
 
 my $navstats = { count => 1, total => 1500 };
-$store->add_navigation_stats($upload_id, 'service', 'server',
-				     $navstats);
-($avg) =
-  $dbh->selectrow_array("SELECT sum(total)/count(*) FROM navigation");
+$store->add_navigation_stats($upload_id, 'service', 'server', $navstats);
+($avg) = $dbh->selectrow_array("SELECT sum(total)/count(*) FROM navigation");
 is($avg, 1500, '1500 ms average update request latency ');
+
 
 ok($dbh->rollback,'db rollback');
 
