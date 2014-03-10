@@ -19,7 +19,7 @@
 use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
-use Test::More tests => 13;
+use Test::More tests => 12;
 
 BEGIN { use lib '..'; }
 
@@ -40,16 +40,10 @@ my $dbfile = "$dir/latency.sqlite3";
 
 my $dbh;
 $dbh = DBI->connect("dbi:SQLite:dbname=$dbfile",
-		       {AutoCommit => 0}, '')
+		       {AutoCommit => 1}, '')
   or die $dbh->errstr;
 
 my $store = new ReportLatency::Store(dbh => $dbh);
-
-isa_ok($store, 'ReportLatency::Store');
-
-is($store->{dbh}, $dbh, "dbh");
-
-$dbh->begin_work;
 
 my $upload_id = $store->new_upload({ hostname => 'localhost',
 				     location => 'localdomain',
@@ -88,11 +82,21 @@ $store->add_update_request_stats($upload_id, 'service', 'server',
   $dbh->selectrow_array("SELECT sum(total)/count(*) FROM update_request");
 is($avg, 2000, '2000 ms average update request latency ');
 
-my $navstats = { count => 1, total => 1500 };
+$reqstats = { response => { 500 => 1} };
+$store->add_update_request_stats($upload_id, 'service', 'server',
+				     $reqstats);
+my ($bad) =
+  $dbh->selectrow_array("SELECT sum(response500) FROM update_request");
+is($bad, 1, '1 bad response');
+
+my $navstats = { count => 1, total => 1500, response => { 200 => 1} };
 $store->add_navigation_stats($upload_id, 'service', 'server', $navstats);
 ($avg) = $dbh->selectrow_array("SELECT sum(total)/count(*) FROM navigation");
 is($avg, 1500, '1500 ms average update request latency ');
 
-
-ok($dbh->rollback,'db rollback');
+$navstats = { response => { 404 => 1} };
+$store->add_navigation_stats($upload_id, 'service', 'server', $navstats);
+my ($error) =
+  $dbh->selectrow_array("SELECT sum(response400) FROM navigation");
+is($error, 1, '1 error response');
 

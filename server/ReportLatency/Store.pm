@@ -128,7 +128,7 @@ sub insert_stats {
 	$r300 += $val;
       } elsif ($key >= 400 && $key < 500) {
 	$r400 += $val;
-      } elsif ($key >= 500 && $key < 500) {
+      } elsif ($key >= 500 && $key < 600) {
 	$r500 += $val;
       }
     }
