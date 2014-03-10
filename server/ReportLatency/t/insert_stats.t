@@ -68,6 +68,19 @@ my ($avg) =
   $dbh->selectrow_array("SELECT sum(total)/count(*) FROM navigation_request");
 is($avg, 1000, '1000 ms average nav request latency ');
 
+$reqstats = { count => 1, total => 2000 };
+$store->add_update_request_stats($upload_id, 'service', 'server',
+				     $reqstats);
+($avg) =
+  $dbh->selectrow_array("SELECT sum(total)/count(*) FROM update_request");
+is($avg, 1000, '1000 ms average update request latency ');
+
+my $navstats = { count => 1, total => 1500 };
+$store->add_navigation_stats($upload_id, 'service', 'server',
+				     $navstats);
+($avg) =
+  $dbh->selectrow_array("SELECT sum(total)/count(*) FROM navigation");
+is($avg, 1500, '1500 ms average update request latency ');
 
 ok($dbh->rollback,'db rollback');
 
