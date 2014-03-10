@@ -43,8 +43,10 @@ CREATE TABLE navigation_request (
   high		REAL,
   low		REAL,
   tabclosed	INTEGER,
-  error400	INTEGER,
-  error500	INTEGER,
+  response200	INTEGER,
+  response300	INTEGER,
+  response400	INTEGER,
+  response500	INTEGER,
   FOREIGN KEY(upload) REFERENCES upload(id)
 );
 CREATE INDEX navigation_request_name ON navigation_request(name);
@@ -60,8 +62,10 @@ CREATE TABLE update_request (
   high		REAL,
   low		REAL,
   tabclosed	INTEGER,
-  error400	INTEGER,
-  error500	INTEGER,
+  response200	INTEGER,
+  response300	INTEGER,
+  response400	INTEGER,
+  response500	INTEGER,
   FOREIGN KEY(upload) REFERENCES upload(id)
 );
 CREATE INDEX update_request_name ON update_request(name);
@@ -76,8 +80,10 @@ CREATE TABLE navigation (
   high		REAL,
   low		REAL,
   tabclosed	INTEGER,
-  error400	INTEGER,
-  error500	INTEGER,
+  response200	INTEGER,
+  response300	INTEGER,
+  response400	INTEGER,
+  response500	INTEGER,
   FOREIGN KEY(upload) REFERENCES upload(id)
 );
 CREATE INDEX navigation_name ON navigation(name);

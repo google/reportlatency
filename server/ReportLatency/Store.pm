@@ -117,15 +117,19 @@ sub option_bits {
 
 sub insert_stats {
   my ($self, $insert, $upload_id, $service, $name, $stats) = @_;
-  my ($error400, $error500);
+  my ($r200,$r300,$r400,$r500);
 
-  if (defined $stats->{"error"}) {
+  if (defined $stats->{"response"}) {
     my ($key,$val);
-    while ( ($key,$val) = each %{$stats->{"error"}}) {
-      if ($key >= 400 && $key < 500) {
-	$error400 += $val;
+    while ( ($key,$val) = each %{$stats->{"response"}}) {
+      if ($key >= 200 && $key < 300) {
+	$r200 += $val;
+      } elsif ($key >= 300 && $key < 400) {
+	$r400 += $val;
+      } elsif ($key >= 400 && $key < 500) {
+	$r400 += $val;
       } elsif ($key >= 500 && $key < 500) {
-	$error500 += $val;
+	$r500 += $val;
       }
     }
   }
@@ -135,7 +139,7 @@ sub insert_stats {
 		   $stats->{'total'},
 		   $stats->{'high'},
 		   $stats->{'low'},
-		   $stats->{'tabclosed'}, $error400, $error500);
+		   $stats->{'tabclosed'}, $r200, $r300, $r400, $r500);
 }
 
 sub add_navigation_request_stats {
@@ -143,9 +147,10 @@ sub add_navigation_request_stats {
 
   $self->{insert_navigation_requests} =
     $self->{dbh}->prepare("INSERT INTO navigation_request " .
-			  "(upload, service, name, count, total, high, low, ".
-			  "tabclosed, error400, error500) " .
-			  "VALUES(?,?,?,?,?,?,?,?,?,?);")
+			  "(upload, service, name, count, total, high, low, " .
+			  "tabclosed, response200, response300, " .
+			  "response400, response500) " .
+			  "VALUES(?,?,?,?,?,?,?,?,?,?,?,?);")
       unless defined $self->{insert_navigation_requests};
 
   $self->insert_stats($self->{insert_navigation_requests},
@@ -158,8 +163,9 @@ sub add_update_request_stats {
   $self->{insert_update_requests} =
     $self->{dbh}->prepare("INSERT INTO update_request " .
 			  "(upload, service, name, count, total, high, low, " .
-			  "tabclosed, error400, error500 ) " .
-			  "VALUES(?,?,?,?,?,?,?,?,?,?);")
+			  "tabclosed, response200, response300, " .
+			  "response400, response500 ) " .
+			  "VALUES(?,?,?,?,?,?,?,?,?,?,?,?);")
       unless defined $self->{insert_update_requests};
 
   $self->insert_stats($self->{insert_update_requests},
@@ -172,8 +178,9 @@ sub add_navigation_stats {
   $self->{insert_navigations} =
     $self->{dbh}->prepare("INSERT INTO navigation " .
 			  "(upload, service, name, count, total, high, low, " .
-			  "tabclosed, error400, error500) " .
-			  "VALUES(?,?,?,?,?,?,?,?,?,?);")
+			  "tabclosed, response200, response300, " .
+			  "response400, response500) " .
+			  "VALUES(?,?,?,?,?,?,?,?,?,?,?,?);")
       unless defined $self->{insert_navigations};
 
   $self->insert_stats($self->{insert_navigations},
