@@ -1,3 +1,9 @@
+reportlatency (1.4.3) precise; urgency=low
+
+  * Bump version.  schema change.
+
+ -- Drake Diedrich <dld@google.com>  Mon, 10 Mar 2014 17:09:51 -0700
+
 reportlatency (1.4.2) precise; urgency=low
 
   * track schema change in static tag data
