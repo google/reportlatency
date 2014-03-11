@@ -15,7 +15,7 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
-begin;
+BEGIN;
 DROP INDEX navigation_request_name;
 DROP INDEX navigation_request_service;
 DROP INDEX update_request_name;
@@ -81,6 +81,19 @@ CREATE INDEX navigation_name ON navigation(name);
 CREATE INDEX navigation_service ON navigation(service);
 
 
-end;
-
 -- migrate the old data into the new tables here
+INSERT INTO navigation(upload,name,service,count,total,high,low,tabclosed)
+  SELECT upload,name,service,count,total,high,low,tabclosed
+    FROM old_navigation;
+
+INSERT INTO
+  navigation_request(upload,name,service,count,total,high,low,tabclosed)
+  SELECT upload,name,service,count,total,high,low,tabclosed
+    FROM old_navigation_request;
+
+INSERT INTO
+  update_request(upload,name,service,count,total,high,low,tabclosed)
+  SELECT upload,name,service,count,total,high,low,tabclosed
+    FROM old_update_request;
+
+END;
