@@ -27,9 +27,9 @@ my $store = {};
 my $view = new ReportLatency::StaticView($store);
 isa_ok($view, 'ReportLatency::StaticView');
 
-is($view->service_img_url('www.company.com'), 'www.company.com.png',
+is($view->service_img_url('www.company.com'), 'navigation.png',
    'hostname passthrough png image name');
-is($view->service_img_url('www.company.com/home'), 'home.png',
+is($view->service_img_url('www.company.com/home'), 'navigation.png',
    'relative path to png from service name with path');
-is($view->service_img_url('www.company.com/home/person'), 'person.png',
+is($view->service_img_url('www.company.com/home/person'), 'navigation.png',
    'relative 2-level path to png from service name with path');

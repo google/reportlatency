@@ -18,7 +18,7 @@
 
 use strict;
 use DBI;
-use Test::More tests => 18;
+use Test::More tests => 23;
 use File::Temp qw(tempfile tempdir);
 
 $ENV{'PATH'} = '/usr/bin';
@@ -64,26 +64,37 @@ chdir($dir);
 
 main();
 
-open(my $id,"-|","identify", "$dir/tags/summary.png") or die $!;
+open(my $id,"-|","identify", "$dir/tags/summary/navigation.png") or die $!;
 my $line = $id->getline;
 like($line,
-     qr/summary\.png PNG \d+x\d+/,
+     qr/navigation\.png PNG \d+x\d+/,
      'PNG');
 
 unlink($dbfile);
 rmdir("$dir/data");
-ok(unlink("$dir/locations/office.google.com..png"),"unlink location png");
-ok(unlink("$dir/locations/office.google.com..html"),"unlink location html");
+ok(unlink("$dir/locations/office.google.com./navigation.png"),
+   "unlink location png");
+ok(unlink("$dir/locations/office.google.com./index.html"),
+   "unlink location html");
+ok(rmdir("$dir/locations/office.google.com."),"rmdir office.google.com.");
 ok(rmdir("$dir/locations"),"rmdir locations/");
-ok(unlink("$dir/services/service.png"),"rmdir service/service.png");
-ok(unlink("$dir/services/service.html"),"unlink service.html");
-ok(unlink("$dir/services/slow.png"),"rmdir service/slow.png");
-ok(unlink("$dir/services/slow.html"),"unlink slow.html");
+ok(unlink("$dir/services/service/navigation.png"),
+   "rmdir service/service/navigation.png");
+ok(unlink("$dir/services/service/index.html"),
+   "unlink service/index.html");
+ok(unlink("$dir/services/slow/navigation.png"),
+   "rmdir service/slow/navigation.png");
+ok(unlink("$dir/services/slow/index.html"),"unlink slow/index.html");
+ok(rmdir("$dir/services/service"),"unlink service/");
+ok(rmdir("$dir/services/slow"),"unlink slow/");
 ok(rmdir("$dir/services"),"unlink services/");
-ok(unlink("$dir/tags/summary.png"),"unlink summary.png");
-ok(unlink("$dir/tags/summary.html"),"unlink summary.html");
-ok(unlink("$dir/tags/untagged.html"),"unlink untagged.html");
-ok(unlink("$dir/tags/untagged.png"),"unlink untagged.png");
+ok(unlink("$dir/tags/summary/navigation.png"),"unlink summary/navigation.png");
+ok(unlink("$dir/tags/summary/index.html"),"unlink summary/index.html");
+ok(unlink("$dir/tags/untagged/index.html"),"unlink untagged/index.html");
+ok(unlink("$dir/tags/untagged/navigation.png"),
+   "unlink untagged/navigation.png");
+ok(rmdir("$dir/tags/summary"),"rmdir summary/");
+ok(rmdir("$dir/tags/untagged"),"rmdir untagged/");
 ok(rmdir("$dir/tags"),"rmdir tags/");
 ok(rmdir($dir),"rmdir tmpdir");
 

@@ -243,4 +243,21 @@ sub aggregate_user_agent($) {
   return "Other";
 }
 
+sub path_depth($) {
+  my ($path) = @_;
+  my ($count) = 0;
+  my (@component) = split('/',$path);
+  foreach my $c (@component) {
+    if ($c eq '.') {
+      next;
+    } elsif ($c eq '..') {
+      $count--;
+    } else {
+      $count++;
+    }
+  }
+  return $count;
+}
+
+
 1;

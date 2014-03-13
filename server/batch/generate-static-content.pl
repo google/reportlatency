@@ -63,7 +63,7 @@ sub total_graph {
     $spectrum->add_row($row);
   }
 
-  my $png = open_path("tags/summary.png");
+  my $png = open_path("tags/summary/navigation.png");
   print $png $spectrum->png();
   close($png);
 
@@ -71,7 +71,7 @@ sub total_graph {
 
 sub total_report {
   my ($view,$options) = @_;
-  my $html = open_path("tags/summary.html");
+  my $html = open_path("tags/summary/index.html");
   print $html $view->summary_html();
   close($html);
 }
@@ -79,7 +79,7 @@ sub total_report {
 sub service_report {
   my ($view,$name,$options) = @_;
 
-  my $report = open_path("services/$name.html");
+  my $report = open_path("services/$name/index.html");
   print $report $view->service_html($name);
   close($report);
 }
@@ -87,7 +87,7 @@ sub service_report {
 sub tag_report {
   my ($view,$name,$options) = @_;
 
-  my $report = open_path("tags/$name.html");
+  my $report = open_path("tags/$name/index.html");
   print $report $view->tag_html($name);
   close($report);
 }
@@ -95,7 +95,7 @@ sub tag_report {
 sub untagged_report {
   my ($view,$options) = @_;
 
-  my $report = open_path("tags/untagged.html");
+  my $report = open_path("tags/untagged/index.html");
   print $report $view->untagged_html();
   close($report);
 }
@@ -127,7 +127,7 @@ sub service_graph {
     $spectrum->add_row($row);
   }
 
-  my $png = open_path("services/$name.png");
+  my $png = open_path("services/$name/navigation.png");
   print $png $spectrum->png();
   close($png);
 }
@@ -159,7 +159,7 @@ sub location_graph {
     $spectrum->add_row($row);
   }
 
-  my $png = open_path('locations/' . ($name||'') . '.png');
+  my $png = open_path("locations/$name/navigation.png");
   print $png $spectrum->png();
   close($png);
 }
@@ -167,7 +167,7 @@ sub location_graph {
 sub location_report {
   my ($view,$name,$options) = @_;
 
-  my $report = open_path('locations/' . ($name||'') . '.html');
+  my $report = open_path("locations/$name/index.html");
   print $report $view->location_html($name);
   close($report);
 }
@@ -308,7 +308,7 @@ sub tag_graph {
     $spectrum->add_row($row);
   }
 
-  my $png = open_path("tags/$name.png");
+  my $png = open_path("tags/$name/navigation.png");
   print $png $spectrum->png();
   close($png);
 }
@@ -340,7 +340,7 @@ sub untagged_graph {
     $spectrum->add_row($row);
   }
 
- my $png = open_path("tags/untagged.png");
+ my $png = open_path("tags/untagged/navigation.png");
   print $png $spectrum->png();
   close($png);
 }
