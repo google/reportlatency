@@ -44,6 +44,11 @@ sub tag_url {
   return "../$tag/index.html";
 }
 
+sub untagged_url {
+  my ($self,$tag) = @_;
+  return "../untagged/index.html";
+}
+
 sub untagged_img_url {
   return "navigation.png";
 }
@@ -140,7 +145,7 @@ EOF
   $rc = $other_sth->execute($meta->{'min_timestamp'},
 			    $meta->{'max_timestamp'});
   my $other = $other_sth->fetchrow_hashref;
-  my $url = $self->tag_url('untagged');
+  my $url = $self->untagged_url();
   print $io latency_summary_row('untagged',$url,
 				$other->{'services'},$other);
   $other_sth->finish;

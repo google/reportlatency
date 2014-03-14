@@ -48,6 +48,11 @@ sub tag_url {
   return "tag?name=$name";
 }
 
+sub untagged_url {
+  my ($self,$name) = @_;
+  return "untagged";
+}
+
 sub location_url {
   my ($self,$name) = @_;
   return "location?name=$name";
