@@ -41,7 +41,7 @@ sub tag_img_url {
 
 sub tag_url {
   my ($self,$tag) = @_;
-  return "index.html";
+  return "../$tag/index.html";
 }
 
 sub untagged_img_url {
@@ -70,7 +70,7 @@ sub location_img_url {
 
 sub location_url_from_tag {
   my ($self,$name) = @_;
-  return "../locations/" . $self->location_url($name);
+  return "../../locations/" . $self->location_url($name);
 }
 
 sub summary_html {
