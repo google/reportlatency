@@ -36,36 +36,36 @@ sub new {
 
 sub tag_img_url {
   my ($self,$tag) = @_;
-  return "$tag.png";
+  return "navigation.png";
 }
 
 sub tag_url {
   my ($self,$tag) = @_;
-  return "$tag.html";
+  return "index.html";
 }
 
 sub untagged_img_url {
-  return "untagged.png";
+  return "navigation.png";
 }
 
 sub service_url_from_tag {
   my ($self,$name) = @_;
-  return "../services/$name.html";
+  return "../../services/$name/index.html";
 }
 
 sub service_url_from_location {
   my ($self,$name) = @_;
-  return "../services/$name.html";
+  return "../../services/$name/index.html";
 }
 
 sub location_url {
   my ($self,$name) = @_;
-  return ( $name || '') . '.html';
+  return "$name/index.html";
 }
 
 sub location_img_url {
   my ($self,$name) = @_;
-  return ( $name || '') . '.png';
+  return "navigation.png";
 }
 
 sub location_url_from_tag {
