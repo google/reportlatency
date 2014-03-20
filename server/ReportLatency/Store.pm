@@ -442,15 +442,16 @@ sub service_select_sth {
   my ($self) = @_;
   my $dbh = $self->{dbh};
   my $sth =
-    $dbh->prepare('SELECT name,' .
-                  'sum(request_count) AS request_count,' .
-                  'sum(request_total)/sum(request_count)' .
-                  ' AS request_latency,' .
-                  'sum(navigation_count) AS navigation_count,' .
-                  'sum(navigation_total)/sum(navigation_count)' .
-                  ' AS navigation_latency ' .
-                  'FROM report ' .
-                  'WHERE final_name=? AND ' .
+    $dbh->prepare('SELECT ur.name AS name,' .
+                  'sum(ur.count) AS request_count,' .
+                  'sum(ur.total)/sum(ur.count) AS request_latency,' .
+                  'sum(n.count) AS navigation_count,' .
+                  'sum(n.total)/sum(n.count) AS navigation_latency ' .
+                  'FROM upload u ' .
+		  'LEFT JOIN navigation n ON n.upload=u.id ' .
+		  'LEFT JOIN update_request ur ON ur.upload=u.id ' .
+		  'AND ur.service=n.service AND ur.name=n.name ' .
+                  'WHERE n.service=? AND ' .
 		  "timestamp >= DATETIME('now','-14 days') " .
                   'GROUP BY name ' .
 		  'ORDER BY name;')
