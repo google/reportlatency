@@ -21,6 +21,7 @@ use DBI;
 use File::Temp qw(tempfile tempdir);
 use HTML::Tidy;
 use Test::More tests => 11;
+use Data::Dumper;
 
 BEGIN { use lib '..'; }
 
@@ -78,6 +79,7 @@ $sth->execute('mail.google.com');
 
 my $rows = 0;
 while (my $row = $sth->fetchrow_hashref) {
+  print STDERR Dumper($row);
   is_deeply($row,
 	    {
 	     request_count => 10,
