@@ -375,7 +375,7 @@ sub tag_service_sth {
   my ($self) = @_;
   my $dbh = $self->{dbh};
   my $sth =
-    $dbh->prepare('SELECT r.final_name,' .
+    $dbh->prepare('SELECT r.final_name AS service,' .
                   'count(distinct r.name) AS dependencies,' .
                   'sum(r.request_count) AS request_count,' .
                   'sum(r.request_total)/sum(r.request_count)' .
@@ -398,7 +398,7 @@ sub untagged_service_sth {
   my ($self) = @_;
   my $dbh = $self->{dbh};
   my $sth =
-    $dbh->prepare('SELECT r.final_name,' .
+    $dbh->prepare('SELECT r.final_name AS service,' .
                   'count(distinct r.name) AS dependencies,' .
                   'sum(r.request_count) AS request_count,' .
                   'sum(r.request_total)/sum(r.request_count)' .
@@ -586,7 +586,7 @@ sub location_service_sth {
   my ($self) = @_;
   my $dbh = $self->{dbh};
   my $sth =
-    $dbh->prepare('SELECT final_name,' .
+    $dbh->prepare('SELECT final_name AS service,' .
                   'count(distinct name) AS dependencies,' .
                   'sum(request_count) AS request_count,' .
                   'sum(request_total)/sum(request_count)' .
