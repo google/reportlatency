@@ -587,7 +587,7 @@ sub location_service_sth {
   my $dbh = $self->{dbh};
   my $sth =
     $dbh->prepare('SELECT final_name,' .
-                  'count(distinct report.name) AS dependencies,' .
+                  'count(distinct name) AS dependencies,' .
                   'sum(request_count) AS request_count,' .
                   'sum(request_total)/sum(request_count)' .
                   ' AS request_latency,' .
