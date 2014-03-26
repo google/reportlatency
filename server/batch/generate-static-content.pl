@@ -41,15 +41,15 @@ sub total_graph {
   my ($dbh,$options) = @_;
 
   my $statement='SELECT strftime("%s",timestamp) AS timestamp,' .
-    'navigation_count AS count,' .
-    'navigation_high AS high,' .
-    'navigation_low AS low,' .
-    'navigation_total AS total ' .
+    'nav_count AS count,' .
+    'nav_high AS high,' .
+    'nav_low AS low,' .
+    'nav_total AS total ' .
     'FROM report ' .
     "WHERE timestamp <= datetime('now',?) AND " .
     "timestamp > datetime('now',?) AND " .
-    "navigation_count IS NOT NULL AND navigation_count != '' AND " .
-    "navigation_count>0;";
+    "nav_count IS NOT NULL AND nav_count != '' AND " .
+    "nav_count>0;";
   my $latency_sth = $dbh->prepare($statement) or die $!;
   my $latency_rc = $latency_sth->execute('0 seconds', -$duration . " seconds");
 
@@ -104,16 +104,16 @@ sub service_graph {
   my ($dbh,$name,$options) = @_;
 
   my $statement='SELECT strftime("%s",timestamp) AS timestamp,' .
-    'navigation_count AS count,' .
-    'navigation_high AS high,' .
-    'navigation_low AS low,' .
-    'navigation_total AS total ' .
+    'nav_count AS count,' .
+    'nav_high AS high,' .
+    'nav_low AS low,' .
+    'nav_total AS total ' .
     'FROM report ' .
     "WHERE timestamp <= datetime('now',?) AND " .
     "timestamp > datetime('now',?) AND " .
-    'final_name = ? AND ' .
-    "navigation_count IS NOT NULL AND navigation_count != '' AND " .
-    "navigation_count>0;";
+    'service = ? AND ' .
+    "nav_count IS NOT NULL AND nav_count != '' AND " .
+    "nav_count>0;";
   my $latency_sth = $dbh->prepare($statement) or die $!;
   my $latency_rc = $latency_sth->execute('0 seconds', -$duration . " seconds",
 					$name);
@@ -136,16 +136,16 @@ sub location_graph {
   my ($dbh,$name,$options) = @_;
 
   my $statement='SELECT strftime("%s",timestamp) AS timestamp,' .
-    'navigation_count AS count,' .
-    'navigation_high AS high,' .
-    'navigation_low AS low,' .
-    'navigation_total AS total ' .
+    'nav_count AS count,' .
+    'nav_high AS high,' .
+    'nav_low AS low,' .
+    'nav_total AS total ' .
     'FROM report ' .
     "WHERE timestamp <= datetime('now',?) AND " .
     "timestamp > datetime('now',?) AND " .
-    'remote_addr = ? AND ' .
-    "navigation_count IS NOT NULL AND navigation_count != '' AND " .
-    "navigation_count>0;";
+    'location = ? AND ' .
+    "nav_count IS NOT NULL AND nav_count != '' AND " .
+    "nav_count>0;";
   my $latency_sth = $dbh->prepare($statement) or die $!;
   my $latency_rc = $latency_sth->execute('0 seconds', -$duration . " seconds",
 					$name);
@@ -176,18 +176,18 @@ sub recent_services {
   my ($dbh) = @_;
 
   my $services_sth =
-      $dbh->prepare('SELECT DISTINCT final_name ' .
+      $dbh->prepare('SELECT DISTINCT service ' .
                     'FROM report ' .
                     "WHERE timestamp >= datetime('now',?) " .
-		    "AND final_name IS NOT NULL " .
-		    "ORDER BY final_name;")
+		    "AND service IS NOT NULL " .
+		    "ORDER BY service;")
         or die "prepare failed";
 
   my $services_rc = $services_sth->execute("-$interval seconds");
 
   my @services;
   while (my $row = $services_sth->fetchrow_hashref) {
-    my $name = $row->{'final_name'};
+    my $name = $row->{'service'};
     push(@services,$name);
   }
   @services;
@@ -199,7 +199,7 @@ sub recent_tags {
   my $tags_sth =
       $dbh->prepare('SELECT DISTINCT tag.tag ' .
                     'FROM report ' .
-		    'INNER JOIN tag ON tag.service=report.final_name ' .
+		    'INNER JOIN tag ON tag.service=report.service ' .
                     "WHERE timestamp >= datetime('now',?);")
         or die "prepare failed";
 
@@ -218,7 +218,7 @@ sub recent_locations {
   my ($dbh) = @_;
 
   my $locations_sth =
-      $dbh->prepare('SELECT DISTINCT remote_addr FROM report ' .
+      $dbh->prepare('SELECT DISTINCT location FROM report ' .
                     "WHERE timestamp >= datetime('now',?);")
         or die "prepare failed";
 
@@ -226,7 +226,7 @@ sub recent_locations {
 
   my @locations;
   while (my $row = $locations_sth->fetchrow_hashref) {
-    my $name = sanitize_location($row->{'remote_addr'});
+    my $name = sanitize_location($row->{'location'});
     push(@locations,$name);
   }
   $locations_sth->finish;
@@ -317,17 +317,17 @@ sub untagged_graph {
   my ($dbh,$options) = @_;
 
   my $statement='SELECT strftime("%s",timestamp) AS timestamp,' .
-    'navigation_count AS count,' .
-    'navigation_high AS high,' .
-    'navigation_low AS low,' .
-    'navigation_total AS total ' .
+    'nav_count AS count,' .
+    'nav_high AS high,' .
+    'nav_low AS low,' .
+    'nav_total AS total ' .
     'FROM report ' .
-    'LEFT OUTER JOIN tag ON report.final_name = tag.service ' .
+    'LEFT OUTER JOIN tag ON report.service = tag.service ' .
     "WHERE timestamp <= datetime('now',?) AND " .
     "timestamp > datetime('now',?) AND " .
     'tag.tag IS NULL AND ' .
-    "navigation_count IS NOT NULL AND navigation_count != '' AND " .
-    "navigation_count>0;";
+    "nav_count IS NOT NULL AND nav_count != '' AND " .
+    "nav_count>0;";
   my $latency_sth = $dbh->prepare($statement) or die $!;
   my $latency_rc = $latency_sth->execute('0 seconds', -$duration . " seconds");
   my $spectrum = new ReportLatency::Spectrum( width => $width,

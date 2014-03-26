@@ -306,19 +306,19 @@ sub untagged_meta_sth {
   my ($self,$start,$end) = @_;
   my $dbh = $self->{dbh};
   my $sth =
-    $dbh->prepare('SELECT count(distinct final_name) AS services,' .
-		  'min(timestamp) AS min_timestamp,' .
-                  'max(timestamp) AS max_timestamp,' .
-                  'sum(request_count) AS request_count,' .
-                  'sum(request_total)/sum(request_count)' .
+    $dbh->prepare('SELECT count(distinct r.final_name) AS services,' .
+		  'min(r.timestamp) AS min_timestamp,' .
+                  'max(r.timestamp) AS max_timestamp,' .
+                  'sum(r.request_count) AS request_count,' .
+                  'sum(r.request_total)/sum(r.request_count)' .
                   ' AS request_latency,' .
-                  'sum(navigation_count) AS navigation_count,' .
+                  'sum(r.navigation_count) AS navigation_count,' .
                   'sum(navigation_total)/sum(navigation_count)' .
                   ' AS navigation_latency ' .
-                  'FROM oldreport ' .
+                  'FROM oldreport AS r ' .
                   'LEFT OUTER JOIN tag ' .
-                  'ON report.final_name = tag.service ' .
-                  "WHERE timestamp >= datetime('now','-14 days') " .
+                  'ON r.final_name = tag.service ' .
+                  "WHERE r.timestamp >= datetime('now','-14 days') " .
 		  'AND tag.tag IS NULL;')
       or die "prepare failed";
 
@@ -331,18 +331,18 @@ sub tag_nav_latencies_sth {
   my $sth = $self->{tag_nav_latencies_sth};
   if (! defined $sth) {
     my $dbh = $self->{dbh};
-    my $statement='SELECT strftime("%s",timestamp) AS timestamp,' .
-      'navigation_count AS count,' .
-      'navigation_high AS high,' .
-      'navigation_low AS low,' .
-      'navigation_total AS total ' .
-      'FROM oldreport ' .
-       'INNER JOIN tag ON report.final_name = tag.service ' .
-       "WHERE timestamp <= datetime('now',?) AND " .
-       "timestamp > datetime('now',?) AND " .
+    my $statement='SELECT strftime("%s",r.timestamp) AS timestamp,' .
+      'r.navigation_count AS count,' .
+      'r.navigation_high AS high,' .
+      'r.navigation_low AS low,' .
+      'r.navigation_total AS total ' .
+      'FROM oldreport AS r ' .
+       'INNER JOIN tag ON r.final_name = tag.service ' .
+       "WHERE r.timestamp <= datetime('now',?) AND " .
+       "r.timestamp > datetime('now',?) AND " .
        'tag.tag = ? AND ' .
-       "navigation_count IS NOT NULL AND navigation_count != '' AND " .
-       "navigation_count>0;";
+       "r.navigation_count IS NOT NULL AND r.navigation_count != '' AND " .
+       "r.navigation_count>0;";
     $sth = $dbh->prepare($statement) or die $!;
   }
 
@@ -353,19 +353,19 @@ sub tag_meta_sth {
   my ($self) = @_;
   my $dbh = $self->{dbh};
   my $sth =
-    $dbh->prepare('SELECT count(distinct final_name) AS services,' .
-		  'min(timestamp) AS min_timestamp,' .
-                  'max(timestamp) AS max_timestamp,' .
-                  'sum(request_count) AS request_count,' .
-                  'sum(request_total)/sum(request_count)' .
+    $dbh->prepare('SELECT count(distinct r.final_name) AS services,' .
+		  'min(r.timestamp) AS min_timestamp,' .
+                  'max(r.timestamp) AS max_timestamp,' .
+                  'sum(r.request_count) AS request_count,' .
+                  'sum(r.request_total)/sum(r.request_count)' .
                   ' AS request_latency,' .
-                  'sum(navigation_count) AS navigation_count,' .
-                  'sum(navigation_total)/sum(navigation_count)' .
+                  'sum(r.navigation_count) AS navigation_count,' .
+                  'sum(r.navigation_total)/sum(r.navigation_count)' .
                   ' AS navigation_latency ' .
-                  'FROM oldreport ' .
+                  'FROM oldreport AS r ' .
                   'INNER JOIN tag ' .
-                  'ON report.final_name = tag.service ' .
-                  "WHERE timestamp >= datetime('now','-14 days') " .
+                  'ON r.final_name = tag.service ' .
+                  "WHERE r.timestamp >= datetime('now','-14 days') " .
 		  'AND tag.tag = ?;')
       or die "prepare failed";
   return $sth;
@@ -375,21 +375,21 @@ sub tag_service_sth {
   my ($self) = @_;
   my $dbh = $self->{dbh};
   my $sth =
-    $dbh->prepare('SELECT final_name,' .
-                  'count(distinct report.name) AS dependencies,' .
-                  'sum(request_count) AS request_count,' .
-                  'sum(request_total)/sum(request_count)' .
+    $dbh->prepare('SELECT r.final_name,' .
+                  'count(distinct r.name) AS dependencies,' .
+                  'sum(r.request_count) AS request_count,' .
+                  'sum(r.request_total)/sum(r.request_count)' .
                   ' AS request_latency,' .
-                  'sum(navigation_count) AS navigation_count,' .
-                  'sum(navigation_total)/sum(navigation_count)' .
+                  'sum(r.navigation_count) AS navigation_count,' .
+                  'sum(r.navigation_total)/sum(r.navigation_count)' .
                   ' AS navigation_latency ' .
-                  'FROM oldreport ' .
+                  'FROM oldreport AS r ' .
 		  'INNER JOIN tag ' .
-		  'ON report.final_name = tag.service ' .
-                  'WHERE timestamp >= ? AND timestamp <= ? ' .
+		  'ON r.final_name = tag.service ' .
+                  'WHERE r.timestamp >= ? AND r.timestamp <= ? ' .
 		  'AND tag.tag = ? ' .
-                  'GROUP BY final_name ' .
-		  'ORDER BY final_name;')
+                  'GROUP BY r.final_name ' .
+		  'ORDER BY r.final_name;')
       or die "prepare failed";
   return $sth;
 }
@@ -398,21 +398,21 @@ sub untagged_service_sth {
   my ($self) = @_;
   my $dbh = $self->{dbh};
   my $sth =
-    $dbh->prepare('SELECT final_name,' .
-                  'count(distinct report.name) AS dependencies,' .
-                  'sum(request_count) AS request_count,' .
-                  'sum(request_total)/sum(request_count)' .
+    $dbh->prepare('SELECT r.final_name,' .
+                  'count(distinct r.name) AS dependencies,' .
+                  'sum(r.request_count) AS request_count,' .
+                  'sum(r.request_total)/sum(r.request_count)' .
                   ' AS request_latency,' .
-                  'sum(navigation_count) AS navigation_count,' .
-                  'sum(navigation_total)/sum(navigation_count)' .
+                  'sum(r.navigation_count) AS navigation_count,' .
+                  'sum(r.navigation_total)/sum(r.navigation_count)' .
                   ' AS navigation_latency ' .
-                  'FROM oldreport ' .
+                  'FROM oldreport AS r ' .
 		  'LEFT OUTER JOIN tag ' .
-		  'ON report.final_name = tag.service ' .
-                  'WHERE timestamp >= ? AND timestamp <= ? ' .
+		  'ON r.final_name = tag.service ' .
+                  'WHERE r.timestamp >= ? AND r.timestamp <= ? ' .
 		  'AND tag.tag IS NULL ' .
-                  'GROUP BY final_name ' .
-		  'ORDER BY final_name;')
+                  'GROUP BY r.final_name ' .
+		  'ORDER BY r.final_name;')
       or die "prepare failed";
   return $sth;
 }
