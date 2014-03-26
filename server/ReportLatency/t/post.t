@@ -99,11 +99,11 @@ is($count, 2, '2 navigation request entry');
 is($count, 1, '1 navigation entry');
 
 
-my ($timestamp,$remote_addr,$name,$service) =
-  $dbh->selectrow_array("SELECT timestamp,remote_addr,name,final_name " .
+my ($timestamp,$location,$name,$service) =
+  $dbh->selectrow_array("SELECT timestamp,location,name,service " .
 			"FROM report");
 
 like($timestamp,qr/^\d{4}-/,'timestamp');
-is($remote_addr,'1.2.3.0','network address');
+is($location,'1.2.3.0','network address');
 is($name,'w3.org','w3.org request name');
 is($service,'w3.org','w3.org service name');

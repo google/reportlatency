@@ -315,7 +315,7 @@ sub untagged_meta_sth {
                   'sum(navigation_count) AS navigation_count,' .
                   'sum(navigation_total)/sum(navigation_count)' .
                   ' AS navigation_latency ' .
-                  'FROM report ' .
+                  'FROM oldreport ' .
                   'LEFT OUTER JOIN tag ' .
                   'ON report.final_name = tag.service ' .
                   "WHERE timestamp >= datetime('now','-14 days') " .
@@ -336,7 +336,7 @@ sub tag_nav_latencies_sth {
       'navigation_high AS high,' .
       'navigation_low AS low,' .
       'navigation_total AS total ' .
-      'FROM report ' .
+      'FROM oldreport ' .
        'INNER JOIN tag ON report.final_name = tag.service ' .
        "WHERE timestamp <= datetime('now',?) AND " .
        "timestamp > datetime('now',?) AND " .
@@ -362,7 +362,7 @@ sub tag_meta_sth {
                   'sum(navigation_count) AS navigation_count,' .
                   'sum(navigation_total)/sum(navigation_count)' .
                   ' AS navigation_latency ' .
-                  'FROM report ' .
+                  'FROM oldreport ' .
                   'INNER JOIN tag ' .
                   'ON report.final_name = tag.service ' .
                   "WHERE timestamp >= datetime('now','-14 days') " .
@@ -383,7 +383,7 @@ sub tag_service_sth {
                   'sum(navigation_count) AS navigation_count,' .
                   'sum(navigation_total)/sum(navigation_count)' .
                   ' AS navigation_latency ' .
-                  'FROM report ' .
+                  'FROM oldreport ' .
 		  'INNER JOIN tag ' .
 		  'ON report.final_name = tag.service ' .
                   'WHERE timestamp >= ? AND timestamp <= ? ' .
@@ -406,7 +406,7 @@ sub untagged_service_sth {
                   'sum(navigation_count) AS navigation_count,' .
                   'sum(navigation_total)/sum(navigation_count)' .
                   ' AS navigation_latency ' .
-                  'FROM report ' .
+                  'FROM oldreport ' .
 		  'LEFT OUTER JOIN tag ' .
 		  'ON report.final_name = tag.service ' .
                   'WHERE timestamp >= ? AND timestamp <= ? ' .
@@ -430,7 +430,7 @@ sub service_meta_sth {
                   'sum(request_total) AS request_total,' .
                   'sum(navigation_count) AS navigation_count,' .
                   'sum(navigation_total) AS navigation_total ' .
-		  'FROM report ' .
+		  'FROM oldreport ' .
                   'WHERE final_name=? AND ' .
 		  "timestamp >= DATETIME('now','-14 days');")
       or die "prepare failed";
@@ -442,17 +442,14 @@ sub service_select_sth {
   my ($self) = @_;
   my $dbh = $self->{dbh};
   my $sth =
-    $dbh->prepare('SELECT coalesce(n.name,ur.name) AS name,' .
-                  'sum(ur.count) AS request_count,' .
-                  'sum(ur.total)/sum(ur.count) AS request_latency,' .
-                  'sum(n.count) AS navigation_count,' .
-                  'sum(n.total)/sum(n.count) AS navigation_latency ' .
-                  'FROM upload u ' .
-		  'LEFT OUTER JOIN navigation n ON n.upload=u.id ' .
-		  'LEFT OUTER JOIN update_request ur ON ur.upload=u.id ' .
-		  'AND ur.service=n.service AND ur.name=n.name ' .
-                  'WHERE coalesce(n.service,ur.service)=? AND ' .
-		  "timestamp >= DATETIME('now','-14 days') " .
+    $dbh->prepare('SELECT name,' .
+                  'sum(ureq_count) AS request_count,' .
+                  'sum(ureq_total)/sum(ureq_count) AS request_latency,' .
+                  'sum(nav_count) AS navigation_count,' .
+                  'sum(nav_total)/sum(nav_count) AS navigation_latency ' .
+		  'FROM report ' .
+		  "WHERE timestamp >= DATETIME('now','-14 days') " .
+                  'AND service=? ' .
                   'GROUP BY name ' .
 		  'ORDER BY name;')
       or die "prepare failed";
@@ -471,7 +468,7 @@ sub service_location_sth {
                   'sum(navigation_count) AS navigation_count,' .
                   'sum(navigation_total)/sum(navigation_count)' .
                   ' AS navigation_latency ' .
-                  'FROM report ' .
+                  'FROM oldreport ' .
                   'WHERE final_name=? AND ' .
 		  "timestamp >= DATETIME('now','-14 days') " .
                   'GROUP BY remote_addr ' .
@@ -493,7 +490,7 @@ sub summary_meta_sth {
                   'sum(navigation_count) AS navigation_count,' .
                   'sum(navigation_total)/sum(navigation_count) ' .
 		  'AS navigation_latency ' .
-                  'FROM report ' .
+                  'FROM oldreport ' .
                   "WHERE timestamp >= datetime('now','-14 days');" )
       or die "prepare failed";
   return $sth;
@@ -512,7 +509,7 @@ sub summary_tag_sth {
                   'sum(navigation_count) AS navigation_count,' .
                   'sum(navigation_total)/sum(navigation_count)' .
                   ' AS navigation_latency ' .
-                  'FROM report ' .
+                  'FROM oldreport ' .
 		  'INNER JOIN tag ' .
 		  'ON report.final_name = tag.service ' .
                   'WHERE timestamp >= ? AND timestamp <= ? ' .
@@ -534,7 +531,7 @@ sub summary_untagged_sth {
                   'sum(navigation_count) AS navigation_count,' .
                   'sum(navigation_total)/sum(navigation_count)' .
                   ' AS navigation_latency ' .
-                  'FROM report ' .
+                  'FROM oldreport ' .
 		  'LEFT OUTER JOIN tag ' .
 		  'ON report.final_name = tag.service ' .
                   'WHERE timestamp >= ? AND timestamp <= ? ' .
@@ -555,7 +552,7 @@ sub summary_location_sth {
                   'sum(navigation_count) AS navigation_count,' .
                   'sum(navigation_total)/sum(navigation_count)' .
                   ' AS navigation_latency ' .
-                  'FROM report ' .
+                  'FROM oldreport ' .
                   'WHERE timestamp >= ? AND timestamp <= ? ' .
                   'GROUP BY remote_addr ' .
 		  'ORDER BY remote_addr;')
@@ -577,7 +574,7 @@ sub location_meta_sth {
                   'sum(navigation_count) AS navigation_count,' .
                   'sum(navigation_total)/sum(navigation_count)' .
                   ' AS navigation_latency ' .
-                  'FROM report ' .
+                  'FROM oldreport ' .
                   "WHERE timestamp >= datetime('now','-14 days') " .
 		  'AND remote_addr = ?;')
       or die "prepare failed";
@@ -597,7 +594,7 @@ sub location_service_sth {
                   'sum(navigation_count) AS navigation_count,' .
                   'sum(navigation_total)/sum(navigation_count)' .
                   ' AS navigation_latency ' .
-                  'FROM report ' .
+                  'FROM oldreport ' .
                   'WHERE timestamp >= ? AND timestamp <= ? ' .
 		  'AND remote_addr = ? ' .
                   'GROUP BY final_name ' .
