@@ -511,7 +511,7 @@ sub summary_tag_sth {
                   ' AS navigation_latency ' .
                   'FROM oldreport ' .
 		  'INNER JOIN tag ' .
-		  'ON report.final_name = tag.service ' .
+		  'ON final_name = tag.service ' .
                   'WHERE timestamp >= ? AND timestamp <= ? ' .
                   'GROUP BY tag ' .
 		  'ORDER BY tag;')
@@ -533,7 +533,7 @@ sub summary_untagged_sth {
                   ' AS navigation_latency ' .
                   'FROM oldreport ' .
 		  'LEFT OUTER JOIN tag ' .
-		  'ON report.final_name = tag.service ' .
+		  'ON final_name = tag.service ' .
                   'WHERE timestamp >= ? AND timestamp <= ? ' .
 		  'AND tag.tag is null;')
       or die "prepare failed";
