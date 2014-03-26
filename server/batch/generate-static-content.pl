@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 #
-# Copyright 2013 Google Inc. All Rights Reserved.
+# Copyright 2013,2014 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -48,8 +48,8 @@ sub total_graph {
     'FROM report ' .
     "WHERE timestamp <= datetime('now',?) AND " .
     "timestamp > datetime('now',?) AND " .
-    "nav_count IS NOT NULL AND nav_count != '' AND " .
-    "nav_count>0;";
+    "count IS NOT NULL AND count != '' AND " .
+    "count>0;";
   my $latency_sth = $dbh->prepare($statement) or die $!;
   my $latency_rc = $latency_sth->execute('0 seconds', -$duration . " seconds");
 
@@ -237,17 +237,17 @@ sub all_services {
   my ($dbh) = @_;
 
   my $services_sth =
-      $dbh->prepare('SELECT DISTINCT final_name ' .
+      $dbh->prepare('SELECT DISTINCT service ' .
                     'FROM report ' .
-                    "WHERE final_name IS NOT NULL " .
-		    "ORDER BY final_name;")
+                    "WHERE service IS NOT NULL " .
+		    "ORDER BY service;")
         or die "prepare failed";
 
   my $services_rc = $services_sth->execute();
 
   my @services;
   while (my $row = $services_sth->fetchrow_hashref) {
-    my $name = $row->{'final_name'};
+    my $name = $row->{'service'};
     push(@services,$name);
   }
   @services;
@@ -276,17 +276,17 @@ sub all_locations {
   my ($dbh) = @_;
 
   my $locations_sth =
-      $dbh->prepare('SELECT DISTINCT remote_addr ' .
+      $dbh->prepare('SELECT DISTINCT location ' .
                     'FROM report ' .
-                    "WHERE remote_addr IS NOT NULL " .
-		    "ORDER BY remote_addr;")
+                    "WHERE location IS NOT NULL " .
+		    "ORDER BY location;")
         or die "prepare failed";
 
   my $locations_rc = $locations_sth->execute();
 
   my @locations;
   while (my $row = $locations_sth->fetchrow_hashref) {
-    my $name = sanitize_location($row->{'remote_addr'});
+    my $name = sanitize_location($row->{'location'});
     push(@locations,$name);
   }
   @locations;
