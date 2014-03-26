@@ -260,10 +260,12 @@ EOF
 EOF
 
   while (my $service = $service_sth->fetchrow_hashref) {
-    my $name = $service->{final_name};
-    my $url = $self->service_url_from_tag($name);
-    my $count = $service->{'dependencies'};
-    print $io latency_summary_row($name,$url,$count,$service);
+    my $name = $service->{service};
+    if (defined $name) {
+      my $url = $self->service_url_from_tag($name);
+      my $count = $service->{'dependencies'};
+      print $io latency_summary_row($name,$url,$count,$service);
+    }
   }
   $service_sth->finish;
 
@@ -361,7 +363,7 @@ EOF
 			      $meta->{'max_timestamp'},$location);
 
   while (my $service = $service_sth->fetchrow_hashref) {
-    my $name = sanitize_service($service->{final_name});
+    my $name = sanitize_service($service->{service});
     if (defined $name) {
       my $url = $self->service_url_from_location($name);
       my $count = $service->{'dependencies'};
@@ -648,7 +650,7 @@ EOF
 			      $meta->{'max_timestamp'},$tag_name);
 
   while (my $service = $service_sth->fetchrow_hashref) {
-    my $name = sanitize_service($service->{final_name});
+    my $name = sanitize_service($service->{service});
     if (defined $name) {
       my $url = $self->service_url_from_tag($name);
       my $count = $service->{'dependencies'};
