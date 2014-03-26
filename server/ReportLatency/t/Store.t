@@ -19,7 +19,7 @@
 use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
-use Test::More tests => 12;
+use Test::More tests => 7;
 
 BEGIN { use lib '..'; }
 
@@ -55,18 +55,4 @@ is($store->aggregate_remote_address('8.8.8.8'),'google.com.',
    '2nd aggregate_remote_address(8.8.8.8)');
 is($store->aggregate_remote_address('0.0.0.1'),'0.0.0.0',
    'aggregate_remote_address(0.0.0.1)');
-
-isa_ok($store->tag_nav_latencies_sth, 'DBI::st');
-
-
-$dbh->begin_work;
-
-is($store->aggregate_remote_address('8.8.8.8'),'google.com.',
-   'aggregate_remote_address(8.8.8.8)');
-is($store->aggregate_remote_address('8.8.8.8'),'google.com.',
-   '2nd aggregate_remote_address(8.8.8.8)');
-is($store->aggregate_remote_address('0.0.0.1'),'0.0.0.0',
-   'aggregate_remote_address(0.0.0.1)');
-
-ok($dbh->rollback,'db rollback');
 
