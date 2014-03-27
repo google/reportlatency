@@ -21,7 +21,7 @@ use DBI;
 use CGI;
 use IO::String;
 use File::Temp qw(tempfile tempdir);
-use Test::More tests => 12;
+use Test::More tests => 16;
 
 BEGIN { use lib '..'; }
 
@@ -99,11 +99,27 @@ is($count, 2, '2 navigation request entry');
 is($count, 1, '1 navigation entry');
 
 
-my ($timestamp,$location,$name,$service) =
-  $dbh->selectrow_array("SELECT timestamp,location,name,service " .
-			"FROM report");
+my ($timestamp,$location) =
+  $dbh->selectrow_array("SELECT timestamp,location " .
+			"FROM upload");
 
 like($timestamp,qr/^\d{4}-/,'timestamp');
 is($location,'1.2.3.0','network address');
-is($name,'w3.org','w3.org request name');
-is($service,'w3.org','w3.org service name');
+
+my ($service,$name) =
+  $dbh->selectrow_array("SELECT service,name " .
+			"FROM navigation");
+is($name,'w3.org','w3.org navigation name');
+is($service,'w3.org','w3.org navigation service');
+
+($service,$name) =
+  $dbh->selectrow_array("SELECT service,name " .
+			"FROM update_request");
+is($name,'w3.org','w3.org update request name');
+is($service,'w3.org','w3.org update request service');
+
+($service,$name) =
+  $dbh->selectrow_array("SELECT service,name " .
+			"FROM navigation_request");
+is($name,'w3.org','w3.org navigation request name');
+is($service,'w3.org','w3.org navigation request service');
