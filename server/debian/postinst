@@ -47,6 +47,8 @@ case "$1" in
     configure)
 	if [ ! -f  $DBFILE ] ; then
 	  sqlite3 $DBFILE <$PKGSHARE/sqlite3.sql
+	  sqlite3 $DBFILE <$PKGSHARE/views-sqlite3.sql
+	  sqlite3 $DBFILE <$PKGSHARE/indicies-sqlite3.sql
 	  for sql in $PKGETC/match.d/*.sql ; do
 	      sqlite3 $DBFILE <$sql
 	  done
