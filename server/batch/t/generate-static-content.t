@@ -33,11 +33,13 @@ my $dbfile="$dir/data/backup.sqlite3";
 
 {
   open(my $sqlite3,"|-",'sqlite3',$dbfile) or die $!;
-  open(my $sql,'<','../sql/sqlite3.sql') or die $!;
-  while (my $line = $sql->getline) {
-    print $sqlite3 $line;
+  foreach my $source qw(sqlite3.sql views-sqlite3.sql) {
+    open(my $sql,'<',"../sql/$source") or die $!;
+    while (my $line = $sql->getline) {
+      print $sqlite3 $line;
+    }
+    close($sql);
   }
-  close($sql);
   ok(close($sqlite3),'latency schema');
 }
 

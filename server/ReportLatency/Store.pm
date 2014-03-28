@@ -438,16 +438,34 @@ sub service_meta_sth {
 }
 
 
+sub common_aggregate_fields {
+  my ($self) = @_;
+  return 
+    'sum(nreq_tabclosed) AS nreq_tabclosed,' .
+    'sum(nreq_200) AS nreq_200,' .
+    'sum(nreq_200) AS nreq_300,' .
+    'sum(nreq_200) AS nreq_400,' .
+    'sum(nreq_200) AS nreq_500,' .
+    'sum(nreq_count) AS nreq_count,' .
+    'sum(nreq_total)/sum(nreq_count) AS nreq_latency,' .
+    'sum(nav_tabclosed) AS nav_tabclosed,' .
+    'sum(nav_count) AS nav_count,' .
+    'sum(nav_total)/sum(nav_count) AS nav_latency,' .
+    'sum(ureq_200) AS ureq_200,' .
+    'sum(ureq_200) AS ureq_300,' .
+    'sum(ureq_200) AS ureq_400,' .
+    'sum(ureq_200) AS ureq_500,' .
+    'sum(ureq_count) AS ureq_count,' .
+    'sum(ureq_total)/sum(ureq_count) AS ureq_latency';
+}
+
 sub service_select_sth {
   my ($self) = @_;
   my $dbh = $self->{dbh};
   my $sth =
     $dbh->prepare('SELECT name,' .
-                  'sum(ureq_count) AS request_count,' .
-                  'sum(ureq_total)/sum(ureq_count) AS request_latency,' .
-                  'sum(nav_count) AS navigation_count,' .
-                  'sum(nav_total)/sum(nav_count) AS navigation_latency ' .
-		  'FROM report ' .
+		  $self->common_aggregate_fields() .
+		  ' FROM report ' .
 		  "WHERE timestamp >= DATETIME('now','-14 days') " .
                   'AND service=? ' .
                   'GROUP BY name ' .
@@ -461,18 +479,13 @@ sub service_location_sth {
   my ($self) = @_;
   my $dbh = $self->{dbh};
   my $sth =
-    $dbh->prepare('SELECT remote_addr,' .
-                  'sum(request_count) AS request_count,' .
-                  'sum(request_total)/sum(request_count)' .
-                  ' AS request_latency,' .
-                  'sum(navigation_count) AS navigation_count,' .
-                  'sum(navigation_total)/sum(navigation_count)' .
-                  ' AS navigation_latency ' .
-                  'FROM oldreport ' .
-                  'WHERE final_name=? AND ' .
+    $dbh->prepare('SELECT location,' .
+		  $self->common_aggregate_fields() .
+                  ' FROM report ' .
+                  'WHERE service=? AND ' .
 		  "timestamp >= DATETIME('now','-14 days') " .
-                  'GROUP BY remote_addr ' .
-		  'ORDER BY remote_addr;')
+                  'GROUP BY location ' .
+		  'ORDER BY location;')
       or die "prepare failed";
   return $sth;
 }
@@ -484,13 +497,9 @@ sub summary_meta_sth {
     $dbh->prepare('SELECT "total" AS tag,' .
 		  'min(timestamp) AS min_timestamp,' .
                   'max(timestamp) AS max_timestamp,' .
-                  'count(distinct final_name) AS services,' .
-                  'sum(request_count) AS request_count,' .
-                  'sum(request_total)/sum(request_count) AS request_latency,' .
-                  'sum(navigation_count) AS navigation_count,' .
-                  'sum(navigation_total)/sum(navigation_count) ' .
-		  'AS navigation_latency ' .
-                  'FROM oldreport ' .
+                  'count(distinct service) AS services,' .
+		  $self->common_aggregate_fields() .
+                  ' FROM report ' .
                   "WHERE timestamp >= datetime('now','-14 days');" )
       or die "prepare failed";
   return $sth;
@@ -502,16 +511,11 @@ sub summary_tag_sth {
   my $dbh = $self->{dbh};
   my $sth =
     $dbh->prepare('SELECT tag.tag as tag,' .
-                  'count(distinct final_name) AS services,' .
-                  'sum(request_count) AS request_count,' .
-                  'sum(request_total)/sum(request_count)' .
-                  ' AS request_latency,' .
-                  'sum(navigation_count) AS navigation_count,' .
-                  'sum(navigation_total)/sum(navigation_count)' .
-                  ' AS navigation_latency ' .
-                  'FROM oldreport ' .
+                  'count(distinct service) AS services,' .
+		  $self->common_aggregate_fields() .
+                  ' FROM report ' .
 		  'INNER JOIN tag ' .
-		  'ON final_name = tag.service ' .
+		  'ON report.service = tag.service ' .
                   'WHERE timestamp >= ? AND timestamp <= ? ' .
                   'GROUP BY tag ' .
 		  'ORDER BY tag;')
@@ -524,16 +528,11 @@ sub summary_untagged_sth {
   my $dbh = $self->{dbh};
   my $sth =
     $dbh->prepare('SELECT ' .
-                  'count(distinct final_name) AS services,' .
-                  'sum(request_count) AS request_count,' .
-                  'sum(request_total)/sum(request_count)' .
-                  ' AS request_latency,' .
-                  'sum(navigation_count) AS navigation_count,' .
-                  'sum(navigation_total)/sum(navigation_count)' .
-                  ' AS navigation_latency ' .
-                  'FROM oldreport ' .
+                  'count(distinct service) AS services,' .
+		  $self->common_aggregate_fields() .
+                  ' FROM report ' .
 		  'LEFT OUTER JOIN tag ' .
-		  'ON final_name = tag.service ' .
+		  'ON report.service = tag.service ' .
                   'WHERE timestamp >= ? AND timestamp <= ? ' .
 		  'AND tag.tag is null;')
       or die "prepare failed";
@@ -544,18 +543,13 @@ sub summary_location_sth {
   my ($self) = @_;
   my $dbh = $self->{dbh};
   my $sth =
-    $dbh->prepare('SELECT remote_addr,' .
-                  'count(distinct final_name) AS services,' .
-                  'sum(request_count) AS request_count,' .
-                  'sum(request_total)/sum(request_count)' .
-                  ' AS request_latency,' .
-                  'sum(navigation_count) AS navigation_count,' .
-                  'sum(navigation_total)/sum(navigation_count)' .
-                  ' AS navigation_latency ' .
-                  'FROM oldreport ' .
+    $dbh->prepare('SELECT location,' .
+                  'count(distinct service) AS services,' .
+		  $self->common_aggregate_fields() .
+                  ' FROM report ' .
                   'WHERE timestamp >= ? AND timestamp <= ? ' .
-                  'GROUP BY remote_addr ' .
-		  'ORDER BY remote_addr;')
+                  'GROUP BY location ' .
+		  'ORDER BY location;')
       or die "prepare failed";
 
   return $sth;
@@ -565,18 +559,13 @@ sub location_meta_sth {
   my ($self) = @_;
   my $dbh = $self->{dbh};
   my $sth =
-    $dbh->prepare('SELECT count(distinct final_name) AS services,' .
+    $dbh->prepare('SELECT count(distinct service) AS services,' .
 		  'min(timestamp) AS min_timestamp,' .
                   'max(timestamp) AS max_timestamp,' .
-                  'sum(request_count) AS request_count,' .
-                  'sum(request_total)/sum(request_count)' .
-                  ' AS request_latency,' .
-                  'sum(navigation_count) AS navigation_count,' .
-                  'sum(navigation_total)/sum(navigation_count)' .
-                  ' AS navigation_latency ' .
-                  'FROM oldreport ' .
+		  $self->common_aggregate_fields() .
+                  ' FROM report ' .
                   "WHERE timestamp >= datetime('now','-14 days') " .
-		  'AND remote_addr = ?;')
+		  'AND location = ?;')
       or die "prepare failed";
   return $sth;
 }
@@ -586,19 +575,14 @@ sub location_service_sth {
   my ($self) = @_;
   my $dbh = $self->{dbh};
   my $sth =
-    $dbh->prepare('SELECT final_name AS service,' .
+    $dbh->prepare('SELECT service AS service,' .
                   'count(distinct name) AS dependencies,' .
-                  'sum(request_count) AS request_count,' .
-                  'sum(request_total)/sum(request_count)' .
-                  ' AS request_latency,' .
-                  'sum(navigation_count) AS navigation_count,' .
-                  'sum(navigation_total)/sum(navigation_count)' .
-                  ' AS navigation_latency ' .
-                  'FROM oldreport ' .
+		  $self->common_aggregate_fields() .
+                  ' FROM report ' .
                   'WHERE timestamp >= ? AND timestamp <= ? ' .
-		  'AND remote_addr = ? ' .
-                  'GROUP BY final_name ' .
-		  'ORDER BY final_name;')
+		  'AND location = ? ' .
+                  'GROUP BY service ' .
+		  'ORDER BY service;')
       or die "prepare failed";
   return $sth;
 }

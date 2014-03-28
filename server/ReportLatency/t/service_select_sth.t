@@ -20,7 +20,7 @@ use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
 use HTML::Tidy;
-use Test::More tests => 11;
+use Test::More tests => 15;
 
 BEGIN { use lib '..'; }
 
@@ -80,15 +80,11 @@ $sth->execute('mail.google.com');
 
 my $rows = 0;
 while (my $row = $sth->fetchrow_hashref) {
-  is_deeply($row,
-	    {
-	     request_count => 10,
-	     request_latency => 222,
-	     navigation_count => 1,
-	     navigation_latency => 2038,
-	     name => 'mail.google.com'
-	    },
-	    'mail.google.com data row');
+  is($row->{ureq_count}, 10, '10 ureqs');
+  is($row->{ureq_latency}, 222, 'ureq latency');
+  is($row->{nav_count}, 1, '1 nav');
+  is($row->{nav_latency}, 2038, 'nav latency');
+  is($row->{name}, 'mail.google.com', 'mail.google.com server name');
   $rows++;
 }
 is($rows, 1, "1 row for mail.google.com");
