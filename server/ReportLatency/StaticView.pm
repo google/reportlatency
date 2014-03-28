@@ -494,11 +494,7 @@ EOF
     my $name = sanitize_service($row->{'name'}) or next;
     print $io "  <tr>";
     print $io " <td> $name </td>";
-    print $io " <td align=right> " . mynum($row->{'request_count'}) . " </td>";
-    print $io " <td align=right> " . myround($row->{'request_latency'}) . " </td>";
-    print $io " <td align=right> " . mynum($row->{'navigation_count'}) . " </td>";
-    print $io ' <td align=right> ' .
-      myround($row->{'navigation_latency'}) . " </td>";
+    print $io $self->common_html_fields($row);
     print $io "  </tr>\n";
   }
 
@@ -516,17 +512,7 @@ EOF
 </tr>
 <tr> <td align=center> total </td>
 EOF
-  print $io "  <td align=right> " . mynum($meta->{'request_count'}) .
-    " </td>\n";
-  print $io "  <td align=right> " .
-    average($meta->{'request_total'},$meta->{'request_count'}) .
-      " </td>\n";
-  print $io "  <td align=right> " . mynum($meta->{'navigation_count'}) .
-    " </td>\n";
-  print $io "  <td align=right> " .
-    average($meta->{'navigation_total'},$meta->{'navigation_count'}) .
-      " </td>\n";
-
+  print $io $self->common_html_fields($meta);
   print $io <<EOF;
 </tr>
 </table>
