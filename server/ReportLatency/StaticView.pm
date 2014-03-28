@@ -182,7 +182,7 @@ EOF
 			       $meta->{'max_timestamp'});
 
   while (my $location = $location_sth->fetchrow_hashref) {
-    my $name = $location->{remote_addr};
+    my $name = $location->{location};
     my $url = $self->location_url_from_tag(uri_escape($name));
     my $count = $location->{'services'};
     print $io latency_summary_row(sanitize_location($name),$url,
@@ -428,6 +428,27 @@ EOF
   return ${$io->string_ref};
 }
 
+sub common_html_fields {
+  my ($self,$row) = @_;
+  return
+    " <td align=right> " . mynum($row->{'nreq_tabclosed'}) . " </td>" .
+    " <td align=right> " . mynum($row->{'nreq_200'}) . " </td>" .
+    " <td align=right> " . mynum($row->{'nreq_300'}) . " </td>" .
+    " <td align=right> " . mynum($row->{'nreq_400'}) . " </td>" .
+    " <td align=right> " . mynum($row->{'nreq_500'}) . " </td>" .
+    " <td align=right> " . mynum($row->{'nreq_count'}) . " </td>" .
+    " <td align=right> " . myround($row->{'nreq_latency'}) . " </td>" .
+    " <td align=right> " . mynum($row->{'nav_tabclosed'}) . " </td>" .
+    " <td align=right> " . mynum($row->{'nav_count'}) . " </td>" .
+    ' <td align=right> ' . myround($row->{'nav_latency'}) . " </td>" .
+    " <td align=right> " . mynum($row->{'ureq_tabclosed'}) . " </td>" .
+    " <td align=right> " . mynum($row->{'ureq_200'}) . " </td>" .
+    " <td align=right> " . mynum($row->{'ureq_300'}) . " </td>" .
+    " <td align=right> " . mynum($row->{'ureq_400'}) . " </td>" .
+    " <td align=right> " . mynum($row->{'ureq_500'}) . " </td>" .
+    " <td align=right> " . mynum($row->{'ureq_count'}) . " </td>";
+}
+
 sub service_found {
   my ($self,$service,$meta,$select,$select_location) = @_;
 
@@ -527,14 +548,10 @@ EOF
   $rc = $select_location->execute($service);
 
   while ( my $row = $select_location->fetchrow_hashref) {
-    my $location = $row->{'remote_addr'} || 'N/A';
+    my $location = $row->{'location'} || 'N/A';
     print $io "  <tr>";
     print $io " <td> $location </td>";
-    print $io " <td align=right> " . mynum($row->{'request_count'}) . " </td>";
-    print $io " <td align=right> " . myround($row->{'request_latency'}) . " </td>";
-    print $io " <td align=right> " . mynum($row->{'navigation_count'}) . " </td>";
-    print $io ' <td align=right> ' .
-      myround($row->{'navigation_latency'}) . " </td>";
+    print $io $self->common_html_fields($row);
     print $io "  </tr>\n";
   }
 
