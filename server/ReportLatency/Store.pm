@@ -348,18 +348,13 @@ sub tag_meta_sth {
   my ($self) = @_;
   my $dbh = $self->{dbh};
   my $sth =
-    $dbh->prepare('SELECT count(distinct r.final_name) AS services,' .
+    $dbh->prepare('SELECT count(distinct r.service) AS services,' .
 		  'min(r.timestamp) AS min_timestamp,' .
                   'max(r.timestamp) AS max_timestamp,' .
-                  'sum(r.request_count) AS request_count,' .
-                  'sum(r.request_total)/sum(r.request_count)' .
-                  ' AS request_latency,' .
-                  'sum(r.navigation_count) AS navigation_count,' .
-                  'sum(r.navigation_total)/sum(r.navigation_count)' .
-                  ' AS navigation_latency ' .
-                  'FROM oldreport AS r ' .
+		  $self->common_aggregate_fields() .
+                  ' FROM report AS r ' .
                   'INNER JOIN tag ' .
-                  'ON r.final_name = tag.service ' .
+                  'ON r.service = tag.service ' .
                   "WHERE r.timestamp >= datetime('now','-14 days') " .
 		  'AND tag.tag = ?;')
       or die "prepare failed";
