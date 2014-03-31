@@ -418,25 +418,6 @@ sub untagged_service_sth {
 }
 
 
-sub service_meta_sth {
-  my ($self) = @_;
-  my $dbh = $self->{dbh};
-  my $sth =
-    $dbh->prepare('SELECT final_name,' .
-		  'min(timestamp) AS min_timestamp,' .
-                  'max(timestamp) AS max_timestamp,' .
-		  "DATE('now') as date," .
-                  'sum(request_count) AS request_count,' .
-                  'sum(request_total) AS request_total,' .
-                  'sum(navigation_count) AS navigation_count,' .
-                  'sum(navigation_total) AS navigation_total ' .
-		  'FROM oldreport ' .
-                  'WHERE final_name=? AND ' .
-		  "timestamp >= DATETIME('now','-14 days');")
-      or die "prepare failed";
-  return $sth;
-}
-
 
 sub common_aggregate_fields {
   my ($self) = @_;
@@ -457,6 +438,22 @@ sub common_aggregate_fields {
     'sum(ureq_200) AS ureq_500,' .
     'sum(ureq_count) AS ureq_count,' .
     'sum(ureq_total)/sum(ureq_count) AS ureq_latency';
+}
+
+sub service_meta_sth {
+  my ($self) = @_;
+  my $dbh = $self->{dbh};
+  my $sth =
+    $dbh->prepare('SELECT service,' .
+		  'min(timestamp) AS min_timestamp,' .
+                  'max(timestamp) AS max_timestamp,' .
+		  "DATE('now') as date," .
+		  $self->common_aggregate_fields() .
+		  ' FROM report ' .
+                  'WHERE service=? AND ' .
+		  "timestamp >= DATETIME('now','-14 days');")
+      or die "prepare failed";
+  return $sth;
 }
 
 sub service_select_sth {

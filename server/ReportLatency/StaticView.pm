@@ -20,8 +20,7 @@ use ReportLatency::utils;
 use IO::String;
 use URI::Escape;
 
-
-$VERSION     = 0.1;
+$VERSION     = 0.2;
 
 sub new {
   my $class = shift;
@@ -446,7 +445,8 @@ sub common_html_fields {
     " <td align=right> " . mynum($row->{'ureq_300'}) . " </td>" .
     " <td align=right> " . mynum($row->{'ureq_400'}) . " </td>" .
     " <td align=right> " . mynum($row->{'ureq_500'}) . " </td>" .
-    " <td align=right> " . mynum($row->{'ureq_count'}) . " </td>";
+    " <td align=right> " . mynum($row->{'ureq_count'}) . " </td>" .
+    " <td align=right> " . mynum($row->{'ureq_latency'}) . " </td>";
 }
 
 sub service_found {
@@ -588,6 +588,7 @@ sub service_html {
 
   my $rc = $meta_sth->execute($service_name);
   my $row = $meta_sth->fetchrow_hashref;
+
   $meta_sth->finish;
 
   if (!defined $row) {

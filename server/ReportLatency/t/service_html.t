@@ -60,7 +60,6 @@ for my $message ( $tidy->messages ) {
 }
 $tidy->clear_messages();
 
-
 ok($dbh->do(q{
   INSERT INTO upload(location) VALUES("1.2.3.0");
 }), 'INSERT upload');
