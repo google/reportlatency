@@ -487,15 +487,15 @@ sub summary_tag_sth {
   my ($self) = @_;
   my $dbh = $self->{dbh};
   my $sth =
-    $dbh->prepare('SELECT tag.tag as tag,' .
-                  'count(distinct service) AS services,' .
+    $dbh->prepare('SELECT t.tag as tag,' .
+                  'count(distinct r.service) AS services,' .
 		  $self->common_aggregate_fields() .
-                  ' FROM report ' .
-		  'INNER JOIN tag ' .
-		  'ON report.service = tag.service ' .
+                  ' FROM report r ' .
+		  'INNER JOIN tag t ' .
+		  'ON r.service = t.service ' .
                   'WHERE timestamp >= ? AND timestamp <= ? ' .
-                  'GROUP BY tag ' .
-		  'ORDER BY tag;')
+                  'GROUP BY t.tag ' .
+		  'ORDER BY t.tag;')
       or die "prepare failed";
   return $sth;
 }
@@ -505,13 +505,13 @@ sub summary_untagged_sth {
   my $dbh = $self->{dbh};
   my $sth =
     $dbh->prepare('SELECT ' .
-                  'count(distinct service) AS services,' .
+                  'count(distinct r.service) AS services,' .
 		  $self->common_aggregate_fields() .
-                  ' FROM report ' .
-		  'LEFT OUTER JOIN tag ' .
-		  'ON report.service = tag.service ' .
+                  ' FROM report r ' .
+		  'LEFT OUTER JOIN tag t ' .
+		  'ON r.service = t.service ' .
                   'WHERE timestamp >= ? AND timestamp <= ? ' .
-		  'AND tag.tag is null;')
+		  'AND t.tag is null;')
       or die "prepare failed";
   return $sth;
 }
