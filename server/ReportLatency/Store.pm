@@ -365,21 +365,16 @@ sub tag_service_sth {
   my ($self) = @_;
   my $dbh = $self->{dbh};
   my $sth =
-    $dbh->prepare('SELECT r.final_name AS service,' .
+    $dbh->prepare('SELECT r.service AS service,' .
                   'count(distinct r.name) AS dependencies,' .
-                  'sum(r.request_count) AS request_count,' .
-                  'sum(r.request_total)/sum(r.request_count)' .
-                  ' AS request_latency,' .
-                  'sum(r.navigation_count) AS navigation_count,' .
-                  'sum(r.navigation_total)/sum(r.navigation_count)' .
-                  ' AS navigation_latency ' .
-                  'FROM oldreport AS r ' .
+		  $self->common_aggregate_fields() .
+                  ' FROM report AS r ' .
 		  'INNER JOIN tag ' .
-		  'ON r.final_name = tag.service ' .
+		  'ON r.service = tag.service ' .
                   'WHERE r.timestamp >= ? AND r.timestamp <= ? ' .
 		  'AND tag.tag = ? ' .
-                  'GROUP BY r.final_name ' .
-		  'ORDER BY r.final_name;')
+                  'GROUP BY r.service ' .
+		  'ORDER BY r.service;')
       or die "prepare failed";
   return $sth;
 }
