@@ -1,4 +1,5 @@
-# Copyright 2013 Google Inc. All Rights Reserved.
+#
+# Copyright 2013,2014 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,6 +20,7 @@ use vars qw($VERSION);
 use ReportLatency::utils;
 use IO::String;
 use URI::Escape;
+use Data::Dumper;
 
 $VERSION     = 0.2;
 

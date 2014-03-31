@@ -20,7 +20,7 @@ use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
 use HTML::Tidy;
-use Test::More tests => 14;
+use Test::More tests => 12;
 
 BEGIN { use lib '..'; }
 
@@ -66,7 +66,7 @@ ok($dbh->do(q{
   INSERT INTO navigation_request(upload,name,service,count,total) VALUES(1, 'google.com','google.com',3,1164);
 }), 'INSERT google.com update_request');
 ok($dbh->do(q{
-  INSERT INTO navigation(upload,name,service,count,total) VALUES(1, 'google.com','google.com',1,2222);
+  INSERT INTO navigation(upload,name,service,count,total) VALUES(1, 'google.com','google.com',4,8888);
 }), 'INSERT google.com navigation');
 
 
@@ -82,7 +82,3 @@ $tidy->clear_messages();
 like($location_html, qr/499/, '499ms update request latency found');
 like($location_html, qr/388/, '388ms navigation request latency found');
 like($location_html, qr/2222/, '2222ms navigation latency found');
-
-print STDERR "dbfile = $dbfile\n";
-sleep(60);
-
