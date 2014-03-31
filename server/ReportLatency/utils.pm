@@ -183,7 +183,10 @@ sub latency_summary_row {
     }
   }
   $html .= ' </td>';
-  $html .= "  <td align=right> $count </td> ";
+  $html .= " <td align=right> $count </td> ";
+  $html .=" <td align=right> " . mynum($row->{'nav_tabclosed'}) . " </td>";
+  $html .= " <td align=right> " . mynum($row->{'nav_count'}) . " </td>";
+  $html .= " <td align=right> " . myround($row->{'nav_latency'}) . " </td>";
   $html .=" <td align=right> " . mynum($row->{'nreq_tabclosed'}) . " </td>";
   $html .=" <td align=right> " . mynum($row->{'nreq_200'}) . " </td>";
   $html .=" <td align=right> " . mynum($row->{'nreq_300'}) . " </td>";
@@ -191,8 +194,6 @@ sub latency_summary_row {
   $html .=" <td align=right> " . mynum($row->{'nreq_500'}) . " </td>";
   $html .=" <td align=right> " . mynum($row->{'nreq_count'}) . " </td>";
   $html .= " <td align=right> " . myround($row->{'nreq_latency'}) . " </td>";
-  $html .= "   <td align=right> " . mynum($row->{'nav_count'}) . " </td>";
-  $html .= "   <td align=right> " . myround($row->{'nav_latency'}) . " </td>";
   $html .=" <td align=right> " . mynum($row->{'ureq_200'}) . " </td>";
   $html .=" <td align=right> " . mynum($row->{'ureq_300'}) . " </td>";
   $html .=" <td align=right> " . mynum($row->{'ureq_400'}) . " </td>";

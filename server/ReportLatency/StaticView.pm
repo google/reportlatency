@@ -79,6 +79,24 @@ sub location_url_from_tag {
   return "../../locations/" . $self->location_url($name);
 }
 
+sub common_header_1 {
+  my ($self) = @_;
+  return <<EOF;
+ <th align=right colspan=3> Navigation </th>
+ <th align=right colspan=7> Navigation Request </th>
+ <th align=right colspan=6> Update Request </th>
+EOF
+}
+
+sub common_header_2 {
+  my ($self) = @_;
+  return <<EOF;
+ <th>tabclosed</th> <th>Count</th> <th>Latency</th>
+ <th>tabclosed</th> <th>200</th> <th>300</th> <th>400</th> <th>500</th> <th>Count</th> <th>Latency</th>
+ <th>200</th> <th>300</th> <th>400</th> <th>500</th> <th>Count</th> <th>Latency</th>
+EOF
+}
+
 sub summary_html {
   my ($self) = @_;
   my $store = $self->{store};
@@ -97,16 +115,17 @@ sub summary_html {
 
   my $io = new IO::String;
 
+  my $header_1 = $self->common_header_1();
+  my $header_2 = $self->common_header_2();
+
   my $tag_header = <<EOF;
 <tr>
  <th colspan=2> Tag </th>
- <th colspan=2> Request </th>
- <th colspan=2> Navigation </th>
+$header_1
 </tr>
 <tr>
  <th>Name</th> <th>Services</th>
- <th>Count</th> <th>Latency (ms)</th>
- <th>Count</th> <th>Latency (ms)</th>
+$header_2
 </tr>
 EOF
 
@@ -432,6 +451,9 @@ EOF
 sub common_html_fields {
   my ($self,$row) = @_;
   return
+    " <td align=right> " . mynum($row->{'nav_tabclosed'}) . " </td>" .
+    " <td align=right> " . mynum($row->{'nav_count'}) . " </td>" .
+    ' <td align=right> ' . myround($row->{'nav_latency'}) . " </td>" .
     " <td align=right> " . mynum($row->{'nreq_tabclosed'}) . " </td>" .
     " <td align=right> " . mynum($row->{'nreq_200'}) . " </td>" .
     " <td align=right> " . mynum($row->{'nreq_300'}) . " </td>" .
@@ -439,10 +461,6 @@ sub common_html_fields {
     " <td align=right> " . mynum($row->{'nreq_500'}) . " </td>" .
     " <td align=right> " . mynum($row->{'nreq_count'}) . " </td>" .
     " <td align=right> " . myround($row->{'nreq_latency'}) . " </td>" .
-    " <td align=right> " . mynum($row->{'nav_tabclosed'}) . " </td>" .
-    " <td align=right> " . mynum($row->{'nav_count'}) . " </td>" .
-    ' <td align=right> ' . myround($row->{'nav_latency'}) . " </td>" .
-    " <td align=right> " . mynum($row->{'ureq_tabclosed'}) . " </td>" .
     " <td align=right> " . mynum($row->{'ureq_200'}) . " </td>" .
     " <td align=right> " . mynum($row->{'ureq_300'}) . " </td>" .
     " <td align=right> " . mynum($row->{'ureq_400'}) . " </td>" .
