@@ -327,17 +327,17 @@ sub tag_nav_latencies_sth {
   if (! defined $sth) {
     my $dbh = $self->{dbh};
     my $statement='SELECT strftime("%s",r.timestamp) AS timestamp,' .
-      'r.navigation_count AS count,' .
-      'r.navigation_high AS high,' .
-      'r.navigation_low AS low,' .
-      'r.navigation_total AS total ' .
-      'FROM oldreport AS r ' .
-       'INNER JOIN tag ON r.final_name = tag.service ' .
+      'r.nav_count AS count,' .
+      'r.nav_high AS high,' .
+      'r.nav_low AS low,' .
+      'r.nav_total AS total ' .
+      'FROM report AS r ' .
+       'INNER JOIN tag ON r.service = tag.service ' .
        "WHERE r.timestamp <= datetime('now',?) AND " .
        "r.timestamp > datetime('now',?) AND " .
        'tag.tag = ? AND ' .
-       "r.navigation_count IS NOT NULL AND r.navigation_count != '' AND " .
-       "r.navigation_count>0;";
+       "r.nav_count IS NOT NULL AND r.nav_count != '' AND " .
+       "r.nav_count>0;";
     $sth = $dbh->prepare($statement) or die $!;
   }
 
