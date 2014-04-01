@@ -89,6 +89,12 @@ TabData.prototype.endRequest = function(data) {
 	      latencyType='ureq';
 	    }
 	    this.stat.add(name, latencyType, delay);
+	    if (data.statusCode) {
+	      var family=statusCodeFamily(data.statusCode);
+	      if (family) {
+		this.stat.increment(name, latencyType, 'r' + family);
+	      }
+	    }
 	  } else {
 	    if (localStorage['debug_requests'] == 'true') {
 	      logObject('no service name in endRequest()', data);

@@ -282,3 +282,28 @@ function timeZone(date) {
 
   return null;
 }
+
+/**
+ * statusCodeFamily() converts a numeric HTTP status code
+ * to one of '200', '300', '400', '500' for the family code.
+ *
+ * @param {string} statusCode is the numeric HTTP status code
+ * @return {string} numeric status code family
+ **/
+
+function statusCodeFamily(statusCode) {
+  if (statusCode) {
+    if (statusCode>=200) {
+      if (statusCode<300) {
+	return 200;
+      } else if (statusCode<400) {
+	return 300;
+      } else if (statusCode<500) {
+	return 400;
+      } else if (statusCode<600) {
+	return 500;
+      }
+    }
+  }
+  return null;
+}
