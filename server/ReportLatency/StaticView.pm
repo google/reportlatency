@@ -141,6 +141,15 @@ sub latency_summary_row {
   return $html;
 }
 
+sub alternate_style {
+  my ($self) = @_;
+  return <<EOF;
+    table.alternate tr:nth-child(odd) td{ background-color: #CCFFCC; }
+    table.alternate tr:nth-child(even) td{ background-color: #99DD99; }
+    table.alternate tr td.latency{ font-weight:bold; }
+EOF
+}
+
 sub summary_html {
   my ($self) = @_;
   my $store = $self->{store};
@@ -161,6 +170,7 @@ sub summary_html {
 
   my $header_1 = $self->common_header_1();
   my $header_2 = $self->common_header_2();
+  my $altstyle = $self->alternate_style();
 
   my $tag_header = <<EOF;
 <tr>
@@ -179,9 +189,7 @@ EOF
 <head>
   <title>ReportLatency summary</title>
   <style type="text/css">
-    table.alternate tr:nth-child(odd) td{ background-color: #CCFFCC; }
-    table.alternate tr:nth-child(even) td{ background-color: #99DD99; }
-    table.alternate tr td.latency{ font-weight:bold; }
+$altstyle
   </style>
 </head>
 <body>
@@ -293,6 +301,7 @@ EOF
 
   my $header_1 = $self->common_header_1();
   my $header_2 = $self->common_header_2();
+  my $altstyle = $self->alternate_style();
 
   print $io <<EOF;
 <!DOCTYPE html>
@@ -300,8 +309,7 @@ EOF
 <head>
   <title>Latency report for untagged services</title>
   <style type="text/css">
-    table.alternate tr:nth-child(odd) td{ background-color: #CCFFCC; }
-    table.alternate tr:nth-child(even) td{ background-color: #99DD99; }
+$altstyle
   </style>
 </head>
 <body>
@@ -392,6 +400,7 @@ EOF
 
   my $header_1 = $self->common_header_1();
   my $header_2 = $self->common_header_2();
+  my $altstyle = $self->alternate_style();
 
   my $title = 'Location ' . ($location||'');
   print $io <<EOF;
@@ -400,8 +409,7 @@ EOF
 <head>
   <title>Latency Summary For $title</title>
   <style type="text/css">
-    table.alternate tr:nth-child(odd) td{ background-color: #CCFFCC; }
-    table.alternate tr:nth-child(even) td{ background-color: #99DD99; }
+$altstyle
   </style>
 </head>
 <body>
@@ -503,14 +511,14 @@ sub service_found {
 
   my $header_1 = $self->common_header_1();
   my $header_2 = $self->common_header_2();
+  my $altstyle = $self->alternate_style();
 
   print $io <<EOF;
 <!DOCTYPE html>
 <html>
 <head>
   <style type="text/css">
-    table.alternate tr:nth-child(odd) td{ background-color: #CCFFCC; }
-    table.alternate tr:nth-child(even) td{ background-color: #99DD99; }
+$altstyle
   </style>
   <title> $meta->{'date'} $service Latency </title>
 </head>
@@ -660,6 +668,7 @@ EOF
 
   my $header_1 = $self->common_header_1();
   my $header_2 = $self->common_header_2();
+  my $altstyle = $self->alternate_style();
 
   print $io <<EOF;
 <!DOCTYPE html>
@@ -667,8 +676,7 @@ EOF
 <head>
   <title>$tag_name ReportLatency summary</title>
   <style type="text/css">
-    table.alternate tr:nth-child(odd) td{ background-color: #CCFFCC; }
-    table.alternate tr:nth-child(even) td{ background-color: #99DD99; }
+$altstyle
   </style>
 </head>
 <body>
