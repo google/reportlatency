@@ -117,29 +117,17 @@ sub option_bits {
 
 sub insert_stats {
   my ($self, $insert, $upload_id, $service, $name, $stats) = @_;
-  my ($r200,$r300,$r400,$r500);
-
-  if (defined $stats->{"response"}) {
-    my ($key,$val);
-    while ( ($key,$val) = each %{$stats->{"response"}}) {
-      if ($key >= 200 && $key < 300) {
-	$r200 += $val;
-      } elsif ($key >= 300 && $key < 400) {
-	$r300 += $val;
-      } elsif ($key >= 400 && $key < 500) {
-	$r400 += $val;
-      } elsif ($key >= 500 && $key < 600) {
-	$r500 += $val;
-      }
-    }
-  }
 
   $insert->execute($upload_id, $service, $name,
 		   $stats->{'count'},
 		   $stats->{'total'},
 		   $stats->{'high'},
 		   $stats->{'low'},
-		   $stats->{'tabclosed'}, $r200, $r300, $r400, $r500);
+		   $stats->{'tabclosed'},
+		   $stats->{'r200'},
+		   $stats->{'r300'},
+		   $stats->{'r400'},
+		   $stats->{'r500'});
 }
 
 sub add_navigation_request_stats {
