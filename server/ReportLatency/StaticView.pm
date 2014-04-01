@@ -245,6 +245,9 @@ EOF
 
   my $untagged_img_url = $self->untagged_img_url;
 
+  my $header_1 = $self->common_header_1();
+  my $header_2 = $self->common_header_2();
+
   print $io <<EOF;
 <!DOCTYPE html>
 <html>
@@ -267,13 +270,11 @@ EOF
 <table class="alternate" summary="Latency report for untagged services">
 <tr>
  <th colspan=2> Service </th>
- <th colspan=2> Request </th>
- <th colspan=2> Navigation </th>
+$header_1
 </tr>
 <tr>
  <th>Name</th> <th>Dependencies</th>
- <th>Count</th> <th>Latency (ms)</th>
- <th>Count</th> <th>Latency (ms)</th>
+$header_2
 </tr>
 EOF
 
@@ -291,13 +292,11 @@ EOF
 <tr>
  <th> Service </th>
  <th> Service </th>
- <th colspan=2> Request </th>
- <th colspan=2> Navigation </th>
+$header_1
 </tr>
 <tr>
  <th></th> <th>Count</th>
- <th>Count</th> <th>Latency (ms)</th>
- <th>Count</th> <th>Latency (ms)</th>
+$header_2
 </tr>
 EOF
 
