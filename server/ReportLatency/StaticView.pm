@@ -91,9 +91,9 @@ EOF
 sub common_header_2 {
   my ($self) = @_;
   return <<EOF;
- <th>tabclosed</th> <th>Count</th> <th>Latency</th>
- <th>tabclosed</th> <th>200</th> <th>300</th> <th>400</th> <th>500</th> <th>Count</th> <th>Latency</th>
- <th>200</th> <th>300</th> <th>400</th> <th>500</th> <th>Count</th> <th>Latency</th>
+ <th>closed</th> <th>count</th> <th>latency</th>
+ <th>closed</th> <th>200</th> <th>300</th> <th>400</th> <th>500</th> <th>count</th> <th>latency</th>
+ <th>200</th> <th>300</th> <th>400</th> <th>500</th> <th>count</th> <th>latency</th>
 EOF
 }
 
@@ -182,13 +182,11 @@ EOF
   my $location_header = <<EOF;
 <tr>
  <th colspan=2> Location </th>
- <th colspan=2> Request </th>
- <th colspan=2> Navigation </th>
+$header_1
 </tr>
 <tr>
  <th>Name</th> <th>Services</th>
- <th>Count</th> <th>Latency (ms)</th>
- <th>Count</th> <th>Latency (ms)</th>
+$header_2
 </tr>
 EOF
 
