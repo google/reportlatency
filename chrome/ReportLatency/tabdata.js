@@ -90,7 +90,7 @@ TabData.prototype.endRequest = function(data) {
 	    }
 	    this.stat.add(name, latencyType, delay);
 	    if (data.statusCode) {
-	      var family=statusCodeFamily(data.statusCode);
+	      var family = statusCodeFamily(data.statusCode);
 	      if (family) {
 		this.stat.increment(name, latencyType, 'r' + family);
 	      }

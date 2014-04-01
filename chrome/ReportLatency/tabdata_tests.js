@@ -61,28 +61,36 @@ test('TabData.endRequest', function() {
   var dataStart3 = { requestId:3, timeStamp:1030,
 		     url: 'http://host.example.com/v1' };
   t.startRequest(dataStart3);
-  var dataStart4 = { requestId:3, timeStamp:1040, fromCache:false,
-		     statusCode:304,
+  var dataStart4 = { requestId:4, timeStamp:1040,
 		     url: 'http://host.example.com/v2' };
   t.startRequest(dataStart4);
+
+  equal(t.stat.count('nreq'), 1,
+	'2 new started, still 1 recorded requests');
+  equal(t.stat.total('nreq'), 10,
+	'2 new started, still 10 ms of requests');
 
   var dataEnd3 = { requestId:3, timeStamp:1039, fromCache:false,
 		   statusCode:304,
 		   url: 'http://host.example.com/v1' };
   t.endRequest(dataEnd3);
-  var dataEnd4 = { requestId:3, timeStamp:1054, fromCache:false,
+
+  equal(t.stat.count('nreq'), 3,
+	'1 interleaved finished, 3 request countables');
+  equal(t.stat.total('nreq'), 19,
+	'1 interleaved finished, 19 ms of requests');
+
+
+  var dataEnd4 = { requestId:4, timeStamp:1054, fromCache:false,
 		   statusCode:200,
 		   url: 'http://host.example.com/v2' };
   t.endRequest(dataEnd4);
 
-  equal(t.stat.count('nreq'), 3,
-	'redirected endRequest left 3 recorded requests');
+  equal(t.stat.count('nreq'), 5,
+	'redirected endRequest 5 request countables');
 
   // Want 33, but accepting 34 for now as well.
-  var reqt = t.stat.total('nreq');
-  ok(reqt >=  10 + 9 + 14 && reqt <= 34,
-	'redirected endRequest left 33-34 ms of requests');
-
+  equal(t.stat.total('nreq'), 33, '33 ms of total requests');
 
 });
 
