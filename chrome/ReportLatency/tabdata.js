@@ -84,11 +84,11 @@ TabData.prototype.endRequest = function(data) {
 	      console.log(name + ' (' + this.service + ') requests +' +
 			  delay + ' ms');
 	    }
+	    var latencyType='nreq';
 	    if (this.service) {
-	      this.stat.add(name, 'ureq', delay);
-	    } else {
-	      this.stat.add(name, 'nreq', delay);
+	      latencyType='ureq';
 	    }
+	    this.stat.add(name, latencyType, delay);
 	  } else {
 	    if (localStorage['debug_requests'] == 'true') {
 	      logObject('no service name in endRequest()', data);
