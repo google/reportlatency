@@ -25,7 +25,7 @@ use base 'Exporter';
 our @EXPORT    = qw(sanitize sanitize_service sanitize_location service_path
 		    mynum myround average
 		    open_path
-		    latency_dbh latency_summary_row net_class_c
+		    latency_dbh net_class_c
 		    reverse_dns aggregate_user_agent);
 
 #
@@ -167,41 +167,6 @@ sub average($$) {
     return round($total/$count);
   }
   "";
-}
-
-sub latency_summary_row {
-  my ($name,$url,$count,$row) = @_;
-#  my $sname = sanitize_service($name);
-  my $sname = $name;
-
-  my $html = "  <tr> <td align=left>";
-  if (defined $sname && $sname ne '') {
-    if (defined $url && $url ne '') {
-      $html .= "<a href=\"$url\"> $sname </a> ";
-    } else {
-      $html .= $sname;
-    }
-  }
-  $html .= ' </td>';
-  $html .= " <td align=right> $count </td> ";
-  $html .=" <td align=right> " . mynum($row->{'nav_tabclosed'}) . " </td>";
-  $html .= " <td align=right> " . mynum($row->{'nav_count'}) . " </td>";
-  $html .= " <td align=right> " . myround($row->{'nav_latency'}) . " </td>";
-  $html .=" <td align=right> " . mynum($row->{'nreq_tabclosed'}) . " </td>";
-  $html .=" <td align=right> " . mynum($row->{'nreq_200'}) . " </td>";
-  $html .=" <td align=right> " . mynum($row->{'nreq_300'}) . " </td>";
-  $html .=" <td align=right> " . mynum($row->{'nreq_400'}) . " </td>";
-  $html .=" <td align=right> " . mynum($row->{'nreq_500'}) . " </td>";
-  $html .=" <td align=right> " . mynum($row->{'nreq_count'}) . " </td>";
-  $html .= " <td align=right> " . myround($row->{'nreq_latency'}) . " </td>";
-  $html .=" <td align=right> " . mynum($row->{'ureq_200'}) . " </td>";
-  $html .=" <td align=right> " . mynum($row->{'ureq_300'}) . " </td>";
-  $html .=" <td align=right> " . mynum($row->{'ureq_400'}) . " </td>";
-  $html .=" <td align=right> " . mynum($row->{'ureq_500'}) . " </td>";
-  $html .=" <td align=right> " . mynum($row->{'ureq_count'}) . " </td>";
-  $html .= " <td align=right> " . myround($row->{'ureq_latency'}) . " </td>";
-  $html .= "  </tr>\n";
-  return $html;
 }
 
 sub net_class_c($) {

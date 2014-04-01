@@ -97,6 +97,47 @@ sub common_header_2 {
 EOF
 }
 
+sub common_html_fields {
+  my ($self,$row) = @_;
+  return
+    " <td align=right> " . mynum($row->{'nav_tabclosed'}) . " </td>" .
+    " <td align=right> " . mynum($row->{'nav_count'}) . " </td>" .
+    ' <td align=right> ' . myround($row->{'nav_latency'}) . " </td>" .
+    " <td align=right> " . mynum($row->{'nreq_tabclosed'}) . " </td>" .
+    " <td align=right> " . mynum($row->{'nreq_200'}) . " </td>" .
+    " <td align=right> " . mynum($row->{'nreq_300'}) . " </td>" .
+    " <td align=right> " . mynum($row->{'nreq_400'}) . " </td>" .
+    " <td align=right> " . mynum($row->{'nreq_500'}) . " </td>" .
+    " <td align=right> " . mynum($row->{'nreq_count'}) . " </td>" .
+    " <td align=right> " . myround($row->{'nreq_latency'}) . " </td>" .
+    " <td align=right> " . mynum($row->{'ureq_200'}) . " </td>" .
+    " <td align=right> " . mynum($row->{'ureq_300'}) . " </td>" .
+    " <td align=right> " . mynum($row->{'ureq_400'}) . " </td>" .
+    " <td align=right> " . mynum($row->{'ureq_500'}) . " </td>" .
+    " <td align=right> " . mynum($row->{'ureq_count'}) . " </td>" .
+    " <td align=right> " . mynum($row->{'ureq_latency'}) . " </td>";
+}
+
+sub latency_summary_row {
+  my ($self,$name,$url,$count,$row) = @_;
+#  my $sname = sanitize_service($name);
+  my $sname = $name;
+
+  my $html = "  <tr> <td align=left>";
+  if (defined $sname && $sname ne '') {
+    if (defined $url && $url ne '') {
+      $html .= "<a href=\"$url\"> $sname </a> ";
+    } else {
+      $html .= $sname;
+    }
+  }
+  $html .= ' </td>';
+  $html .= " <td align=right> $count </td> ";
+  $html .= $self->common_html_fields($row);
+  $html .= "  </tr>\n";
+  return $html;
+}
+
 sub summary_html {
   my ($self) = @_;
   my $store = $self->{store};
@@ -158,7 +199,7 @@ EOF
     my $name = $tag->{tag};
     my $url = $self->tag_url($name);
     my $count = $tag->{'services'};
-    print $io latency_summary_row($name,$url,$count,$tag);
+    print $io $self->latency_summary_row($name,$url,$count,$tag);
   }
   $tag_sth->finish;
 
@@ -166,13 +207,14 @@ EOF
 			    $meta->{'max_timestamp'});
   my $other = $other_sth->fetchrow_hashref;
   my $url = $self->untagged_url();
-  print $io latency_summary_row('untagged',$url,
-				$other->{'services'},$other);
+  print $io $self->latency_summary_row('untagged',$url,
+				       $other->{'services'},$other);
   $other_sth->finish;
 
   print $io $tag_header;
 
-  print $io latency_summary_row('total', '', $meta->{'services'}, $meta);
+  print $io $self->latency_summary_row('total', '',
+				       $meta->{'services'}, $meta);
 
   print $io <<EOF;
 </table>
@@ -203,8 +245,8 @@ EOF
     my $name = $location->{location};
     my $url = $self->location_url_from_tag(uri_escape($name));
     my $count = $location->{'services'};
-    print $io latency_summary_row(sanitize_location($name),$url,
-				  $count,$location);
+    print $io $self->latency_summary_row(sanitize_location($name),$url,
+					 $count,$location);
   }
   $location_sth->finish;
 
@@ -283,7 +325,7 @@ EOF
     if (defined $name) {
       my $url = $self->service_url_from_tag($name);
       my $count = $service->{'dependencies'};
-      print $io latency_summary_row($name,$url,$count,$service);
+      print $io $self->latency_summary_row($name,$url,$count,$service);
     }
   }
   $service_sth->finish;
@@ -300,7 +342,8 @@ $header_2
 </tr>
 EOF
 
-  print $io latency_summary_row('total', '', $meta->{'services'}, $meta);
+  print $io $self->latency_summary_row('total', '',
+				       $meta->{'services'}, $meta);
 
   print $io <<EOF;
 </table>
@@ -385,7 +428,7 @@ EOF
     if (defined $name) {
       my $url = $self->service_url_from_location($name);
       my $count = $service->{'dependencies'};
-      print $io latency_summary_row($name,$url,$count,$service);
+      print $io $self->latency_summary_row($name,$url,$count,$service);
     }
   }
   $service_sth->finish;
@@ -402,7 +445,8 @@ $header_2
 </tr>
 EOF
 
-  print $io latency_summary_row('total', '', $meta->{'services'}, $meta);
+  print $io $self->latency_summary_row('total', '',
+				       $meta->{'services'}, $meta);
 
   print $io <<EOF;
 </table>
@@ -442,27 +486,6 @@ No recent reports were found for $name
 EOF
   $io->setpos(0);
   return ${$io->string_ref};
-}
-
-sub common_html_fields {
-  my ($self,$row) = @_;
-  return
-    " <td align=right> " . mynum($row->{'nav_tabclosed'}) . " </td>" .
-    " <td align=right> " . mynum($row->{'nav_count'}) . " </td>" .
-    ' <td align=right> ' . myround($row->{'nav_latency'}) . " </td>" .
-    " <td align=right> " . mynum($row->{'nreq_tabclosed'}) . " </td>" .
-    " <td align=right> " . mynum($row->{'nreq_200'}) . " </td>" .
-    " <td align=right> " . mynum($row->{'nreq_300'}) . " </td>" .
-    " <td align=right> " . mynum($row->{'nreq_400'}) . " </td>" .
-    " <td align=right> " . mynum($row->{'nreq_500'}) . " </td>" .
-    " <td align=right> " . mynum($row->{'nreq_count'}) . " </td>" .
-    " <td align=right> " . myround($row->{'nreq_latency'}) . " </td>" .
-    " <td align=right> " . mynum($row->{'ureq_200'}) . " </td>" .
-    " <td align=right> " . mynum($row->{'ureq_300'}) . " </td>" .
-    " <td align=right> " . mynum($row->{'ureq_400'}) . " </td>" .
-    " <td align=right> " . mynum($row->{'ureq_500'}) . " </td>" .
-    " <td align=right> " . mynum($row->{'ureq_count'}) . " </td>" .
-    " <td align=right> " . mynum($row->{'ureq_latency'}) . " </td>";
 }
 
 sub service_found {
@@ -672,8 +695,8 @@ EOF
     if (defined $name) {
       my $url = $self->service_url_from_tag($name);
       my $count = $service->{'dependencies'};
-      print $io latency_summary_row(sanitize_service($name),$url,$count,
-				    $service);
+      print $io $self->latency_summary_row(sanitize_service($name),$url,$count,
+					   $service);
     }
   }
   $service_sth->finish;
@@ -690,7 +713,8 @@ $header_2
 </tr>
 EOF
 
-  print $io latency_summary_row('total', '', $meta->{'services'}, $meta);
+  print $io $self->latency_summary_row('total', '',
+				       $meta->{'services'}, $meta);
 
   print $io <<EOF;
 </table>
