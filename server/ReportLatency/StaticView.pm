@@ -102,20 +102,23 @@ sub common_html_fields {
   return
     " <td align=right> " . mynum($row->{'nav_tabclosed'}) . " </td>" .
     " <td align=right> " . mynum($row->{'nav_count'}) . " </td>" .
-    ' <td align=right> ' . myround($row->{'nav_latency'}) . " </td>" .
-    " <td align=right> " . mynum($row->{'nreq_tabclosed'}) . " </td>" .
+    ' <td align=right class="latency"> ' . myround($row->{'nav_latency'}) .
+      " </td>" .
+    ' <td align=right> ' . mynum($row->{'nreq_tabclosed'}) . " </td>" .
     " <td align=right> " . mynum($row->{'nreq_200'}) . " </td>" .
     " <td align=right> " . mynum($row->{'nreq_300'}) . " </td>" .
     " <td align=right> " . mynum($row->{'nreq_400'}) . " </td>" .
     " <td align=right> " . mynum($row->{'nreq_500'}) . " </td>" .
     " <td align=right> " . mynum($row->{'nreq_count'}) . " </td>" .
-    " <td align=right> " . myround($row->{'nreq_latency'}) . " </td>" .
+    ' <td align=right class="latency"> ' . myround($row->{'nreq_latency'}) .
+      " </td>" .
     " <td align=right> " . mynum($row->{'ureq_200'}) . " </td>" .
     " <td align=right> " . mynum($row->{'ureq_300'}) . " </td>" .
     " <td align=right> " . mynum($row->{'ureq_400'}) . " </td>" .
     " <td align=right> " . mynum($row->{'ureq_500'}) . " </td>" .
     " <td align=right> " . mynum($row->{'ureq_count'}) . " </td>" .
-    " <td align=right> " . mynum($row->{'ureq_latency'}) . " </td>";
+    ' <td align=right class="latency"> ' . myround($row->{'ureq_latency'}) .
+      " </td>";
 }
 
 sub latency_summary_row {
@@ -178,6 +181,7 @@ EOF
   <style type="text/css">
     table.alternate tr:nth-child(odd) td{ background-color: #CCFFCC; }
     table.alternate tr:nth-child(even) td{ background-color: #99DD99; }
+    table.alternate tr td.latency{ font-weight:bold; }
   </style>
 </head>
 <body>
