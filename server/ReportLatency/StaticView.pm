@@ -474,6 +474,9 @@ sub service_found {
 
   my $service_img_url = $self->service_img_url($service);
 
+  my $header_1 = $self->common_header_1();
+  my $header_2 = $self->common_header_2();
+
   print $io <<EOF;
 <!DOCTYPE html>
 <html>
@@ -497,12 +500,10 @@ sub service_found {
 <table class="alternate" summary="$service latency by request name">
 <tr>
  <th rowspan=2> Request Name</th>
- <th colspan=2> Request </th>
- <th colspan=2> Navigation </th>
+$header_1
 </tr>
 <tr>
- <th>Count</th> <th>Latency (ms)</th>
- <th>Count</th> <th>Latency (ms)</th>
+$header_2
 </tr>
 EOF
 
@@ -519,12 +520,10 @@ EOF
   print $io <<EOF;
 <tr>
  <th rowspan=2> Request Name</th>
- <th colspan=2> Request </th>
- <th colspan=2> Navigation </th>
+$header_1
 </tr>
 <tr>
- <th>Count</th> <th>Latency (ms)</th>
- <th>Count</th> <th>Latency (ms)</th>
+$header_2
 </tr>
 <tr> <td align=center> total </td>
 EOF
@@ -538,12 +537,10 @@ EOF
 <table class="alternate" summary="$service latency by location">
 <tr>
  <th rowspan=2> Location </th>
- <th colspan=2> Request </th>
- <th colspan=2> Navigation </th>
+$header_1
 </tr>
 <tr>
- <th>Count</th> <th>Latency (ms)</th>
- <th>Count</th> <th>Latency (ms)</th>
+$header_2
 </tr>
 EOF
 
