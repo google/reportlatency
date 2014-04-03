@@ -91,7 +91,7 @@ sub common_header_2 {
   my ($self) = @_;
   return <<EOF;
  <th>closed</th> <th>count</th> <th>latency</th>
- <th>closed</th> <th>200</th> <th>300</th> <th>400</th> <th>500</th> <th>count</th> <th>latency</th>
+ <th>200</th> <th>300</th> <th>400</th> <th>500</th> <th>closed</th> <th>count</th> <th>latency</th>
  <th>200</th> <th>300</th> <th>400</th> <th>500</th> <th>count</th> <th>latency</th>
 EOF
 }
@@ -103,11 +103,11 @@ sub common_html_fields {
     " <td align=right> " . mynum($row->{'nav_count'}) . " </td>" .
     ' <td align=right class="latency"> ' . myround($row->{'nav_latency'}) .
       " </td>" .
-    ' <td align=right> ' . mynum($row->{'nreq_tabclosed'}) . " </td>" .
     " <td align=right> " . mynum($row->{'nreq_200'}) . " </td>" .
     " <td align=right> " . mynum($row->{'nreq_300'}) . " </td>" .
     " <td align=right> " . mynum($row->{'nreq_400'}) . " </td>" .
     " <td align=right> " . mynum($row->{'nreq_500'}) . " </td>" .
+    ' <td align=right> ' . mynum($row->{'nreq_tabclosed'}) . " </td>" .
     " <td align=right> " . mynum($row->{'nreq_count'}) . " </td>" .
     ' <td align=right class="latency"> ' . myround($row->{'nreq_latency'}) .
       " </td>" .
