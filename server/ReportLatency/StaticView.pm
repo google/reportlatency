@@ -20,7 +20,6 @@ use vars qw($VERSION);
 use ReportLatency::utils;
 use IO::String;
 use URI::Escape;
-use Data::Dumper;
 
 $VERSION     = 0.2;
 

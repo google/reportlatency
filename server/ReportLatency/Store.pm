@@ -392,18 +392,18 @@ sub common_aggregate_fields {
   return 
     'sum(nreq_tabclosed) AS nreq_tabclosed,' .
     'sum(nreq_200) AS nreq_200,' .
-    'sum(nreq_200) AS nreq_300,' .
-    'sum(nreq_200) AS nreq_400,' .
-    'sum(nreq_200) AS nreq_500,' .
+    'sum(nreq_300) AS nreq_300,' .
+    'sum(nreq_400) AS nreq_400,' .
+    'sum(nreq_500) AS nreq_500,' .
     'sum(nreq_count) AS nreq_count,' .
     'sum(nreq_total)/sum(nreq_count) AS nreq_latency,' .
     'sum(nav_tabclosed) AS nav_tabclosed,' .
     'sum(nav_count) AS nav_count,' .
     'sum(nav_total)/sum(nav_count) AS nav_latency,' .
     'sum(ureq_200) AS ureq_200,' .
-    'sum(ureq_200) AS ureq_300,' .
-    'sum(ureq_200) AS ureq_400,' .
-    'sum(ureq_200) AS ureq_500,' .
+    'sum(ureq_300) AS ureq_300,' .
+    'sum(ureq_400) AS ureq_400,' .
+    'sum(ureq_500) AS ureq_500,' .
     'sum(ureq_count) AS ureq_count,' .
     'sum(ureq_total)/sum(ureq_count) AS ureq_latency';
 }
