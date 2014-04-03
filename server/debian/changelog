@@ -1,3 +1,9 @@
+reportlatency (1.5.2) precise; urgency=low
+
+  * Fix response code column counting.  Revise table layouts.
+
+ -- Drake Diedrich <dld@google.com>  Thu, 03 Apr 2014 10:39:39 -0700
+
 reportlatency (1.5.1) precise; urgency=low
 
   * Report all latencies and counted events.
