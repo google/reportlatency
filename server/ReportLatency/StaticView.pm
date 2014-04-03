@@ -81,9 +81,9 @@ sub location_url_from_tag {
 sub common_header_1 {
   my ($self) = @_;
   return <<EOF;
- <th align=right colspan=3> Navigation </th>
- <th align=right colspan=7> Navigation Request </th>
- <th align=right colspan=6> Update Request </th>
+ <th colspan=3> Navigation </th>
+ <th colspan=7> Navigation Request </th>
+ <th colspan=6> Update Request </th>
 EOF
 }
 
@@ -146,6 +146,7 @@ sub alternate_style {
     table.alternate tr:nth-child(odd) td{ background-color: #CCFFCC; }
     table.alternate tr:nth-child(even) td{ background-color: #99DD99; }
     table.alternate tr td.latency{ font-weight:bold; }
+    table.alternate tr th{ background-color: #DDDDDD; }
 EOF
 }
 
