@@ -85,15 +85,15 @@ CREATE VIEW oldreport AS
     FROM report;
 
 CREATE VIEW services AS
-  SELECT DISTINCT service FROM navigation;
-  UNION ALL
-  SELECT DISTINCT service FROM navigation_request;
-  UNION ALL
-  SELECT DISTINCT service FROM update_request;
+  SELECT DISTINCT service AS service FROM navigation
+  UNION
+  SELECT DISTINCT service AS service FROM navigation_request
+  UNION
+  SELECT DISTINCT service AS service FROM update_request;
 
 CREATE VIEW names AS
-  SELECT DISTINCT name FROM navigation;
-  UNION ALL
-  SELECT DISTINCT name FROM navigation_request;
-  UNION ALL
-  SELECT DISTINCT name FROM update_request;
+  SELECT DISTINCT name AS name FROM navigation
+  UNION
+  SELECT DISTINCT name AS name FROM navigation_request
+  UNION
+  SELECT DISTINCT name AS name FROM update_request;
