@@ -84,3 +84,16 @@ CREATE VIEW oldreport AS
     nav_high AS navigation_high, nav_low AS navigation_low
     FROM report;
 
+CREATE VIEW services AS
+  SELECT DISTINCT service FROM navigation;
+  UNION ALL
+  SELECT DISTINCT service FROM navigation_request;
+  UNION ALL
+  SELECT DISTINCT service FROM update_request;
+
+CREATE VIEW names AS
+  SELECT DISTINCT name FROM navigation;
+  UNION ALL
+  SELECT DISTINCT name FROM navigation_request;
+  UNION ALL
+  SELECT DISTINCT name FROM update_request;
