@@ -70,20 +70,6 @@ CREATE VIEW report AS
     FROM upload AS u
     JOIN update_request AS ur ON u.id=ur.upload;
 
-
--- just some column differences.  Going away.
-CREATE VIEW oldreport AS
-  SELECT id, timestamp, location AS remote_addr,
-    user_agent, tz, version,
-    options,
-    service AS final_name,
-    name,
-    ureq_count AS request_count, ureq_total AS request_total,
-    ureq_high AS request_high, ureq_low AS request_low,
-    nav_count AS navigation_count, nav_total AS navigation_total,
-    nav_high AS navigation_high, nav_low AS navigation_low
-    FROM report;
-
 CREATE VIEW services AS
   SELECT DISTINCT service AS service FROM navigation
   UNION
