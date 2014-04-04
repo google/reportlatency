@@ -103,7 +103,7 @@ CREATE VIEW report2 AS
     FROM navigation nav
     LEFT JOIN navigation_request AS nr
     ON nav.upload=nr.upload AND nav.service=nr.service AND nav.name=nr.name
-    UNION
+    UNION ALL
     SELECT nr.upload AS upload,
         nr.service AS service,
         nr.name AS name,
@@ -121,7 +121,8 @@ CREATE VIEW report2 AS
 	nr.response500 AS nreq_500
     FROM navigation_request AS nr
     LEFT JOIN navigation nav
-    ON nav.upload=nr.upload AND nav.service=nr.service AND nav.name=nr.name;
+    ON nav.upload=nr.upload AND nav.service=nr.service AND nav.name=nr.name
+    WHERE nav.upload IS NULL;
 
 CREATE VIEW report3 AS
     SELECT coalesce(r2.upload,ur.upload) AS upload,
