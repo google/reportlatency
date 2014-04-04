@@ -17,5 +17,6 @@
 
 BEGIN;
 DROP VIEW report;
+DROP VIEW oldreport;
 .read views-sqlite3.sql
 END;
