@@ -125,9 +125,9 @@ CREATE VIEW report2 AS
     WHERE nav.upload IS NULL;
 
 CREATE VIEW report3 AS
-    SELECT coalesce(r2.upload,ur.upload) AS upload,
-        coalesce(r2.service,ur.service) AS service,
-        coalesce(r2.name,ur.name) AS name,
+    SELECT r2.upload AS upload,
+        r2.service AS service,
+        r2.name AS name,
 	r2.nav_count AS nav_count,
 	r2.nav_total AS nav_total,
 	r2.nav_high AS nav_high,
@@ -153,10 +153,10 @@ CREATE VIEW report3 AS
     FROM report2 r2
     LEFT JOIN update_request AS ur
     ON r2.upload=ur.upload AND r2.service=ur.service AND r2.name=ur.name
-    UNION
-    SELECT coalesce(r2.upload,ur.upload) AS upload,
-        coalesce(r2.service,ur.service) AS service,
-        coalesce(r2.name,ur.name) AS name,
+    UNION ALL
+    SELECT ur.upload AS upload,
+        ur.service AS service,
+        ur.name AS name,
 	r2.nav_count AS nav_count,
 	r2.nav_total AS nav_total,
 	r2.nav_high AS nav_high,
@@ -181,5 +181,6 @@ CREATE VIEW report3 AS
 	ur.response500 AS ureq_500
     FROM update_request ur
     LEFT JOIN report2 AS r2
-    ON r2.upload=ur.upload AND r2.service=ur.service AND r2.name=ur.name;
+    ON r2.upload=ur.upload AND r2.service=ur.service AND r2.name=ur.name
+    WHERE r2.upload IS NULL;
 
