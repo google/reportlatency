@@ -85,9 +85,9 @@ CREATE VIEW names AS
   SELECT DISTINCT name AS name FROM update_request;
 
 CREATE VIEW report2 AS
-    SELECT coalesce(nav.upload,nr.upload) AS upload,
-        coalesce(nav.service,nr.service) AS service,
-        coalesce(nav.name,nr.name) AS name,
+    SELECT nav.upload AS upload,
+        nav.service AS service,
+        nav.name AS name,
 	nav.count AS nav_count, nav.total AS nav_total,
 	nav.high AS nav_high, nav.low AS nav_low,
 	nav.tabclosed AS nav_tabclosed,
@@ -104,9 +104,9 @@ CREATE VIEW report2 AS
     LEFT JOIN navigation_request AS nr
     ON nav.upload=nr.upload AND nav.service=nr.service AND nav.name=nr.name
     UNION
-    SELECT coalesce(nav.upload,nr.upload) AS upload,
-        coalesce(nav.service,nr.service) AS service,
-        coalesce(nav.name,nr.name) AS name,
+    SELECT nr.upload AS upload,
+        nr.service AS service,
+        nr.name AS name,
 	nav.count AS nav_count, nav.total AS nav_total,
 	nav.high AS nav_high, nav.low AS nav_low,
 	nav.tabclosed AS nav_tabclosed,
@@ -181,3 +181,4 @@ CREATE VIEW report3 AS
     FROM update_request ur
     LEFT JOIN report2 AS r2
     ON r2.upload=ur.upload AND r2.service=ur.service AND r2.name=ur.name;
+
