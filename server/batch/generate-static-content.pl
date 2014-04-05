@@ -103,17 +103,18 @@ sub untagged_report {
 sub service_graph {
   my ($dbh,$name,$options) = @_;
 
-  my $statement='SELECT strftime("%s",timestamp) AS timestamp,' .
-    'nav_count AS count,' .
-    'nav_high AS high,' .
-    'nav_low AS low,' .
-    'nav_total AS total ' .
-    'FROM report ' .
-    "WHERE timestamp <= datetime('now',?) AND " .
-    "timestamp > datetime('now',?) AND " .
-    'service = ? AND ' .
-    "nav_count IS NOT NULL AND nav_count != '' AND " .
-    "nav_count>0;";
+  my $statement='SELECT strftime("%s",u.timestamp) AS timestamp,' .
+    'n.count AS count,' .
+    'n.high AS high,' .
+    'n.low AS low,' .
+    'n.total AS total ' .
+    'FROM navigation n, upload u ' .
+    "WHERE u.timestamp <= datetime('now',?) AND " .
+    "u.timestamp > datetime('now',?) AND " .
+    "n.upload=u.id AND " .
+    'n.service = ? AND ' .
+    "n.count IS NOT NULL AND n.count != '' AND " .
+    "count>0;";
   my $latency_sth = $dbh->prepare($statement) or die $!;
   my $latency_rc = $latency_sth->execute('0 seconds', -$duration . " seconds",
 					$name);
