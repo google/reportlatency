@@ -314,19 +314,121 @@ sub tag_nav_latencies_sth {
   my $sth = $self->{tag_nav_latencies_sth};
   if (! defined $sth) {
     my $dbh = $self->{dbh};
-    my $statement='SELECT strftime("%s",r.timestamp) AS timestamp,' .
-      'r.nav_count AS count,' .
-      'r.nav_high AS high,' .
-      'r.nav_low AS low,' .
-      'r.nav_total AS total ' .
-      'FROM report AS r ' .
-       'INNER JOIN tag ON r.service = tag.service ' .
-       "WHERE r.timestamp <= datetime('now',?) AND " .
-       "r.timestamp > datetime('now',?) AND " .
+    my $statement='SELECT strftime("%s",u.timestamp) AS timestamp,' .
+      'n.count AS count,' .
+      'n.high AS high,' .
+      'n.low AS low,' .
+      'n.total AS total ' .
+      'FROM navigation n ' .
+      'INNER JOIN upload u ON u.id=n.upload ' .
+      'INNER JOIN tag ON n.service = tag.service ' .
+       "WHERE u.timestamp <= datetime('now',?) AND " .
+       "u.timestamp > datetime('now',?) AND " .
        'tag.tag = ? AND ' .
-       "r.nav_count IS NOT NULL AND r.nav_count != '' AND " .
-       "r.nav_count>0;";
+       "n.count IS NOT NULL AND n.count != '' AND " .
+       "n.count>0;";
     $sth = $dbh->prepare($statement) or die $!;
+    $self->{tag_nav_latencies_sth} = $sth;
+  }
+
+  return $sth;
+}
+
+sub service_nav_latencies_sth {
+  my ($self) = @_;
+
+  my $sth = $self->{service_nav_latencies_sth};
+  if (! defined $sth) {
+    my $dbh = $self->{dbh};
+    my $statement='SELECT strftime("%s",u.timestamp) AS timestamp,' .
+      'n.count AS count,' .
+      'n.high AS high,' .
+      'n.low AS low,' .
+      'n.total AS total ' .
+      'FROM navigation n ' .
+      'INNER JOIN upload u ON u.id=n.upload ' .
+       "WHERE u.timestamp <= datetime('now',?) AND " .
+       "u.timestamp > datetime('now',?) AND " .
+       'n.service = ? AND ' .
+       "n.count IS NOT NULL AND n.count != '' AND " .
+       "n.count>0;";
+    $sth = $dbh->prepare($statement) or die $!;
+    $self->{service_nav_latencies_sth} = $sth;
+  }
+
+  return $sth;
+}
+
+sub location_nav_latencies_sth {
+  my ($self) = @_;
+
+  my $sth = $self->{location_nav_latencies_sth};
+  if (! defined $sth) {
+    my $dbh = $self->{dbh};
+    my $statement='SELECT strftime("%s",u.timestamp) AS timestamp,' .
+      'n.count AS count,' .
+      'n.high AS high,' .
+      'n.low AS low,' .
+      'n.total AS total ' .
+      'FROM navigation n ' .
+      'INNER JOIN upload u ON u.id=n.upload ' .
+       "WHERE u.timestamp <= datetime('now',?) AND " .
+       "u.timestamp > datetime('now',?) AND " .
+       'u.location = ? AND ' .
+       "n.count IS NOT NULL AND n.count != '' AND " .
+       "n.count>0;";
+    $sth = $dbh->prepare($statement) or die $!;
+    $self->{location_nav_latencies_sth} = $sth;
+  }
+
+  return $sth;
+}
+
+sub total_nav_latencies_sth {
+  my ($self) = @_;
+
+  my $sth = $self->{total_nav_latencies_sth};
+  if (! defined $sth) {
+    my $dbh = $self->{dbh};
+    my $statement='SELECT strftime("%s",u.timestamp) AS timestamp,' .
+      'n.count AS count,' .
+      'n.high AS high,' .
+      'n.low AS low,' .
+      'n.total AS total ' .
+      'FROM navigation n ' .
+      'INNER JOIN upload u ON u.id=n.upload ' .
+       "WHERE u.timestamp <= datetime('now',?) AND " .
+       "u.timestamp > datetime('now',?) AND " .
+       "n.count IS NOT NULL AND n.count != '' AND " .
+       "n.count>0;";
+    $sth = $dbh->prepare($statement) or die $!;
+    $self->{total_nav_latencies_sth} = $sth;
+  }
+
+  return $sth;
+}
+
+sub untagged_nav_latencies_sth {
+  my ($self) = @_;
+
+  my $sth = $self->{untagged_nav_latencies_sth};
+  if (! defined $sth) {
+    my $dbh = $self->{dbh};
+    my $statement='SELECT strftime("%s",u.timestamp) AS timestamp,' .
+      'n.count AS count,' .
+      'n.high AS high,' .
+      'n.low AS low,' .
+      'n.total AS total ' .
+      'FROM navigation n ' .
+      'INNER JOIN upload u ON u.id=n.upload ' .
+      'LEFT OUTER JOIN tag t ON n.service=t.service ' .
+       "WHERE u.timestamp <= datetime('now',?) AND " .
+       "u.timestamp > datetime('now',?) AND " .
+       "t.tag IS NULL AND " .
+       "n.count IS NOT NULL AND n.count != '' AND " .
+       "n.count>0;";
+    $sth = $dbh->prepare($statement) or die $!;
+    $self->{untagged_nav_latencies_sth} = $sth;
   }
 
   return $sth;
@@ -548,6 +650,32 @@ sub location_service_sth {
 		  'AND location = ? ' .
                   'GROUP BY service ' .
 		  'ORDER BY service;')
+      or die "prepare failed";
+  return $sth;
+}
+
+sub extension_version_summary_sth {
+  my ($self) = @_;
+  my $dbh = $self->{dbh};
+  my $sth =
+    $dbh->prepare('SELECT version AS name,count(*) AS value' .
+                  ' FROM upload AS u ' .
+                  'WHERE timestamp >= ? AND timestamp <= ? ' .
+                  'GROUP BY version ' .
+		  'ORDER BY version;')
+      or die "prepare failed";
+  return $sth;
+}
+
+sub user_agent_summary_sth {
+  my ($self) = @_;
+  my $dbh = $self->{dbh};
+  my $sth =
+    $dbh->prepare('SELECT user_agent AS name,count(*) AS value' .
+                  ' FROM upload ' .
+                  'WHERE timestamp >= ? AND timestamp <= ? ' .
+                  'GROUP BY user_agent ' .
+		  'ORDER BY user_agent;')
       or die "prepare failed";
   return $sth;
 }

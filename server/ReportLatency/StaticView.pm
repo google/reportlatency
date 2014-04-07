@@ -150,6 +150,24 @@ sub alternate_style {
 EOF
 }
 
+sub dual_column_style {
+  my ($self) = @_;
+  return <<EOF;
+#dual_column {
+   width:100%;
+   margin:0 auto;
+}
+#left_column {
+   float:left;
+   width:50%;
+}
+#right_column {
+   float:left;
+   width:50%;
+}
+EOF
+}
+
 sub summary_html {
   my ($self) = @_;
   my $store = $self->{store};
@@ -171,6 +189,7 @@ sub summary_html {
   my $header_1 = $self->common_header_1();
   my $header_2 = $self->common_header_2();
   my $altstyle = $self->alternate_style();
+  my $twostyle = $self->dual_column_style();
 
   my $tag_header = <<EOF;
 <tr>
@@ -190,6 +209,7 @@ EOF
   <title>ReportLatency summary</title>
   <style type="text/css">
 $altstyle
+$twostyle
   </style>
 </head>
 <body>
@@ -265,6 +285,27 @@ EOF
   print $io <<EOF;
 </table>
 
+
+<h2> Client Summary </h2>
+<div id="dual_column">
+    <div id="left_column">
+      <table class="alternate" summary="Distribution of User Agents">
+        <tr> <th>User Agent</th> <th>Uploads</th> </tr>
+EOF
+
+print $io <<EOF;
+      </table>
+    </div>
+    <div id="right_column">
+      <table class="alternate" summary="Distribution of User Agents (browsers)">
+        <tr> <th>Extension Version</th> <th>Uploads</th> </tr>
+EOF
+
+print $io <<EOF;
+      </table>
+    </div>
+</div>
+<p>
 EOF
 
   print $io meta_timestamp_html($meta);
@@ -730,11 +771,6 @@ EOF
 
   print $io <<EOF;
 </table>
-
-EOF
-  print $io meta_timestamp_html($meta);
-
-  print $io <<EOF;
                       
 </body>
 </html>

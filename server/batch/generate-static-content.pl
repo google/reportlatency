@@ -38,20 +38,12 @@ my $latency_ceiling = 30000; # 30s max for all icons
 
 
 sub total_graph {
-  my ($dbh,$options) = @_;
+  my ($store,$options) = @_;
 
-  my $statement='SELECT strftime("%s",timestamp) AS timestamp,' .
-    'nav_count AS count,' .
-    'nav_high AS high,' .
-    'nav_low AS low,' .
-    'nav_total AS total ' .
-    'FROM report ' .
-    "WHERE timestamp <= datetime('now',?) AND " .
-    "timestamp > datetime('now',?) AND " .
-    "count IS NOT NULL AND count != '' AND " .
-    "count>0;";
-  my $latency_sth = $dbh->prepare($statement) or die $!;
-  my $latency_rc = $latency_sth->execute('0 seconds', -$duration . " seconds");
+  my ($dbh) = $store->{dbh};
+  my $sth = $store->total_nav_latencies_sth();
+
+  my $latency_rc = $sth->execute('0 seconds', -$duration . " seconds");
 
   my $spectrum = new ReportLatency::Spectrum( width => $width,
 					      height => $height,
@@ -59,7 +51,7 @@ sub total_graph {
 					      ceiling => $latency_ceiling,
 					      border => 24 );
   
-  while (my $row = $latency_sth->fetchrow_hashref) {
+  while (my $row = $sth->fetchrow_hashref) {
     $spectrum->add_row($row);
   }
 
@@ -101,30 +93,20 @@ sub untagged_report {
 }
 
 sub service_graph {
-  my ($dbh,$name,$options) = @_;
+  my ($store,$name,$options) = @_;
 
-  my $statement='SELECT strftime("%s",u.timestamp) AS timestamp,' .
-    'n.count AS count,' .
-    'n.high AS high,' .
-    'n.low AS low,' .
-    'n.total AS total ' .
-    'FROM navigation n, upload u ' .
-    "WHERE u.timestamp <= datetime('now',?) AND " .
-    "u.timestamp > datetime('now',?) AND " .
-    "n.upload=u.id AND " .
-    'n.service = ? AND ' .
-    "n.count IS NOT NULL AND n.count != '' AND " .
-    "count>0;";
-  my $latency_sth = $dbh->prepare($statement) or die $!;
-  my $latency_rc = $latency_sth->execute('0 seconds', -$duration . " seconds",
-					$name);
+  my $dbh = $store->{dbh};
+  my $sth = $store->service_nav_latencies_sth();
+
+  my $latency_rc = $sth->execute('0 seconds', -$duration . " seconds",
+				 $name);
   my $spectrum = new ReportLatency::Spectrum( width => $width,
 					      height => $height,
 					      duration => $duration,
 					      ceiling => $latency_ceiling,
 					      border => 24 );
   
-  while (my $row = $latency_sth->fetchrow_hashref) {
+  while (my $row = $sth->fetchrow_hashref) {
     $spectrum->add_row($row);
   }
 
@@ -134,29 +116,19 @@ sub service_graph {
 }
 
 sub location_graph {
-  my ($dbh,$name,$options) = @_;
+  my ($store,$name,$options) = @_;
 
-  my $statement='SELECT strftime("%s",timestamp) AS timestamp,' .
-    'nav_count AS count,' .
-    'nav_high AS high,' .
-    'nav_low AS low,' .
-    'nav_total AS total ' .
-    'FROM report ' .
-    "WHERE timestamp <= datetime('now',?) AND " .
-    "timestamp > datetime('now',?) AND " .
-    'location = ? AND ' .
-    "nav_count IS NOT NULL AND nav_count != '' AND " .
-    "nav_count>0;";
-  my $latency_sth = $dbh->prepare($statement) or die $!;
-  my $latency_rc = $latency_sth->execute('0 seconds', -$duration . " seconds",
-					$name);
+  my $dbh = $store->{dbh};
+  my $sth = $store->location_nav_latencies_sth();
+  my $latency_rc = $sth->execute('0 seconds', -$duration . " seconds", $name);
+
   my $spectrum = new ReportLatency::Spectrum( width => $width,
 					      height => $height,
 					      duration => $duration,
 					      ceiling => $latency_ceiling,
 					      border => 24 );
   
-  while (my $row = $latency_sth->fetchrow_hashref) {
+  while (my $row = $sth->fetchrow_hashref) {
     $spectrum->add_row($row);
   }
 
@@ -315,29 +287,17 @@ sub tag_graph {
 }
 
 sub untagged_graph {
-  my ($dbh,$options) = @_;
+  my ($store,$options) = @_;
 
-  my $statement='SELECT strftime("%s",timestamp) AS timestamp,' .
-    'nav_count AS count,' .
-    'nav_high AS high,' .
-    'nav_low AS low,' .
-    'nav_total AS total ' .
-    'FROM report ' .
-    'LEFT OUTER JOIN tag ON report.service = tag.service ' .
-    "WHERE timestamp <= datetime('now',?) AND " .
-    "timestamp > datetime('now',?) AND " .
-    'tag.tag IS NULL AND ' .
-    "nav_count IS NOT NULL AND nav_count != '' AND " .
-    "nav_count>0;";
-  my $latency_sth = $dbh->prepare($statement) or die $!;
-  my $latency_rc = $latency_sth->execute('0 seconds', -$duration . " seconds");
+  my $dbh = $store->{dbh};
+  my $sth = $store->untagged_nav_latencies_sth;
+  my $latency_rc = $sth->execute('0 seconds', -$duration . " seconds");
   my $spectrum = new ReportLatency::Spectrum( width => $width,
 					      height => $height,
 					      duration => $duration,
 					      ceiling => $latency_ceiling,
 					      border => 24 );
-  
-  while (my $row = $latency_sth->fetchrow_hashref) {
+  while (my $row = $sth->fetchrow_hashref) {
     $spectrum->add_row($row);
   }
 
@@ -363,11 +323,11 @@ sub main() {
   my $view = new ReportLatency::StaticView($store);
 
   print "total\n";
-  total_graph($dbh,\%options);
+  total_graph($store,\%options);
   total_report($view,\%options);
 
   print "untagged\n";
-  untagged_graph($dbh,\%options);
+  untagged_graph($store,\%options);
   untagged_report($view,\%options);
 
   my (@services,@tags,@locations);
@@ -389,13 +349,13 @@ sub main() {
 
   foreach my $location (@locations) {
     print "location " . ($location||'') . "\n";
-    location_graph($dbh,$location,\%options);
+    location_graph($store,$location,\%options);
     location_report($view,$location,\%options);
   }
 
   foreach my $service (@services) {
     print "service $service\n";
-    service_graph($dbh,$service,\%options);
+    service_graph($store,$service,\%options);
     service_report($view,$service,\%options);
   }
 
