@@ -120,6 +120,13 @@ sub common_html_fields {
       " </td>";
 }
 
+sub name_value_row {
+  my ($self,$row) = @_;
+  my $html = "  <tr> <td align=left>$row->{name}</td> <td align=right>$row->{value}</td> </tr>\n";
+  return $html;
+}
+
+
 sub latency_summary_row {
   my ($self,$name,$url,$count,$row) = @_;
 #  my $sname = sanitize_service($name);
@@ -176,6 +183,8 @@ sub summary_html {
   my $tag_sth = $store->summary_tag_sth;
   my $other_sth = $store->summary_untagged_sth;
   my $location_sth = $store->summary_location_sth;
+  my $extension_version_sth = $store->extension_version_summary_sth;
+  my $user_agent_sth = $store->user_agent_summary_sth;
 
   my $summary_img_url = $self->tag_img_url('summary');
 
@@ -293,6 +302,14 @@ EOF
         <tr> <th>User Agent</th> <th>Uploads</th> </tr>
 EOF
 
+  $rc = $user_agent_sth->execute($meta->{'min_timestamp'},
+				 $meta->{'max_timestamp'});
+
+  while (my $ua = $user_agent_sth->fetchrow_hashref) {
+    print $io $self->name_value_row($ua);
+  }
+  $user_agent_sth->finish;
+
 print $io <<EOF;
       </table>
     </div>
@@ -301,11 +318,18 @@ print $io <<EOF;
         <tr> <th>Extension Version</th> <th>Uploads</th> </tr>
 EOF
 
+  $rc = $extension_version_sth->execute($meta->{'min_timestamp'},
+					$meta->{'max_timestamp'});
+
+  while (my $v = $extension_version_sth->fetchrow_hashref) {
+    print $io $self->name_value_row($v);
+  }
+  $extension_version_sth->finish;
+
 print $io <<EOF;
       </table>
     </div>
 </div>
-<p>
 EOF
 
   print $io meta_timestamp_html($meta);

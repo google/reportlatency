@@ -1,3 +1,9 @@
+reportlatency (1.5.3) precise; urgency=low
+
+  * Report browser and extension versions in summary
+
+ -- Drake Diedrich <dld@google.com>  Mon, 07 Apr 2014 17:17:39 -0700
+
 reportlatency (1.5.2) precise; urgency=low
 
   * Fix response code column counting.  Revise table layouts.
