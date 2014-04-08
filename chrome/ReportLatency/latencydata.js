@@ -183,6 +183,7 @@ LatencyData.prototype.deleteNavigation = function(data) {
   }
 };
 
+
 /**
  * Post Latency summaries to central server.
  * Post just one summary at a time for interactivity.  Choose a good one.
@@ -224,8 +225,22 @@ LatencyData.prototype.postLatency = function(skip) {
   if (localStorage['debug_posts'] == 'true') {
     console.log(JSON.stringify(report));
   }
+  req.timeout = 10000;
+  req.onload = function() {
+    if (req.status >= 200 && req.status<300) {
+      this.stats.delete(bestFinal);
+    } else {
+      if (localStorage['debug_posts'] == 'true') {
+	console.log('POST readyState ' + req.readyState);
+	console.log('POST status ' + req.status);
+	console.log('POST responseText ' + req.responseText);
+      }
+    }
+  }
+  req.onerror = function (e) {
+    console.error('onerror e=' + req.statusText);
+  };
   req.send(JSON.stringify(report));
-  this.stats.delete(bestFinal);
 }
 
 /**
