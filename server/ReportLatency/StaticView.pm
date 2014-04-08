@@ -296,7 +296,6 @@ EOF
 
 
 <h2> Client Summary </h2>
-<div id="dual_column">
     <div id="left_column">
       <table class="alternate" summary="Distribution of User Agents">
         <tr> <th>User Agent</th> <th>Uploads</th> </tr>
@@ -329,7 +328,6 @@ EOF
 print $io <<EOF;
       </table>
     </div>
-</div>
 EOF
 
   print $io meta_timestamp_html($meta);
