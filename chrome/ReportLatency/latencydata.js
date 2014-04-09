@@ -222,13 +222,23 @@ LatencyData.prototype.postLatency = function(skip) {
   report.tz = timeZone(Date());
   report.services = {};
   report.services[bestFinal] = bestService; // future: could be more than one
+  var json_report = JSON.stringify(report);
   if (localStorage['debug_posts'] == 'true') {
-    console.log(JSON.stringify(report));
+    console.log(json_report);
   }
   req.timeout = 10000;
+  if (localStorage['debug_posts'] == 'true') {
+    req.onerror = function (e) {
+      console.log('onerror e=' + req.statusText);
+    };
+  }
+  var stats = this.stats;
   req.onload = function() {
     if (req.status >= 200 && req.status<300) {
-      this.stats.delete(bestFinal);
+      if (localStorage['debug_posts'] == 'true') {
+	console.log('deleting local stats for ' + bestFinal);
+      }
+      stats.delete(bestFinal);
     } else {
       if (localStorage['debug_posts'] == 'true') {
 	console.log('POST readyState ' + req.readyState);
@@ -237,10 +247,7 @@ LatencyData.prototype.postLatency = function(skip) {
       }
     }
   }
-  req.onerror = function (e) {
-    console.error('onerror e=' + req.statusText);
-  };
-  req.send(JSON.stringify(report));
+  req.send(json_report);
 }
 
 /**
