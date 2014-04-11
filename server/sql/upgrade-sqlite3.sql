@@ -1,5 +1,5 @@
 -- upgrade the previous schema to the current schema
--- 1.4.3 -> 1.5.0 in this version
+-- 1.5.3->1.5.4 in this version
 --
 -- Copyright 2013,2014 Google Inc. All Rights Reserved.
 --
@@ -16,8 +16,8 @@
 -- limitations under the License.
 
 BEGIN;
-DROP VIEW report;
-DROP VIEW oldreport;
-.read indicies-sqlite3.sql
-.read views-sqlite3.sql
+ALTER TABLE navigation ADD COLUMN response200 INTEGER;
+ALTER TABLE navigation ADD COLUMN response300 INTEGER;
+ALTER TABLE navigation ADD COLUMN response400 INTEGER;
+ALTER TABLE navigation ADD COLUMN response500 INTEGER;
 END;
