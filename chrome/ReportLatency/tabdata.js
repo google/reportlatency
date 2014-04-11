@@ -94,6 +94,9 @@ TabData.prototype.endRequest = function(data) {
 	      if (family) {
 		this.stat.increment(name, latencyType, 'r' + family);
 	      }
+	      if (data.type == 'main_frame') {
+		this.mainFrameStatusCode = data.statusCode;
+	      }
 	    }
 	  } else {
 	    if (localStorage['debug_requests'] == 'true') {
@@ -212,6 +215,12 @@ TabData.prototype.endNavigation = function(data) {
 			    ') navigations +' + delay + ' ms');
 	      }
 	      this.stat.add(original_name, 'nav', delay);
+	      if (this.mainFrameStatusCode) {
+		var family = statusCodeFamily(data.mainFrameStatusCode);
+		if (family) {
+		  this.stat.increment(name, 'nav', 'r' + family);
+		}
+	      }
 	    } else {
 	      if (localStorage['debug_navigations'] == 'true') {
 		console.log('missing timeStamp in endNavigation() data');
