@@ -39,6 +39,14 @@ function TabData() {
  *
  */
 TabData.prototype.startRequest = function(data) {
+  if (data.type == 'main_frame') {
+    console.log('starting main_frame request');
+    if ('service' in this) {
+      console.log('deleting old tabdata.service');
+      delete this['service'];
+    }
+  }
+
   if (localStorage['debug_requests'] == 'true') {
     logObject('TabData(' + this.service + ').startRequest()', data);
   }
@@ -96,6 +104,7 @@ TabData.prototype.endRequest = function(data) {
 	      }
 	      if (data.type == 'main_frame') {
 		this.mainFrameStatusCode = data.statusCode;
+		console.log('mainFrameStatusCode = ' + data.statusCode);
 	      }
 	    }
 	  } else {
@@ -203,6 +212,8 @@ TabData.prototype.endNavigation = function(data) {
       if (data.frameId == this.navigation.frameId) {
 	if (localStorage['debug_navigations'] == 'true') {
 	  logObject('TabData.endNavigation()', data);
+	  console.log('tabdata.mainFrameStatusCode = ' +
+		      this.mainFrameStatusCode);
 	}
 	if ('url' in data) {
 	  if (isWebUrl(data.url)) {
@@ -218,6 +229,7 @@ TabData.prototype.endNavigation = function(data) {
 	      if (this.mainFrameStatusCode) {
 		var family = statusCodeFamily(data.mainFrameStatusCode);
 		if (family) {
+		  console.log('incrementing navigation status code ' + family);
 		  this.stat.increment(name, 'nav', 'r' + family);
 		}
 	      }
