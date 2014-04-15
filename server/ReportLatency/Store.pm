@@ -342,11 +342,12 @@ sub service_nav_latencies_sth {
       'n.high AS high,' .
       'n.low AS low,' .
       'n.total AS total ' .
-      'FROM navigation n ' .
-      'INNER JOIN upload u ON u.id=n.upload ' .
-       "WHERE u.timestamp <= datetime('now',?) AND " .
-       "u.timestamp > datetime('now',?) AND " .
+      'FROM navigation n, upload u ' .
+       "WHERE " .
        'n.service = ? AND ' .
+       'n.upload = u.id AND ' .
+       "u.timestamp <= datetime('now',?) AND " .
+       "u.timestamp > datetime('now',?) AND " .
        "n.count IS NOT NULL AND n.count != '' AND " .
        "n.count>0;";
     $sth = $dbh->prepare($statement) or die $!;

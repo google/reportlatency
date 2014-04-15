@@ -98,8 +98,7 @@ sub service_graph {
   my $dbh = $store->{dbh};
   my $sth = $store->service_nav_latencies_sth();
 
-  my $latency_rc = $sth->execute('0 seconds', -$duration . " seconds",
-				 $name);
+  my $latency_rc = $sth->execute($name, '0 seconds', -$duration . " seconds");
   my $spectrum = new ReportLatency::Spectrum( width => $width,
 					      height => $height,
 					      duration => $duration,
@@ -355,7 +354,7 @@ sub main() {
 
   foreach my $service (@services) {
     print "service $service\n";
-    service_graph($store,$service,\%options);
+    # service_graph($store,$service,\%options);
     service_report($view,$service,\%options);
   }
 

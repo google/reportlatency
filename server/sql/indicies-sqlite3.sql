@@ -13,22 +13,16 @@
 -- limitations under the License.
 
 CREATE INDEX upload_id ON upload(id);
-CREATE INDEX upload_collected_on ON upload(collected_on);
-CREATE INDEX upload_timestamp ON upload(timestamp);
+CREATE INDEX upload_id_timestamp ON upload(id,timestamp);
 CREATE INDEX upload_location ON upload(location);
 CREATE INDEX upload_user_agent ON upload(user_agent);
-CREATE INDEX upload_tz ON upload(tz);
-CREATE INDEX upload_version ON upload(version);
-CREATE INDEX upload_options ON upload(options);
 CREATE INDEX navigation_request_upload ON navigation_request(upload);
 CREATE INDEX navigation_request_name ON navigation_request(name);
 CREATE INDEX navigation_request_service ON navigation_request(service);
 CREATE INDEX update_request_upload ON update_request(upload);
 CREATE INDEX update_request_name ON update_request(name);
 CREATE INDEX update_request_service ON update_request(service);
-CREATE INDEX navigation_upload ON navigation(upload);
-CREATE INDEX navigation_name ON navigation(name);
-CREATE INDEX navigation_service ON navigation(service);
+CREATE INDEX navigation_service_upload ON navigation(service,upload);
 CREATE INDEX tag_tag on tag(tag);
 CREATE INDEX tag_service on tag(service);
 CREATE INDEX location_location ON location(location);
