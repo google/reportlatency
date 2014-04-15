@@ -354,7 +354,7 @@ sub main() {
 
   foreach my $service (@services) {
     print "service $service\n";
-    # service_graph($store,$service,\%options);
+    service_graph($store,$service,\%options);
     service_report($view,$service,\%options);
   }
 
