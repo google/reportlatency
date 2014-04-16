@@ -531,8 +531,8 @@ sub service_select_sth {
     $dbh->prepare('SELECT name,' .
 		  $self->common_aggregate_fields() .
 		  ' FROM report ' .
-		  "WHERE timestamp >= DATETIME('now','-14 days') " .
-                  'AND service=? ' .
+		  "WHERE service=? AND " .
+		  "timestamp >= DATETIME('now','-14 days') " .
                   'GROUP BY name ' .
 		  'ORDER BY name;')
       or die "prepare failed";
