@@ -564,11 +564,18 @@ EOF
 }
 
 sub service_found {
-  my ($self,$service,$meta,$select,$select_location) = @_;
+  my ($self,$service,$meta_sth,$select,$select_location) = @_;
 
   my $io = new IO::String;
 
-  my $rc = $select->execute($service);
+
+  my $rc = $meta_sth->execute($service);
+  my $meta = $meta_sth->fetchrow_hashref;
+  $meta_sth->finish;
+
+  if (! $meta) {
+    return $self->service_not_found($service);
+  }
 
   my $service_img_url = $self->service_img_url($service);
 
@@ -605,6 +612,9 @@ $header_2
 </tr>
 EOF
 
+  if (0) {
+  my $rc = $select->execute($service);
+
   while ( my $row = $select->fetchrow_hashref) {
     my $name = sanitize_service($row->{'name'}) or next;
     print $io "  <tr>";
@@ -612,8 +622,8 @@ EOF
     print $io $self->common_html_fields($row);
     print $io "  </tr>\n";
   }
-
   $select->finish;
+}
 
   print $io <<EOF;
 <tr>
@@ -625,7 +635,7 @@ $header_2
 </tr>
 <tr> <td align=center> total </td>
 EOF
-  print $io $self->common_html_fields($meta);
+#  print $io $self->common_html_fields($meta);
   print $io <<EOF;
 </tr>
 </table>
@@ -642,8 +652,8 @@ $header_2
 </tr>
 EOF
 
-  $rc = $select_location->execute($service);
-
+  if (0) {
+  my $rc = $select_location->execute($service);
   while ( my $row = $select_location->fetchrow_hashref) {
     my $location = $row->{'location'} || 'N/A';
     print $io "  <tr>";
@@ -651,15 +661,15 @@ EOF
     print $io $self->common_html_fields($row);
     print $io "  </tr>\n";
   }
-
-  $select->finish;
+  $select_location->finish;
+}
 
   print $io <<EOF;
 </table>
 
 EOF
 
-  print $io meta_timestamp_html($meta);
+#  print $io meta_timestamp_html($meta);
 
   print $io <<EOF;
 
@@ -696,17 +706,8 @@ sub service_html {
   my $select_sth = $store->service_select_sth;
   my $select_location_sth = $store->service_location_sth;
 
-
-  my $rc = $meta_sth->execute($service_name);
-  my $row = $meta_sth->fetchrow_hashref;
-
-  $meta_sth->finish;
-
-  if (!defined $row) {
-    return $self->service_not_found($service_name);
-  } else {
-    return $self->service_found($service_name,$row,$select_sth,$select_location_sth);
-  }
+  return $self->service_found($service_name,$meta_sth,$select_sth,
+			      $select_location_sth);
 }
 
 sub tag_html {
