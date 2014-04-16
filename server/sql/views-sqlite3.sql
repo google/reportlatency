@@ -15,20 +15,6 @@
 
 
 
-CREATE VIEW services AS
-  SELECT DISTINCT service AS service FROM navigation
-  UNION
-  SELECT DISTINCT service AS service FROM navigation_request
-  UNION
-  SELECT DISTINCT service AS service FROM update_request;
-
-CREATE VIEW names AS
-  SELECT DISTINCT name AS name FROM navigation
-  UNION
-  SELECT DISTINCT name AS name FROM navigation_request
-  UNION
-  SELECT DISTINCT name AS name FROM update_request;
-
 CREATE VIEW report2 AS
     SELECT nav.upload AS upload,
         nav.service AS service,
@@ -36,6 +22,10 @@ CREATE VIEW report2 AS
 	nav.count AS nav_count, nav.total AS nav_total,
 	nav.high AS nav_high, nav.low AS nav_low,
 	nav.tabclosed AS nav_tabclosed,
+	nav.response200 AS nav_200,
+	nav.response300 AS nav_300,
+	nav.response400 AS nav_400,
+	nav.response500 AS nav_500,
 	nr.count AS nreq_count,
 	nr.total AS nreq_total,
 	nr.high AS nreq_high,
@@ -47,7 +37,7 @@ CREATE VIEW report2 AS
 	nr.response500 AS nreq_500
     FROM navigation nav
     LEFT JOIN navigation_request AS nr
-    ON nav.upload=nr.upload AND nav.service=nr.service AND nav.name=nr.name
+    ON nav.service=nr.service AND nav.upload=nr.upload AND nav.name=nr.name
     UNION ALL
     SELECT nr.upload AS upload,
         nr.service AS service,
@@ -55,6 +45,10 @@ CREATE VIEW report2 AS
 	nav.count AS nav_count, nav.total AS nav_total,
 	nav.high AS nav_high, nav.low AS nav_low,
 	nav.tabclosed AS nav_tabclosed,
+	nav.response200 AS nav_200,
+	nav.response300 AS nav_300,
+	nav.response400 AS nav_400,
+	nav.response500 AS nav_500,
 	nr.count AS nreq_count,
 	nr.total AS nreq_total,
 	nr.high AS nreq_high,
@@ -66,7 +60,7 @@ CREATE VIEW report2 AS
 	nr.response500 AS nreq_500
     FROM navigation_request AS nr
     LEFT JOIN navigation nav
-    ON nav.upload=nr.upload AND nav.service=nr.service AND nav.name=nr.name
+    ON nav.service=nr.service AND nav.upload=nr.upload AND nav.name=nr.name
     WHERE nav.upload IS NULL;
 
 CREATE VIEW report3 AS
@@ -78,6 +72,10 @@ CREATE VIEW report3 AS
 	r2.nav_high AS nav_high,
 	r2.nav_low AS nav_low,
 	r2.nav_tabclosed AS nav_tabclosed,
+	r2.nav_200 AS nav_200,
+	r2.nav_300 AS nav_300,
+	r2.nav_400 AS nav_400,
+	r2.nav_500 AS nav_500,
 	r2.nreq_count AS nreq_count,
 	r2.nreq_total AS nreq_total,
 	r2.nreq_high AS nreq_high,
@@ -97,7 +95,7 @@ CREATE VIEW report3 AS
 	ur.response500 AS ureq_500
     FROM report2 r2
     LEFT JOIN update_request AS ur
-    ON r2.upload=ur.upload AND r2.service=ur.service AND r2.name=ur.name
+    ON r2.service=ur.service AND r2.upload=ur.upload AND r2.name=ur.name
     UNION ALL
     SELECT ur.upload AS upload,
         ur.service AS service,
@@ -107,6 +105,10 @@ CREATE VIEW report3 AS
 	r2.nav_high AS nav_high,
 	r2.nav_low AS nav_low,
 	r2.nav_tabclosed AS nav_tabclosed,
+	r2.nav_200 AS nav_200,
+	r2.nav_300 AS nav_300,
+	r2.nav_400 AS nav_400,
+	r2.nav_500 AS nav_500,
 	r2.nreq_count AS nreq_count,
 	r2.nreq_total AS nreq_total,
 	r2.nreq_high AS nreq_high,
@@ -126,10 +128,10 @@ CREATE VIEW report3 AS
 	ur.response500 AS ureq_500
     FROM update_request ur
     LEFT JOIN report2 AS r2
-    ON r2.upload=ur.upload AND r2.service=ur.service AND r2.name=ur.name
+    ON r2.service=ur.service AND r2.upload=ur.upload AND r2.name=ur.name
     WHERE r2.upload IS NULL;
 
 CREATE VIEW report AS
     SELECT u.*,r.*
-    FROM upload AS u
-    JOIN report3 AS r ON u.id=r.upload;
+    FROM upload u, report3 r
+    WHERE u.id=r.upload;

@@ -16,8 +16,37 @@
 -- limitations under the License.
 
 BEGIN;
+DROP VIEW report;
+DROP VIEW report3;
+DROP VIEW report2;
+DROP VIEW names;
+DROP VIEW services;
+DROP INDEX location_ip;
+DROP INDEX location_location;
+DROP INDEX location_timestamp;
+DROP INDEX navigation_name;
+DROP INDEX navigation_request_name;
+DROP INDEX navigation_request_service;
+DROP INDEX navigation_request_upload;
+DROP INDEX navigation_service;
+DROP INDEX navigation_upload;
+DROP INDEX tag_service;
+DROP INDEX tag_tag;
+DROP INDEX update_request_name;
+DROP INDEX update_request_service;
+DROP INDEX update_request_upload;
+DROP INDEX upload_collected_on;
+DROP INDEX upload_id;
+DROP INDEX upload_location;
+DROP INDEX upload_options;
+DROP INDEX upload_timestamp;
+DROP INDEX upload_tz;
+DROP INDEX upload_user_agent;
+DROP INDEX upload_version;
 ALTER TABLE navigation ADD COLUMN response200 INTEGER;
 ALTER TABLE navigation ADD COLUMN response300 INTEGER;
 ALTER TABLE navigation ADD COLUMN response400 INTEGER;
 ALTER TABLE navigation ADD COLUMN response500 INTEGER;
+.read views-sqlite3.sql
+.read indices-sqlite3.sql
 END;
