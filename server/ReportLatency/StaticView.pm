@@ -612,7 +612,6 @@ $header_2
 </tr>
 EOF
 
-  if (0) {
   my $rc = $select->execute($service);
 
   while ( my $row = $select->fetchrow_hashref) {
@@ -623,7 +622,6 @@ EOF
     print $io "  </tr>\n";
   }
   $select->finish;
-}
 
   print $io <<EOF;
 <tr>
@@ -652,7 +650,6 @@ $header_2
 </tr>
 EOF
 
-  if (0) {
   my $rc = $select_location->execute($service);
   while ( my $row = $select_location->fetchrow_hashref) {
     my $location = $row->{'location'} || 'N/A';
@@ -662,14 +659,13 @@ EOF
     print $io "  </tr>\n";
   }
   $select_location->finish;
-}
 
   print $io <<EOF;
 </table>
 
 EOF
 
-#  print $io meta_timestamp_html($meta);
+  print $io meta_timestamp_html($meta);
 
   print $io <<EOF;
 
