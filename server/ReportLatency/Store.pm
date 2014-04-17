@@ -498,6 +498,10 @@ sub common_aggregate_fields {
     'sum(nreq_count) AS nreq_count,' .
     'sum(nreq_total)/sum(nreq_count) AS nreq_latency,' .
     'sum(nav_tabclosed) AS nav_tabclosed,' .
+    'sum(nav_200) as nav_200,' .
+    'sum(nav_300) as nav_300,' .
+    'sum(nav_400) as nav_400,' .
+    'sum(nav_500) as nav_500,' .
     'sum(nav_count) AS nav_count,' .
     'sum(nav_total)/sum(nav_count) AS nav_latency,' .
     'sum(ureq_200) AS ureq_200,' .
