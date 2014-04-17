@@ -80,4 +80,3 @@ $tidy->clear_messages();
 
 like($service_html, qr/1492/, '1492ms request latency found');
 like($service_html, qr/1\.2\.3\.0/, '1.2.3.0 location found');
-
