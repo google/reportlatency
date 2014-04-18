@@ -132,7 +132,8 @@ LatencyData.prototype.tabRemoved = function(tabId, removeInfo) {
  */
 LatencyData.prototype.startNavigation = function(data) {
   if ('tabId' in data) {
-    if (('parentFrameId' in data) && (data.parentFrameId < 0)) {
+    if (('parentFrameId' in data) && (data.parentFrameId < 0) &&
+	!((data.tabId in this.tab))) {
       this.tab[data.tabId] = new TabData();
     }
     this.tab[data.tabId].startNavigation(data);

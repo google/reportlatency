@@ -27,6 +27,7 @@
  * @constructor
  */
 function TabData() {
+  console.log('new TabData()');
   this.stat = new NameStats();
   this.request = {};
   this.tabupdate = {};
@@ -41,6 +42,7 @@ function TabData() {
 TabData.prototype.startRequest = function(data) {
   if (data.type == 'main_frame') {
     console.log('starting main_frame request');
+    logObject('TabData(' + this.service + ').startRequest()', data);
     if ('service' in this) {
       console.log('deleting old tabdata.service');
       delete this['service'];
@@ -77,6 +79,9 @@ TabData.prototype.startRequest = function(data) {
  */
 TabData.prototype.endRequest = function(data) {
   if (localStorage['debug_requests'] == 'true') {
+    logObject('TabData(' + this.service + ').endRequest()', data);
+  }
+  if (data.type == 'main_frame') {
     logObject('TabData(' + this.service + ').endRequest()', data);
   }
   if ('requestId' in data) {
@@ -171,6 +176,7 @@ TabData.prototype.startNavigation = function(data) {
       logObject('TabData.startNavigation()', data);
     }
     if ('service' in this) {
+      console.log('deleting tabdata.service');
       delete this['service'];
     }
     if ('url' in data) {
@@ -207,13 +213,13 @@ TabData.prototype.startNavigation = function(data) {
  *
  */
 TabData.prototype.endNavigation = function(data) {
+  console.log('TabData.endNavigation(' + this.service +
+	      ').mainFrameStatusCode = ' + this.mainFrameStatusCode);
   if (('frameId' in data)) {
     if ('navigation' in this) {
       if (data.frameId == this.navigation.frameId) {
 	if (localStorage['debug_navigations'] == 'true') {
 	  logObject('TabData.endNavigation()', data);
-	  console.log('tabdata.mainFrameStatusCode = ' +
-		      this.mainFrameStatusCode);
 	}
 	if ('url' in data) {
 	  if (isWebUrl(data.url)) {
