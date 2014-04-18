@@ -81,7 +81,7 @@ sub location_url_from_tag {
 sub common_header_1 {
   my ($self) = @_;
   return <<EOF;
- <th colspan=3> Navigation </th>
+ <th colspan=7> Navigation </th>
  <th colspan=7> Navigation Request </th>
  <th colspan=6> Update Request </th>
 EOF
@@ -90,7 +90,7 @@ EOF
 sub common_header_2 {
   my ($self) = @_;
   return <<EOF;
- <th>closed</th> <th>count</th> <th>latency</th>
+ <th>200</th> <th>300</th> <th>400</th> <th>500</th> <th>closed</th> <th>count</th> <th>latency</th>
  <th>200</th> <th>300</th> <th>400</th> <th>500</th> <th>closed</th> <th>count</th> <th>latency</th>
  <th>200</th> <th>300</th> <th>400</th> <th>500</th> <th>count</th> <th>latency</th>
 EOF
@@ -99,6 +99,10 @@ EOF
 sub common_html_fields {
   my ($self,$row) = @_;
   return
+    " <td align=right> " . mynum($row->{'nav_200'}) . " </td>" .
+    " <td align=right> " . mynum($row->{'nav_300'}) . " </td>" .
+    " <td align=right> " . mynum($row->{'nav_400'}) . " </td>" .
+    " <td align=right> " . mynum($row->{'nav_500'}) . " </td>" .
     " <td align=right> " . mynum($row->{'nav_tabclosed'}) . " </td>" .
     " <td align=right> " . mynum($row->{'nav_count'}) . " </td>" .
     ' <td align=right class="latency"> ' . myround($row->{'nav_latency'}) .
