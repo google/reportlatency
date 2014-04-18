@@ -637,7 +637,7 @@ $header_2
 </tr>
 <tr> <td align=center> total </td>
 EOF
-#  print $io $self->common_html_fields($meta);
+  print $io $self->common_html_fields($meta);
   print $io <<EOF;
 </tr>
 </table>
