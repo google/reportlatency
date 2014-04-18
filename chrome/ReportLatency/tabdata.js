@@ -27,7 +27,6 @@
  * @constructor
  */
 function TabData() {
-  console.log('new TabData()');
   this.stat = new NameStats();
   this.request = {};
   this.tabupdate = {};
@@ -40,18 +39,17 @@ function TabData() {
  *
  */
 TabData.prototype.startRequest = function(data) {
-  if (data.type == 'main_frame') {
-    console.log('starting main_frame request');
+  if (localStorage['debug_requests'] == 'true' ||
+      (data.type == 'main_frame' &&
+       localStorage['debug_navigations'] == 'true')) {
     logObject('TabData(' + this.service + ').startRequest()', data);
+  }
+  if (data.type == 'main_frame') {
     if ('service' in this) {
-      console.log('deleting old tabdata.service');
       delete this['service'];
     }
   }
 
-  if (localStorage['debug_requests'] == 'true') {
-    logObject('TabData(' + this.service + ').startRequest()', data);
-  }
   if ('requestId' in data) {
     if (data.requestId in this.request) {
       var data1 = Object.create(this.request[data.requestId]);
@@ -78,22 +76,32 @@ TabData.prototype.startRequest = function(data) {
  *
  */
 TabData.prototype.endRequest = function(data) {
-  if (localStorage['debug_requests'] == 'true') {
+  if (localStorage['debug_requests'] == 'true' ||
+      (data.type == 'main_frame' &&
+       localStorage['debug_navigations'] == 'true')) {
     logObject('TabData(' + this.service + ').endRequest()', data);
   }
-  if (data.type == 'main_frame') {
-    logObject('TabData(' + this.service + ').endRequest()', data);
+
+  if (data.statusCode) {
+    if (data.type == 'main_frame') {
+      this.mainFrameStatusCode = data.statusCode;
+    }
+  } else {
+    logObject('endRequest w/o statusCode', data);
   }
+
   if ('requestId' in data) {
     if (data.requestId in this.request) {
-      if (!data.fromCache) {
-	if (('url' in data) &&
-	    (data.url == this.request[data.requestId].url)) {
-	  var name = aggregateName(data.url);
-	  if (name) {
+      if (('url' in data) &&
+	  (data.url == this.request[data.requestId].url)) {
+	var name = aggregateName(data.url);
+	if (name) {
+	  if (!data.fromCache) {
 	    var delay = data.timeStamp -
 	      this.request[data.requestId].timeStamp;
-	    if (localStorage['log_requests'] == 'true') {
+	    if (localStorage['log_requests'] == 'true' ||
+		(data.type == 'main_frame' &&
+		 localStorage['log_navigations'] == 'true')) {
 	      console.log(name + ' (' + this.service + ') requests +' +
 			  delay + ' ms');
 	    }
@@ -107,23 +115,19 @@ TabData.prototype.endRequest = function(data) {
 	      if (family) {
 		this.stat.increment(name, latencyType, 'r' + family);
 	      }
-	      if (data.type == 'main_frame') {
-		this.mainFrameStatusCode = data.statusCode;
-		console.log('mainFrameStatusCode = ' + data.statusCode);
-	      }
-	    }
-	  } else {
-	    if (localStorage['debug_requests'] == 'true') {
-	      logObject('no service name in endRequest()', data);
 	    }
 	  }
-	  delete this.request[data.requestId];
 	} else {
 	  if (localStorage['debug_requests'] == 'true') {
-	    logObject('missing or mismatched data.url in endRequest()', data);
+	    logObject('no service name in endRequest()', data);
 	  }
 	}
+      } else {
+	if (localStorage['debug_requests'] == 'true') {
+	  logObject('missing or mismatched data.url in endRequest()', data);
+	}
       }
+      delete this.request[data.requestId];
     } else {
       if (localStorage['debug_requests'] == 'true') {
 	logObject('requestId ' + data.requestId + ' not found in endRequest',
@@ -213,8 +217,6 @@ TabData.prototype.startNavigation = function(data) {
  *
  */
 TabData.prototype.endNavigation = function(data) {
-  console.log('TabData.endNavigation(' + this.service +
-	      ').mainFrameStatusCode = ' + this.mainFrameStatusCode);
   if (('frameId' in data)) {
     if ('navigation' in this) {
       if (data.frameId == this.navigation.frameId) {
@@ -233,10 +235,13 @@ TabData.prototype.endNavigation = function(data) {
 	      }
 	      this.stat.add(original_name, 'nav', delay);
 	      if (this.mainFrameStatusCode) {
-		var family = statusCodeFamily(data.mainFrameStatusCode);
+		var family = statusCodeFamily(this.mainFrameStatusCode);
 		if (family) {
-		  console.log('incrementing navigation status code ' + family);
-		  this.stat.increment(name, 'nav', 'r' + family);
+		  if (localStorage['log_navigations'] == 'true') {
+		    console.log('incrementing navigation status code ' +
+				family);
+		  }
+		  this.stat.increment(original_name, 'nav', 'r' + family);
 		}
 	      }
 	    } else {
