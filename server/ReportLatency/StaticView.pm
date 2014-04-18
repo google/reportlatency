@@ -81,19 +81,43 @@ sub location_url_from_tag {
 sub common_header_1 {
   my ($self) = @_;
   return <<EOF;
- <th colspan=7> Navigation </th>
- <th colspan=7> Navigation Request </th>
- <th colspan=6> Update Request </th>
+ <th colspan=8> Navigation </th>
+ <th colspan=8> Navigation Request </th>
+ <th colspan=7> Update Request </th>
 EOF
 }
 
 sub common_header_2 {
   my ($self) = @_;
   return <<EOF;
- <th>200</th> <th>300</th> <th>400</th> <th>500</th> <th>closed</th> <th>count</th> <th>latency</th>
- <th>200</th> <th>300</th> <th>400</th> <th>500</th> <th>closed</th> <th>count</th> <th>latency</th>
- <th>200</th> <th>300</th> <th>400</th> <th>500</th> <th>count</th> <th>latency</th>
+ <th>200</th> <th>300</th> <th>400</th> <th>500</th> <th>closed</th> <th>count</th> <th>latency</th> <th>avail</th>
+ <th>200</th> <th>300</th> <th>400</th> <th>500</th> <th>closed</th> <th>count</th> <th>latency</th> <th>avail</th>
+ <th>200</th> <th>300</th> <th>400</th> <th>500</th> <th>count</th> <th>latency</th> <th>avail</th>
 EOF
+}
+
+sub availability {
+  my ($self,$type,$row) = @_;
+
+  my $count = ($row->{$type . "_count"} || 0);
+  my $r300 = ($row->{$type . "_300"} || 0);
+  my $r400 = ($row->{$type . "_400"} || 0);
+  my $r500 = ($row->{$type . "_500"} || 0);
+  my $closed = ($row->{$type . "closed"} || 0);
+  my $denom = $count + $closed - $r300;
+  if ($denom > 0) {
+    return ($count - $r500 - $r400 - $r300) / $denom;
+  } else {
+    return undef;
+  }
+}
+
+sub percentage {
+  my ($self,$fraction) = @_;
+  if (defined $fraction) {
+    return int(10000*$fraction)/100 . '%';
+  }
+  return '';
 }
 
 sub common_html_fields {
@@ -107,6 +131,8 @@ sub common_html_fields {
     " <td align=right> " . mynum($row->{'nav_count'}) . " </td>" .
     ' <td align=right class="latency"> ' . myround($row->{'nav_latency'}) .
       " </td>" .
+    ' <td align=right class="avail"> ' .
+      $self->percentage($self->availability('nav',$row)) . ' </td>' .
     " <td align=right> " . mynum($row->{'nreq_200'}) . " </td>" .
     " <td align=right> " . mynum($row->{'nreq_300'}) . " </td>" .
     " <td align=right> " . mynum($row->{'nreq_400'}) . " </td>" .
@@ -115,13 +141,17 @@ sub common_html_fields {
     " <td align=right> " . mynum($row->{'nreq_count'}) . " </td>" .
     ' <td align=right class="latency"> ' . myround($row->{'nreq_latency'}) .
       " </td>" .
+    ' <td align=right class="avail"> ' .
+      $self->percentage($self->availability('nreq',$row)) . ' </td>' .
     " <td align=right> " . mynum($row->{'ureq_200'}) . " </td>" .
     " <td align=right> " . mynum($row->{'ureq_300'}) . " </td>" .
     " <td align=right> " . mynum($row->{'ureq_400'}) . " </td>" .
     " <td align=right> " . mynum($row->{'ureq_500'}) . " </td>" .
     " <td align=right> " . mynum($row->{'ureq_count'}) . " </td>" .
     ' <td align=right class="latency"> ' . myround($row->{'ureq_latency'}) .
-      " </td>";
+      " </td>" .
+    ' <td align=right class="avail"> ' .
+      $self->percentage($self->availability('ureq',$row)) . ' </td>';
 }
 
 sub name_value_row {
@@ -157,6 +187,7 @@ sub alternate_style {
     table.alternate tr:nth-child(odd) td{ background-color: #CCFFCC; }
     table.alternate tr:nth-child(even) td{ background-color: #99DD99; }
     table.alternate tr td.latency{ font-weight:bold; }
+    table.alternate tr td.avail{ font-weight:bold; }
     table.alternate tr th{ background-color: #DDDDDD; }
 EOF
 }
