@@ -1,3 +1,9 @@
+reportlatency (1.5.6) precise; urgency=low
+
+  * wrong name for tabclosed field, fix availability calculation
+
+ -- Drake Diedrich <dld@google.com>  Sat, 19 Apr 2014 10:40:51 -0700
+
 reportlatency (1.5.5) precise; urgency=low
 
   * Report navigation response codes and calcuate a user-observed
