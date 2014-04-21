@@ -180,7 +180,6 @@ TabData.prototype.startNavigation = function(data) {
       logObject('TabData.startNavigation()', data);
     }
     if ('service' in this) {
-      console.log('deleting tabdata.service');
       delete this['service'];
     }
     if ('url' in data) {
