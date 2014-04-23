@@ -19,7 +19,6 @@ use strict;
 use vars qw($VERSION);
 use parent 'File::Temp';
 use File::Spec;
-use Scalar::Util qw(reftype);
 
 $VERSION     = 0.1;
 
