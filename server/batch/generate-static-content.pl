@@ -63,33 +63,37 @@ sub total_graph {
 
 sub total_report {
   my ($view,$options) = @_;
-  my $html = open_path("tags/summary/index.html");
+  my $html = open_path("tags/summary/tmp-index.html");
   print $html $view->summary_html();
   close($html);
+  rename("tags/summary/tmp-index.html","tags/summary/index.html");
 }
 
 sub service_report {
   my ($view,$name,$options) = @_;
 
-  my $report = open_path("services/$name/index.html");
+  my $report = open_path("services/$name/tmp-index.html");
   print $report $view->service_html($name);
   close($report);
+  rename("services/$name/tmp-index.html","services/$name/index.html");
 }
 
 sub tag_report {
   my ($view,$name,$options) = @_;
 
-  my $report = open_path("tags/$name/index.html");
+  my $report = open_path("tags/$name/tmp-index.html");
   print $report $view->tag_html($name);
   close($report);
+  rename("tags/$name/tmp-index.html","tags/$name/index.html");
 }
 
 sub untagged_report {
   my ($view,$options) = @_;
 
-  my $report = open_path("tags/untagged/index.html");
+  my $report = open_path("tags/untagged/tmp-index.html");
   print $report $view->untagged_html();
   close($report);
+  rename("tags/untagged/tmp-index.html","tags/untagged/index.html");
 }
 
 sub service_graph {
@@ -139,9 +143,10 @@ sub location_graph {
 sub location_report {
   my ($view,$name,$options) = @_;
 
-  my $report = open_path("locations/$name/index.html");
+  my $report = open_path("locations/$name/tmp-index.html");
   print $report $view->location_html($name);
   close($report);
+  rename("locations/$name/tmp-index.html","locations/$name/index.html");
 }
 
 sub recent_services {
