@@ -19,8 +19,11 @@ use strict;
 use vars qw($VERSION);
 use parent 'File::Temp';
 use File::Spec;
+use Scalar::Util qw(reftype);
 
 $VERSION     = 0.1;
+
+my %realpath;
 
 sub new {
   my $class = shift;
@@ -29,17 +32,21 @@ sub new {
   my ($vol,$dir,$fname) = File::Spec->splitpath($realpath);
 
   my $obj = $class->SUPER::new(DIR => $dir);
-  $obj->{realpath} = $realpath;
+
+  $realpath{$obj} = $realpath;
   return $obj;
 }
 
 sub DESTROY {
-    my $self = shift;
-    my ($tmpfile) = $self->filename;
-    # check for an overridden destructor...
-    $self->SUPER::DESTROY if $self->can("SUPER::DESTROY");
-    # now do your own thing before or after
-    rename($tmpfile,$self->{realpath});
+  my $self = shift;
+  my ($tmpfile) = $self->filename;
+  my $realpath = $realpath{$self};
+  delete $realpath{$self};
+
+  # check for an overridden destructor...
+  # $self->SUPER::DESTROY if $self->can("SUPER::DESTROY");
+  # now do your own thing before or after
+  rename($tmpfile,$realpath);
 }
 1;
 

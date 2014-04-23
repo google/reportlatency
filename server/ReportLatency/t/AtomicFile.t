@@ -17,9 +17,18 @@
 # limitations under the License.
 
 use strict;
-use Test::More tests => 1;
+use Test::More tests => 3;
+use File::Temp qw/ tempdir /;
 
 BEGIN { use lib '..'; }
 
 use_ok( 'ReportLatency::AtomicFile' );
 
+my $dir = tempdir(CLEANUP => 1);
+my $finalpath = "$dir/file.txt";
+
+{
+  my $fh = new ReportLatency::AtomicFile($finalpath);
+ok(! -e $finalpath,"$finalpath doesn't exist after file open");
+}
+ok(-e $finalpath,"$finalpath exists after object deletion");
