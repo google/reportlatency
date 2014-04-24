@@ -19,6 +19,7 @@ use strict;
 use vars qw($VERSION);
 use parent 'File::Temp';
 use File::Spec;
+use File::Path qw(make_path);
 
 $VERSION     = 0.1;
 
@@ -29,6 +30,7 @@ sub new {
   my ($realpath) = shift;
 
   my ($vol,$dir,$fname) = File::Spec->splitpath($realpath);
+  make_path($dir);
 
   my $obj = $class->SUPER::new(DIR => $dir);
 

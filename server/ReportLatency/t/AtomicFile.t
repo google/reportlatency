@@ -17,7 +17,7 @@
 # limitations under the License.
 
 use strict;
-use Test::More tests => 6;
+use Test::More tests => 8;
 use File::Temp qw/ tempdir /;
 
 BEGIN { use lib '..'; }
@@ -25,11 +25,12 @@ BEGIN { use lib '..'; }
 use_ok( 'ReportLatency::AtomicFile' );
 
 my $dir = tempdir(CLEANUP => 1);
-my $finalpath = "$dir/file.txt";
+my $finalpath = "$dir/subdir/file.txt";
 my $size;
 
 {
   my $fh = new ReportLatency::AtomicFile($finalpath);
+  ok(-d "$dir/subdir","$dir/subdir/");
   ok(! -e $finalpath,"$finalpath doesn't exist after file open");
   print $fh "Hello World\n";
   is(-s "$fh", 0, "file buffered still");
@@ -39,3 +40,4 @@ my $size;
 }
 ok(-e $finalpath,"$finalpath exists after object deletion");
 is(-s $finalpath, $size, "$size bytes in $finalpath");
+ok(unlink($finalpath),"unlink $finalpath");
