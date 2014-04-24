@@ -16,6 +16,7 @@
 
 
 use ReportLatency::utils;
+use ReportLatency::AtomicFile;
 use ReportLatency::Spectrum;
 use ReportLatency::StaticView;
 use ReportLatency::Store;
@@ -55,7 +56,7 @@ sub total_graph {
     $spectrum->add_row($row);
   }
 
-  my $png = open_path("tags/summary/navigation.png");
+  my $png = new ReportLatency::AtomicFile("tags/summary/navigation.png");
   print $png $spectrum->png();
   close($png);
 
@@ -63,37 +64,33 @@ sub total_graph {
 
 sub total_report {
   my ($view,$options) = @_;
-  my $html = open_path("tags/summary/tmp-index.html");
+  my $html = new ReportLatency::AtomicFile("tags/summary/index.html");
   print $html $view->summary_html();
   close($html);
-  rename("tags/summary/tmp-index.html","tags/summary/index.html");
 }
 
 sub service_report {
   my ($view,$name,$options) = @_;
 
-  my $report = open_path("services/$name/tmp-index.html");
+  my $report = new ReportLatency::AtomicFile("services/$name/index.html");
   print $report $view->service_html($name);
   close($report);
-  rename("services/$name/tmp-index.html","services/$name/index.html");
 }
 
 sub tag_report {
   my ($view,$name,$options) = @_;
 
-  my $report = open_path("tags/$name/tmp-index.html");
+  my $report = new ReportLatency::AtomicFile("tags/$name/index.html");
   print $report $view->tag_html($name);
   close($report);
-  rename("tags/$name/tmp-index.html","tags/$name/index.html");
 }
 
 sub untagged_report {
   my ($view,$options) = @_;
 
-  my $report = open_path("tags/untagged/tmp-index.html");
+  my $report = new ReportLatency::AtomicFile("tags/untagged/index.html");
   print $report $view->untagged_html();
   close($report);
-  rename("tags/untagged/tmp-index.html","tags/untagged/index.html");
 }
 
 sub service_graph {
@@ -113,7 +110,7 @@ sub service_graph {
     $spectrum->add_row($row);
   }
 
-  my $png = open_path("services/$name/navigation.png");
+  my $png = new ReportLatency::AtomicFile("services/$name/navigation.png");
   print $png $spectrum->png();
   close($png);
 }
@@ -135,7 +132,7 @@ sub location_graph {
     $spectrum->add_row($row);
   }
 
-  my $png = open_path("locations/$name/navigation.png");
+  my $png = new ReportLatency::AtomicFile("locations/$name/navigation.png");
   print $png $spectrum->png();
   close($png);
 }
@@ -143,10 +140,9 @@ sub location_graph {
 sub location_report {
   my ($view,$name,$options) = @_;
 
-  my $report = open_path("locations/$name/tmp-index.html");
+  my $report = new ReportLatency::AtomicFile("locations/$name/index.html");
   print $report $view->location_html($name);
   close($report);
-  rename("locations/$name/tmp-index.html","locations/$name/index.html");
 }
 
 sub recent_services {
@@ -285,7 +281,7 @@ sub tag_graph {
     $spectrum->add_row($row);
   }
 
-  my $png = open_path("tags/$name/navigation.png");
+  my $png = new ReportLatency::AtomicFile("tags/$name/navigation.png");
   print $png $spectrum->png();
   close($png);
 }
@@ -305,7 +301,7 @@ sub untagged_graph {
     $spectrum->add_row($row);
   }
 
- my $png = open_path("tags/untagged/navigation.png");
+  my $png = new ReportLatency::AtomicFile("tags/untagged/navigation.png");
   print $png $spectrum->png();
   close($png);
 }

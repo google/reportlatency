@@ -24,7 +24,6 @@ use File::Spec;
 use base 'Exporter';
 our @EXPORT    = qw(sanitize sanitize_service sanitize_location service_path
 		    mynum myround average
-		    open_path
 		    latency_dbh net_class_c
 		    reverse_dns aggregate_user_agent);
 
@@ -137,17 +136,6 @@ sub service_path($$) {
   return undef if ($name ne $sane_name);
   return "$name$ext";
 }
-
-sub open_path($) {
-  my ($path) = @_;
-  my ($volume,$directories,$file) = File::Spec->splitpath( $path );
-  if (! -d $directories ) {
-    make_path $directories;
-  }
-  open(my $fh,">",$path) || die "$!: unable to open $path";
-  return $fh;
-}
-
 
 sub mynum($) {
   my ($x) = @_;
