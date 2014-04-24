@@ -647,7 +647,7 @@ $header_2
 </tr>
 EOF
 
-  my $rc = $select->execute($service);
+  $rc = $select->execute($service);
 
   while ( my $row = $select->fetchrow_hashref) {
     my $name = sanitize_service($row->{'name'}) or next;
@@ -685,7 +685,7 @@ $header_2
 </tr>
 EOF
 
-  my $rc = $select_location->execute($service);
+  $rc = $select_location->execute($service);
   while ( my $row = $select_location->fetchrow_hashref) {
     my $location = $row->{'location'} || 'N/A';
     print $io "  <tr>";
