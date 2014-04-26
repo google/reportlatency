@@ -151,14 +151,14 @@ sub img() {
     push(@data,$self->{data}{$measure});
   }
   $graph->set_legend(sort keys %{$self->{data}});
-  my $img = $graph->plot(\@data);
-  $self->{img} = $img;
-  $img;
+  my $gd = $graph->plot(\@data) or die $graph->error;
+  $self->{img} = $gd;
+  $gd;
 }
 
 sub png() {
   my ($self) = @_;
-  my $img = $self->img();
+  my $img = $self->{img};
   return $img->png();
 }
 

@@ -18,6 +18,7 @@
 use ReportLatency::utils;
 use ReportLatency::AtomicFile;
 use ReportLatency::Spectrum;
+use ReportLatency::StackedGraph;
 use ReportLatency::StaticView;
 use ReportLatency::Store;
 use DBI;
@@ -37,6 +38,29 @@ my $border=24;
 
 my $latency_ceiling = 30000; # 30s max for all icons
 
+sub user_agents {
+  my ($store) = @_;
+}
+
+sub extensions {
+  my ($store,$options) = @_;
+  my $sth = $store->extension_version_sth();
+
+  my $rc = $sth->execute("-$duration seconds", '0 seconds');
+
+  my $graph = new ReportLatency::StackedGraph( width => $width/2,
+					      height => $height/2,
+					      duration => $duration,
+					      border => 24 );
+  
+  while (my $row = $sth->fetchrow_hashref) {
+    $graph->add_row($row);
+  }
+
+  my $png = new ReportLatency::AtomicFile("tags/summary/extensions.png");
+  print $png $graph->img()->png();
+  close($png);
+}
 
 sub total_graph {
   my ($store,$options) = @_;
@@ -325,6 +349,8 @@ sub main() {
   print "total\n";
   total_graph($store,\%options);
   total_report($view,\%options);
+  user_agents($store);
+  extensions($store);
 
   print "untagged\n";
   untagged_graph($store,\%options);

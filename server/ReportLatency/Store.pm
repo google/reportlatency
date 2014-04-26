@@ -669,6 +669,19 @@ sub extension_version_summary_sth {
   return $sth;
 }
 
+sub extension_version_sth {
+  my ($self) = @_;
+  my $dbh = $self->{dbh};
+  my $sth =
+    $dbh->prepare('SELECT strftime("%s",u.timestamp) AS timestamp,' .
+		  'version AS measure,1 AS amount' .
+                  ' FROM upload AS u ' .
+                  "WHERE timestamp >= datetime('now',?) AND " .
+		  "timestamp <= datetime('now',?);")
+      or die "prepare failed";
+  return $sth;
+}
+
 sub user_agent_summary_sth {
   my ($self) = @_;
   my $dbh = $self->{dbh};
@@ -678,6 +691,19 @@ sub user_agent_summary_sth {
                   'WHERE timestamp >= ? AND timestamp <= ? ' .
                   'GROUP BY user_agent ' .
 		  'ORDER BY user_agent;')
+      or die "prepare failed";
+  return $sth;
+}
+
+sub user_agent_sth {
+  my ($self) = @_;
+  my $dbh = $self->{dbh};
+  my $sth =
+    $dbh->prepare('SELECT strftime("%s",u.timestamp) AS timestamp,' .
+		  'user_agent AS measure,1 AS amount' .
+                  ' FROM upload ' .
+                  "WHERE timestamp >= datetime('now',?) AND " .
+		  "timestamp <= datetime('now',?);")
       or die "prepare failed";
   return $sth;
 }

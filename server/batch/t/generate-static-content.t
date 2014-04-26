@@ -18,7 +18,7 @@
 
 use strict;
 use DBI;
-use Test::More tests => 23;
+use Test::More tests => 24;
 use File::Temp qw(tempfile tempdir);
 
 $ENV{'PATH'} = '/usr/bin';
@@ -47,9 +47,12 @@ my $dbfile="$dir/data/backup.sqlite3";
   open(my $sqlite3,"|-",'sqlite3',$dbfile)
     or die $!;
   print $sqlite3 <<EOF;
-INSERT INTO upload(location) VALUES('office.google.com.');
-INSERT INTO upload(location) VALUES('office.google.com.');
-INSERT INTO upload(location) VALUES('office.google.com.');
+INSERT INTO upload(location,version,user_agent)
+ VALUES('office.google.com.','1.5.4','Chrome 24');
+INSERT INTO upload(location,version,user_agent)
+ VALUES('office.google.com.','1.5.4','Chrome 24');
+INSERT INTO upload(location,version,user_agent)
+ VALUES('office.google.com.','1.5.4','Chrome 24');
 UPDATE upload SET timestamp=DATETIME('now','-2 days') WHERE id=1;
 UPDATE upload SET timestamp=DATETIME('now','-1 days') WHERE id=2;
 INSERT INTO navigation(upload,service,count,total) VALUES(1,'service',3,333);
@@ -91,6 +94,7 @@ ok(rmdir("$dir/services/service"),"unlink service/");
 ok(rmdir("$dir/services/slow"),"unlink slow/");
 ok(rmdir("$dir/services"),"unlink services/");
 ok(unlink("$dir/tags/summary/navigation.png"),"unlink summary/navigation.png");
+ok(unlink("$dir/tags/summary/extensions.png"),"unlink summary/extensions.png");
 ok(unlink("$dir/tags/summary/index.html"),"unlink summary/index.html");
 ok(unlink("$dir/tags/untagged/index.html"),"unlink untagged/index.html");
 ok(unlink("$dir/tags/untagged/navigation.png"),
