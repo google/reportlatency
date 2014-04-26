@@ -39,6 +39,16 @@ sub tag_img_url {
   return "navigation.png";
 }
 
+sub useragents_url {
+  my ($self,$tag) = @_;
+  return "useragents.png";
+}
+
+sub extensions_url {
+  my ($self,$tag) = @_;
+  return "extensions.png";
+}
+
 sub tag_url {
   my ($self,$tag) = @_;
   return "../$tag/index.html";
@@ -222,6 +232,8 @@ sub summary_html {
   my $user_agent_sth = $store->user_agent_summary_sth;
 
   my $summary_img_url = $self->tag_img_url('summary');
+  my $useragents_url = $self->useragents_url('summary');
+  my $extensions_url = $self->extensions_url('summary');
 
 
   my $rc = $meta_sth->execute();
@@ -332,6 +344,7 @@ EOF
 
 <h2> Client Summary </h2>
     <div id="left_column">
+<img src="useragents.png" alt="user_agent distribution over time"><br>
       <table class="alternate" summary="Distribution of User Agents">
         <tr> <th>User Agent</th> <th>Uploads</th> </tr>
 EOF
@@ -348,6 +361,7 @@ print $io <<EOF;
       </table>
     </div>
     <div id="right_column">
+<img src="$extensions_url" alt="Distribution of User Agents over time"><br>
       <table class="alternate" summary="Distribution of User Agents (browsers)">
         <tr> <th>Extension Version</th> <th>Uploads</th> </tr>
 EOF
