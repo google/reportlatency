@@ -40,6 +40,23 @@ my $latency_ceiling = 30000; # 30s max for all icons
 
 sub user_agents {
   my ($store) = @_;
+  my ($store,$options) = @_;
+  my $sth = $store->user_agent_sth();
+
+  my $rc = $sth->execute("-$duration seconds", '0 seconds');
+
+  my $graph = new ReportLatency::StackedGraph( width => $width/2,
+					      height => $height/2,
+					      duration => $duration,
+					      border => 24 );
+  
+  while (my $row = $sth->fetchrow_hashref) {
+    $graph->add_row($row);
+  }
+
+  my $png = new ReportLatency::AtomicFile("tags/summary/useragents.png");
+  print $png $graph->img()->png();
+  close($png);
 }
 
 sub extensions {

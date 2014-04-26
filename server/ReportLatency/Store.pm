@@ -701,7 +701,7 @@ sub user_agent_sth {
   my $sth =
     $dbh->prepare('SELECT strftime("%s",u.timestamp) AS timestamp,' .
 		  'user_agent AS measure,1 AS amount' .
-                  ' FROM upload ' .
+                  ' FROM upload AS u ' .
                   "WHERE timestamp >= datetime('now',?) AND " .
 		  "timestamp <= datetime('now',?);")
       or die "prepare failed";
