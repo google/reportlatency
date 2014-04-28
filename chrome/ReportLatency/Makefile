@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-TARGETS=eventPage.js testable.js tests.js options.js
+TARGETS=eventPage.js testable.js tests.js options.js ReportLatency.zip
 
 SHIP=manifest.json icon128.png options.html $(TARGETS)
 
