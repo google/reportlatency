@@ -18,7 +18,7 @@
 
 use strict;
 use DBI;
-use Test::More tests => 25;
+use Test::More tests => 28;
 use File::Temp qw(tempfile tempdir);
 
 $ENV{'PATH'} = '/usr/bin';
@@ -59,6 +59,7 @@ INSERT INTO navigation(upload,service,count,total) VALUES(1,'service',3,333);
 INSERT INTO navigation(upload,service,count,total) VALUES(2,'service',3,999);
 INSERT INTO navigation(upload,service,count,total) VALUES(3,'service',3,666);
 INSERT INTO navigation(upload,service,count,total) VALUES(3,'slow',1,6666);
+INSERT INTO tag(service,tag) VALUES('service','Company');
 EOF
 
   ok(close($sqlite3),"latency data added");
@@ -97,11 +98,15 @@ ok(unlink("$dir/tags/summary/navigation.png"),"unlink summary/navigation.png");
 ok(unlink("$dir/tags/summary/extensions.png"),"unlink summary/extensions.png");
 ok(unlink("$dir/tags/summary/useragents.png"),"unlink summary/useragents.png");
 ok(unlink("$dir/tags/summary/index.html"),"unlink summary/index.html");
+ok(rmdir("$dir/tags/summary"),"rmdir summary/");
 ok(unlink("$dir/tags/untagged/index.html"),"unlink untagged/index.html");
 ok(unlink("$dir/tags/untagged/navigation.png"),
    "unlink untagged/navigation.png");
-ok(rmdir("$dir/tags/summary"),"rmdir summary/");
 ok(rmdir("$dir/tags/untagged"),"rmdir untagged/");
+ok(unlink("$dir/tags/untagged/index.html"),"unlink untagged/index.html");
+ok(unlink("$dir/tags/Company/navigation.png"),
+   "unlink Company/navigation.png");
+ok(rmdir("$dir/tags/untagged"),"rmdir Company/");
 ok(rmdir("$dir/tags"),"rmdir tags/");
 ok(rmdir($dir),"rmdir tmpdir");
 
