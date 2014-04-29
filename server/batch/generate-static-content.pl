@@ -39,7 +39,6 @@ my $border=24;
 my $latency_ceiling = 30000; # 30s max for all icons
 
 sub user_agents {
-  my ($store) = @_;
   my ($store,$options) = @_;
   my $sth = $store->user_agent_sth();
 
@@ -120,7 +119,6 @@ sub service_report {
 
 sub tag_report {
   my ($view,$name,$options) = @_;
-
   my $report = new ReportLatency::AtomicFile("tags/$name/index.html");
   print $report $view->tag_html($name);
   close($report);
@@ -211,7 +209,7 @@ sub recent_tags {
   my ($dbh) = @_;
 
   my $tags_sth =
-      $dbh->prepare('SELECT DISTINCT tag.tag ' .
+      $dbh->prepare('SELECT DISTINCT tag.tag AS tag ' .
                     'FROM report ' .
 		    'INNER JOIN tag ON tag.service=report.service ' .
                     "WHERE timestamp >= datetime('now',?);")

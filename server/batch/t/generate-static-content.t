@@ -103,10 +103,10 @@ ok(unlink("$dir/tags/untagged/index.html"),"unlink untagged/index.html");
 ok(unlink("$dir/tags/untagged/navigation.png"),
    "unlink untagged/navigation.png");
 ok(rmdir("$dir/tags/untagged"),"rmdir untagged/");
-ok(unlink("$dir/tags/untagged/index.html"),"unlink untagged/index.html");
+ok(unlink("$dir/tags/Company/index.html"),"unlink Company/index.html");
 ok(unlink("$dir/tags/Company/navigation.png"),
    "unlink Company/navigation.png");
-ok(rmdir("$dir/tags/untagged"),"rmdir Company/");
+ok(rmdir("$dir/tags/Company"),"rmdir Company/");
 ok(rmdir("$dir/tags"),"rmdir tags/");
 ok(rmdir($dir),"rmdir tmpdir");
 
