@@ -27,7 +27,7 @@ use_ok( 'ReportLatency::StackedGraph' );
 my $graph = new ReportLatency::StackedGraph( );
 
 isa_ok($graph, 'ReportLatency::StackedGraph');
-can_ok($graph, qw( add img png ));
+can_ok($graph, qw( add add_row img ));
 
 is($graph->width(),1000,"default width()");
 is($graph->height(),250,"default height()");

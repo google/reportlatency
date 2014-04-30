@@ -57,11 +57,6 @@ sub duration {
   return $self->{duration};
 }
 
-sub maxval {
-  my ($self) = @_;
-  return $self->{maxval};
-}
-
 sub duration_end {
   return time;
 }
@@ -154,12 +149,6 @@ sub img() {
   my $gd = $graph->plot(\@data) or die $graph->error;
   $self->{img} = $gd;
   $gd;
-}
-
-sub png() {
-  my ($self) = @_;
-  my $img = $self->{img};
-  return $img->png();
 }
 
 1;
