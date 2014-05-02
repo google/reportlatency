@@ -95,3 +95,60 @@ test('LatencyData.Navigation_Request', function() {
   equal(ts.count('ureq'), 0, '0 update request for tab 30');
 });
 
+
+test('LatencyData.mainFrameRequestFirst', function() {
+
+  localStorage['default_as_org'] = 'true';
+
+  var ld = new LatencyData();
+
+  var ndata = { frameId:0, parentFrameId:-1, processId:2999, tabId:30,
+	       timeStamp:1000, url:'http://first.com/' };
+
+  ld.startNavigation(ndata);
+
+  var rdata = { frameId:0, parentFrameId:-1, requestId:986, tabId:30,
+		timeStamp:1002, type:'main_frame', url:'http://first.com/' };
+  ld.startRequest(rdata);
+
+  rdata.timeStamp = 1998;
+  rdata.statusCode = 200;
+  rdata.fromCache = 'false';
+  ld.endRequest(rdata);
+
+  ndata.timeStamp = 2000;
+  ld.endNavigation(ndata);
+
+  delete rdata['fromCache'];
+  delete rdata['statusCode'];
+  rdata.requestId = 987;
+  rdata.timeStamp = 2998;
+  rdata.url = 'http://second.com/';
+  ld.startRequest(rdata);
+
+  ndata.timeStamp = 3000;
+  ndata.url = 'http://second.com/';
+  ld.startNavigation(ndata);
+
+  rdata.timeStamp = 3998;
+  rdata.statusCode = 200;
+  rdata.fromCache = 'false';
+  ld.endRequest(rdata);
+
+  ndata.timeStamp = 4000;
+  ld.endNavigation(ndata);
+
+  var firstService = ld.stats.service('first.com');
+  notEqual(firstService, undefined, 'firstService ServiceStats')
+  var secondService = ld.stats.service('second.com');
+  notEqual(secondService, undefined, 'secondService ServiceStats')
+
+  equal(firstService.count('nav'), 1, '1 first.com navigation');
+  equal(secondService.count('nav'), 1, '1 second.com navigation');
+
+  equal(firstService.stat['second.com'], undefined,'no second.com in first.com stats');
+  equal(secondService.stat['first.com'], undefined,'no first.com in second.com stats');
+
+  notEqual(firstService, secondService, 'firstService and secondService are distinct objects');
+});
+
