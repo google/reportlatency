@@ -102,53 +102,53 @@ test('LatencyData.mainFrameRequestFirst', function() {
 
   var ld = new LatencyData();
 
-  var ndata = { frameId:0, parentFrameId:-1, processId:2999, tabId:30,
+  var ndata1 = { frameId:0, parentFrameId:-1, processId:2999, tabId:30,
 	       timeStamp:1000, url:'http://first.com/' };
 
-  ld.startNavigation(ndata);
+  ld.startNavigation(ndata1);
 
-  var rdata = { frameId:0, parentFrameId:-1, requestId:986, tabId:30,
+  var rdata1 = { frameId:0, parentFrameId:-1, requestId:986, tabId:30,
 		timeStamp:1002, type:'main_frame', url:'http://first.com/' };
-  ld.startRequest(rdata);
+  ld.startRequest(rdata1);
 
-  rdata.timeStamp = 1998;
-  rdata.statusCode = 200;
-  rdata.fromCache = 'false';
-  ld.endRequest(rdata);
+  var rdata2 = { frameId:0, parentFrameId:-1, requestId:986, tabId:30,
+		 timeStamp:1998, type:'main_frame', url:'http://first.com/',
+		 statusCode:200, fromCache:'false' };
+  ld.endRequest(rdata2);
 
-  ndata.timeStamp = 2000;
-  ld.endNavigation(ndata);
+  var ndata2 = { frameId:0, parentFrameId:-1, processId:2999, tabId:30,
+	       timeStamp:2000, url:'http://first.com/' };
+  ld.endNavigation(ndata2);
 
-  delete rdata['fromCache'];
-  delete rdata['statusCode'];
-  rdata.requestId = 987;
-  rdata.timeStamp = 2998;
-  rdata.url = 'http://second.com/';
-  ld.startRequest(rdata);
+  var rdata3 = { frameId:0, parentFrameId:-1, requestId:987, tabId:30,
+		 timeStamp:2998, type:'main_frame', url:'http://second.com/'};
+  ld.startRequest(rdata3);
 
-  ndata.timeStamp = 3000;
-  ndata.url = 'http://second.com/';
-  ld.startNavigation(ndata);
+  var ndata3 = { frameId:0, parentFrameId:-1, processId:2999, tabId:30,
+	       timeStamp:3000, url:'http://second.com/' };
+  ld.startNavigation(ndata3);
 
-  rdata.timeStamp = 3998;
-  rdata.statusCode = 200;
-  rdata.fromCache = 'false';
-  ld.endRequest(rdata);
+  var rdata4 = { frameId:0, parentFrameId:-1, requestId:987, tabId:30,
+		 timeStamp:2998, type:'main_frame', url:'http://second.com/',
+		 statusCode:200, fromCache:'false' };
+  ld.endRequest(rdata4);
 
-  ndata.timeStamp = 4000;
-  ld.endNavigation(ndata);
+  var ndata4 = { frameId:0, parentFrameId:-1, processId:2999, tabId:30,
+	       timeStamp:4001, url:'http://second.com/' };
+  ld.endNavigation(ndata4);
 
   var firstService = ld.stats.service('first.com');
   notEqual(firstService, undefined, 'firstService ServiceStats')
+  console.log('firstService.toJSON() = ' + firstService.toJSON());
   var secondService = ld.stats.service('second.com');
-  notEqual(secondService, undefined, 'secondService ServiceStats')
+  notEqual(secondService, undefined, 'secondService ServiceStats');
 
-  equal(firstService.count('nav'), 1, '1 first.com navigation');
-  equal(secondService.count('nav'), 1, '1 second.com navigation');
+
+  equal(firstService.count('nav'), 2, '2 first.com navigation countables');
+  equal(secondService.count('nav'), 2, '2 second.com navigation countables');
 
   equal(firstService.stat['second.com'], undefined,'no second.com in first.com stats');
   equal(secondService.stat['first.com'], undefined,'no first.com in second.com stats');
 
-  notEqual(firstService, secondService, 'firstService and secondService are distinct objects');
 });
 

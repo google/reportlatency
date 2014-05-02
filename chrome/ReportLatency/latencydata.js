@@ -42,8 +42,17 @@ function LatencyData() {
  *
  */
 LatencyData.prototype.startRequest = function(data) {
+  console.log('LatencyData.startRequest(' + data.url + ')');
   if ('tabId' in data) {
     if (data.tabId in this.tab) {
+      if (data.type == 'main_frame') {
+	var service = this.tab[data.tabId].service;
+	if (service) {
+	  console.log(' transfering stats to service ' + service);
+	  this.stats.transfer(service, this.tab[data.tabId].stat);
+	  delete this.tab[data.tabId]['service'];
+	}
+      }
       this.tab[data.tabId].startRequest(data);
     } else {
       if (data.tabId >= 0) {
@@ -65,6 +74,7 @@ LatencyData.prototype.startRequest = function(data) {
  *
  */
 LatencyData.prototype.endRequest = function(data) {
+  console.log('LatencyData.endRequest(' + data.url + ')');
   if ('tabId' in data) {
     if (data.tabId in this.tab) {
       this.tab[data.tabId].endRequest(data);
@@ -131,6 +141,7 @@ LatencyData.prototype.tabRemoved = function(tabId, removeInfo) {
  *
  */
 LatencyData.prototype.startNavigation = function(data) {
+  console.log('LatencyData.startNavigation(' + data.url + ')');
   if ('tabId' in data) {
     if (('parentFrameId' in data) && (data.parentFrameId < 0) &&
 	!((data.tabId in this.tab))) {
@@ -150,6 +161,7 @@ LatencyData.prototype.startNavigation = function(data) {
  *
  */
 LatencyData.prototype.endNavigation = function(data) {
+  console.log('LatencyData.endNavigation(' + data.url + ')');
   if ('tabId' in data) {
     if (data.tabId in this.tab) {
       this.tab[data.tabId].endNavigation(data);

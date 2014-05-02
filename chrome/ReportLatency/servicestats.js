@@ -21,7 +21,7 @@
 
 
 /**
- * Class containing of multiple types of latencies
+ * Class containing latencies for multiple services.
  * @constructor
  */
 function ServiceStats() {
@@ -39,6 +39,8 @@ function ServiceStats() {
  *
  */
 ServiceStats.prototype.add = function(service, name, latency, delta) {
+  console.log('ServiceStats.add(' + service + ',' + name + ',' +
+	      latency + ',' + delta + ')');
   if (!this.stat[service]) {
     this.stat[service] = new NameStats();
   }

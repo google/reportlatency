@@ -40,6 +40,7 @@ function LatencyStats() {
  * isn't always known until after collection, so not part of this object.
  */
 LatencyStats.prototype.add = function(latency, delta) {
+  console.log('LatencyStats.add(' + latency + ',' + delta + ')');
   if (!this.stat[latency]) {
     this.stat[latency] = new Stat();
   }
@@ -69,7 +70,9 @@ LatencyStats.prototype.increment = function(latency, result) {
  * @param {Object} stats is another LatencyStats to transfer into this.
  */
 LatencyStats.prototype.transfer = function(stats) {
+  console.log('LatencyStats.transfer()');
   for (var s in stats.stat) {
+    console.log('    s=' + s);
     if (this.stat[s]) {
       this.stat[s].transfer(stats.stat[s]);
     } else {
