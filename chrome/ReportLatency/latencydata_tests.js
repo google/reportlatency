@@ -139,13 +139,14 @@ test('LatencyData.mainFrameRequestFirst', function() {
 
   var firstService = ld.stats.service('first.com');
   notEqual(firstService, undefined, 'firstService ServiceStats')
-  console.log('firstService.toJSON() = ' + firstService.toJSON());
   var secondService = ld.stats.service('second.com');
   notEqual(secondService, undefined, 'secondService ServiceStats');
 
 
   equal(firstService.count('nav'), 2, '2 first.com navigation countables');
+  equal(firstService.count('nreq'), 2, '2 first.com nreq countables');
   equal(secondService.count('nav'), 2, '2 second.com navigation countables');
+  equal(secondService.count('nreq'), 2, '2 second.com nreq countables');
 
   equal(firstService.stat['second.com'], undefined,'no second.com in first.com stats');
   equal(secondService.stat['first.com'], undefined,'no first.com in second.com stats');
