@@ -38,7 +38,6 @@ function NameStats() {
  *
  */
 NameStats.prototype.add = function(name, latency, delta) {
-  console.log('NameStats.add(' + name + ',' + latency + ',' + delta + ')');
   if (!this.stat[name]) {
     this.stat[name] = new LatencyStats();
   }
@@ -67,9 +66,7 @@ NameStats.prototype.increment = function(name, latency, countable) {
  * @param {Object} stats is another NameStats to transfer into this.
  */
 NameStats.prototype.transfer = function(stats) {
-  console.log('NameStats.transfer()');
   for (var s in stats.stat) {
-    console.log('  s=' + s);
     if (this.stat[s]) {
       this.stat[s].transfer(stats.stat[s]);
     } else {

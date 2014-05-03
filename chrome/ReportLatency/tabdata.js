@@ -27,7 +27,6 @@
  * @constructor
  */
 function TabData() {
-  console.log('TabData()');
   this.stat = new NameStats();
   this.request = {};
   this.tabupdate = {};
@@ -40,20 +39,14 @@ function TabData() {
  *
  */
 TabData.prototype.startRequest = function(data) {
-  console.log('TabData.startRequest(' + data.url + ')');
   if (localStorage['debug_requests'] == 'true' ||
       (data.type == 'main_frame' &&
        localStorage['debug_navigations'] == 'true')) {
     logObject('TabData(' + this.service + ').startRequest()', data);
   }
   if (data.type == 'main_frame') {
-    console.log('data.type==main_frame');
     if ('service' in this) {
-      console.log('  delete TabData.service');
       delete this['service'];
-    }
-    if ('navigation' in this) {
-      console.log('this.navigation.url=' + this.navigation.url);
     }
   }
 
@@ -83,8 +76,6 @@ TabData.prototype.startRequest = function(data) {
  *
  */
 TabData.prototype.endRequest = function(data) {
-  console.log('TabData.endRequest(' + data.url + ')');
-  console.log('this.navigation.url = ' + this.navigation.url);
   if (localStorage['debug_requests'] == 'true' ||
       (data.type == 'main_frame' &&
        localStorage['debug_navigations'] == 'true')) {
@@ -184,7 +175,6 @@ TabData.prototype.deleteRequest = function(data) {
  *
  */
 TabData.prototype.startNavigation = function(data) {
-  console.log('TabData.startNavigation(' + data.url + ')');
   if (('parentFrameId' in data) && (data.parentFrameId < 0)) {
     if (localStorage['debug_navigations'] == 'true') {
       logObject('TabData.startNavigation()', data);
@@ -226,7 +216,6 @@ TabData.prototype.startNavigation = function(data) {
  *
  */
 TabData.prototype.endNavigation = function(data) {
-  console.log('TabData.endNavigation(' + data.url + ')');
   if (('frameId' in data)) {
     if ('navigation' in this) {
       if (data.frameId == this.navigation.frameId) {
@@ -237,8 +226,6 @@ TabData.prototype.endNavigation = function(data) {
 	  if (isWebUrl(data.url)) {
 	    if ('timeStamp' in data) {
 	      var delay = data.timeStamp - this.navigation.timeStamp;
-	      console.log('  delay=' + delay + ' = ' + data.timeStamp +
-			  ' - ' + this.navigation.timeStamp);
 	      var original_name = aggregateName(this.navigation.url);
 	      this.service = aggregateName(data.url);
 	      if (localStorage['log_navigations'] == 'true') {
@@ -271,7 +258,6 @@ TabData.prototype.endNavigation = function(data) {
 	    console.log('no url found in endNavigation() data');
 	  }
 	}
-	console.log('delete this.navigation url=' + this.navigation.url);
 	delete this['navigation'];
       } else {
 	// console.log('  Meh. Don\'t care about subframes again.');

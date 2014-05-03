@@ -98,6 +98,7 @@ test('LatencyData.Navigation_Request', function() {
 
 test('LatencyData.mainFrameRequestFirst', function() {
 
+  var old_default = localStorage['default_as_org'];
   localStorage['default_as_org'] = 'true';
 
   var ld = new LatencyData();
@@ -137,19 +138,31 @@ test('LatencyData.mainFrameRequestFirst', function() {
 	       timeStamp:4001, url:'http://second.com/' };
   ld.endNavigation(ndata4);
 
+  equal(ld.stats.stat['first.com'].stat['first.com'].stat['nav'].count, 1,
+	'1 first.com/first.com nav count');
+  equal(ld.stats.stat['first.com'].stat['first.com'].stat['nav'].total, 1000,
+	'1000ms first.com/first.com nav total');
+  equal(ld.stats.stat['second.com'].stat['second.com'].stat['nav'].count, 1,
+	'1 second.com/second.com nav count');
+  equal(ld.stats.stat['second.com'].stat['second.com'].stat['nav'].total, 1001,
+	'1000ms second.com/second.com nav total');
+
+
   var firstService = ld.stats.service('first.com');
-  notEqual(firstService, undefined, 'firstService ServiceStats')
   var secondService = ld.stats.service('second.com');
-  notEqual(secondService, undefined, 'secondService ServiceStats');
-
-
-  equal(firstService.count('nav'), 2, '2 first.com navigation countables');
-  equal(firstService.count('nreq'), 2, '2 first.com nreq countables');
-  equal(secondService.count('nav'), 2, '2 second.com navigation countables');
-  equal(secondService.count('nreq'), 2, '2 second.com nreq countables');
 
   equal(firstService.stat['second.com'], undefined,'no second.com in first.com stats');
   equal(secondService.stat['first.com'], undefined,'no first.com in second.com stats');
 
+  equal(firstService.count('nav'), 2, '2 first.com navigation countables');
+  // equal(firstService.count('nreq'), 2, '2 first.com nreq countables');
+  equal(secondService.count('nav'), 2, '2 second.com navigation countables');
+  //  equal(secondService.count('nreq'), 2, '2 second.com nreq countables');
+
+  if (old_default) {
+    localStorage['default_as_org'] = old_default;
+  } else {
+    delete localStorage['default_as_org'];
+  }
 });
 

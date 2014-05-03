@@ -106,6 +106,8 @@ test('TabData.startNavigation', function() {
 });
 
 test('TabData.endNavigation', function() {
+  localStorage['default_as_org'] = false;
+
   var t = new TabData();
 
   var dataStart = { frameId:0, parentFrameId:-1, processId:2999, tabId:30,
