@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 #
-# Test ReportLatency::Store.pm's service_select_sth()
+# Test ReportLatency::Store.pm's service_nreq_sth()
 #
 # Copyright 2014 Google Inc. All Rights Reserved.
 #
@@ -52,39 +52,22 @@ ok($dbh->do(q{
   INSERT INTO upload(location) VALUES("1.2.3.0");
 }), 'INSERT upload');
 ok($dbh->do(q{
-  INSERT INTO navigation(upload,name,service,count,total)
-    VALUES(1,'mail.google.com','mail.google.com',1,2038);
-}), 'INSERT mail.google.com navigation');
-ok($dbh->do(q{
-  INSERT INTO navigation_request(upload,name,service,count,total)
-    VALUES(1,'mail.google.com','mail.google.com',1,1492);
+  INSERT INTO navigation_request(upload,name,service,count,total,low,high)
+    VALUES(1,'mail.google.com','mail.google.com',3,2100,600,800);
 }), 'INSERT mail.google.com navigation_request');
-ok($dbh->do(q{
-  INSERT INTO upload(location) VALUES("1.2.3.0");
-}), 'INSERT upload');
-ok($dbh->do(q{
-  INSERT INTO update_request(upload,name,service,count,total)
-    VALUES(2,'mail.google.com','mail.google.com',10,2220);
-}), 'INSERT mail.google.com update_request');
-ok($dbh->do(q{
-  INSERT INTO upload(location) VALUES("1.2.3.0");
-}), 'INSERT upload');
-ok($dbh->do(q{
-  INSERT INTO update_request(upload,name,service,count,total)
-    VALUES(3,'news.google.com','news.google.com',10,3330);
-}), 'INSERT news.google.com update_request');
 
 
-my $sth = $store->service_select_sth();
-$sth->execute('mail.google.com');
+my $sth = $store->service_nreq_latencies_sth();
+$sth->execute('mail.google.com','0 seconds', "-300 seconds");
+my $row = $sth->fetchrow_hashref;
 
-my $rows = 0;
-while (my $row = $sth->fetchrow_hashref) {
-  is($row->{ureq_count}, 10, '10 ureqs');
-  is($row->{ureq_latency}, 222, 'ureq latency');
-  is($row->{nav_count}, 1, '1 nav');
-  is($row->{nav_latency}, 2038, 'nav latency');
-  is($row->{name}, 'mail.google.com', 'mail.google.com server name');
-  $rows++;
-}
-is($rows, 1, "1 row for mail.google.com");
+cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
+cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
+is($row->{count}, 3, 'count');
+is($row->{total}, 2100, 'total');
+is($row->{low}, 600, 'low');
+is($row->{high}, 800, 'high');
+is($row->{name}, 'mail.google.com', 'mail.google.com server name');
+
+$row = $sth->fetchrow_hashref;
+is($row, undef, 'last row');
