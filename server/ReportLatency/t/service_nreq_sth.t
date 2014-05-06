@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 #
-# Test ReportLatency::Store.pm's service_nreq_sth()
+# Test ReportLatency::Store.pm's service_nreq_latencies_sth()
 #
 # Copyright 2014 Google Inc. All Rights Reserved.
 #
@@ -20,7 +20,7 @@ use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
 use HTML::Tidy;
-use Test::More tests => 15;
+use Test::More tests => 11;
 
 BEGIN { use lib '..'; }
 
@@ -67,7 +67,6 @@ is($row->{count}, 3, 'count');
 is($row->{total}, 2100, 'total');
 is($row->{low}, 600, 'low');
 is($row->{high}, 800, 'high');
-is($row->{name}, 'mail.google.com', 'mail.google.com server name');
 
 $row = $sth->fetchrow_hashref;
 is($row, undef, 'last row');

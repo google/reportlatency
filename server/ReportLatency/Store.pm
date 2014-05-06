@@ -305,6 +305,32 @@ sub untagged_meta_sth {
   return $sth;
 }
 
+sub service_nreq_latencies_sth {
+  my ($self) = @_;
+
+  my $sth = $self->{service_nreq_latencies_sth};
+  if (! defined $sth) {
+    my $dbh = $self->{dbh};
+    my $statement='SELECT strftime("%s",u.timestamp) AS timestamp,' .
+      'nr.count AS count,' .
+      'nr.high AS high,' .
+      'nr.low AS low,' .
+      'nr.total AS total ' .
+      'FROM navigation_request nr, upload u ' .
+       "WHERE " .
+       'nr.service = ? AND ' .
+       'nr.upload = u.id AND ' .
+       "u.timestamp <= datetime('now',?) AND " .
+       "u.timestamp > datetime('now',?) AND " .
+       "nr.count IS NOT NULL AND nr.count != '' AND " .
+       "nr.count>0;";
+    $sth = $dbh->prepare($statement) or die $!;
+    $self->{service_nreq_latencies_sth} = $sth;
+  }
+
+  return $sth;
+}
+
 sub tag_nav_latencies_sth {
   my ($self) = @_;
 
