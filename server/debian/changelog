@@ -1,3 +1,9 @@
+reportlatency (1.5.8) precise; urgency=low
+
+  * generate nav_request.png for each service
+
+ -- Drake Diedrich <dld@google.com>  Tue, 06 May 2014 13:47:13 -0700
+
 reportlatency (1.5.7) precise; urgency=low
 
   * extensions and useragents graphs

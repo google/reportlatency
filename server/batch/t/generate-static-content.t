@@ -18,7 +18,7 @@
 
 use strict;
 use DBI;
-use Test::More tests => 28;
+use Test::More tests => 30;
 use File::Temp qw(tempfile tempdir);
 
 $ENV{'PATH'} = '/usr/bin';
@@ -86,10 +86,14 @@ ok(rmdir("$dir/locations/office.google.com."),"rmdir office.google.com.");
 ok(rmdir("$dir/locations"),"rmdir locations/");
 ok(unlink("$dir/services/service/navigation.png"),
    "rmdir service/service/navigation.png");
+ok(unlink("$dir/services/service/nav_request.png"),
+   "rmdir service/service/nav_request.png");
 ok(unlink("$dir/services/service/index.html"),
    "unlink service/index.html");
 ok(unlink("$dir/services/slow/navigation.png"),
    "rmdir service/slow/navigation.png");
+ok(unlink("$dir/services/slow/nav_request.png"),
+   "rmdir service/slow/nav_request.png");
 ok(unlink("$dir/services/slow/index.html"),"unlink slow/index.html");
 ok(rmdir("$dir/services/service"),"unlink service/");
 ok(rmdir("$dir/services/slow"),"unlink slow/");
