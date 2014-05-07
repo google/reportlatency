@@ -18,7 +18,7 @@
 
 use strict;
 use DBI;
-use Test::More tests => 31;
+use Test::More tests => 33;
 use File::Temp qw(tempfile tempdir);
 
 $ENV{'PATH'} = '/usr/bin';
@@ -89,19 +89,19 @@ ok(unlink("$dir/locations/office.google.com./index.html"),
 ok(rmdir("$dir/locations/office.google.com."),"rmdir office.google.com.");
 ok(rmdir("$dir/locations"),"rmdir locations/");
 ok(unlink("$dir/services/service/navigation.png"),
-   "rmdir service/service/navigation.png");
+   "rm service/service/navigation.png");
 ok(unlink("$dir/services/service/nav_request.png"),
-   "rmdir service/service/nav_request.png");
-#ok(unlink("$dir/services/service/update_request.png"),
-#   "rmdir service/service/update_request.png");
+   "rm service/service/nav_request.png");
+ok(unlink("$dir/services/service/update_request.png"),
+   "rm service/service/update_request.png");
 ok(unlink("$dir/services/service/index.html"),
    "unlink service/index.html");
 ok(unlink("$dir/services/slow/navigation.png"),
-   "rmdir service/slow/navigation.png");
+   "rm service/slow/navigation.png");
 ok(unlink("$dir/services/slow/nav_request.png"),
-   "rmdir service/slow/nav_request.png");
-#ok(unlink("$dir/services/slow/update_request.png"),
-#   "rmdir service/slow/update_request.png");
+   "rm service/slow/nav_request.png");
+ok(unlink("$dir/services/slow/update_request.png"),
+   "rm service/slow/update_request.png");
 ok(unlink("$dir/services/slow/index.html"),"unlink slow/index.html");
 ok(rmdir("$dir/services/service"),"unlink service/");
 ok(rmdir("$dir/services/slow"),"unlink slow/");
@@ -110,7 +110,7 @@ ok(unlink("$dir/tags/summary/navigation.png"),"unlink summary/navigation.png");
 #ok(unlink("$dir/tags/summary/update_request.png"),
 #   "rmdir tags/summary/update_request.png");
 ok(unlink("$dir/tags/summary/nav_request.png"),
-   "rmdir tags/summary/nav_request.png");
+   "rm tags/summary/nav_request.png");
 ok(unlink("$dir/tags/summary/extensions.png"),"unlink summary/extensions.png");
 ok(unlink("$dir/tags/summary/useragents.png"),"unlink summary/useragents.png");
 ok(unlink("$dir/tags/summary/index.html"),"unlink summary/index.html");
