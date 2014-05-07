@@ -18,7 +18,7 @@
 
 use strict;
 use DBI;
-use Test::More tests => 38;
+use Test::More tests => 31;
 use File::Temp qw(tempfile tempdir);
 
 $ENV{'PATH'} = '/usr/bin';
@@ -80,10 +80,10 @@ unlink($dbfile);
 rmdir("$dir/data");
 ok(unlink("$dir/locations/office.google.com./navigation.png"),
    "unlink location png");
-ok(unlink("$dir/locations/office.google.com./update_request.png"),
-   "rmdir locations/office.google.com./update_request.png");
-ok(unlink("$dir/locations/office.google.com./nav_request.png"),
-   "rmdir locations/office.google.com./nav_request.png");
+#ok(unlink("$dir/locations/office.google.com./update_request.png"),
+#   "rmdir locations/office.google.com./update_request.png");
+#ok(unlink("$dir/locations/office.google.com./nav_request.png"),
+#   "rmdir locations/office.google.com./nav_request.png");
 ok(unlink("$dir/locations/office.google.com./index.html"),
    "unlink location html");
 ok(rmdir("$dir/locations/office.google.com."),"rmdir office.google.com.");
@@ -92,23 +92,23 @@ ok(unlink("$dir/services/service/navigation.png"),
    "rmdir service/service/navigation.png");
 ok(unlink("$dir/services/service/nav_request.png"),
    "rmdir service/service/nav_request.png");
-ok(unlink("$dir/services/service/update_request.png"),
-   "rmdir service/service/update_request.png");
+#ok(unlink("$dir/services/service/update_request.png"),
+#   "rmdir service/service/update_request.png");
 ok(unlink("$dir/services/service/index.html"),
    "unlink service/index.html");
 ok(unlink("$dir/services/slow/navigation.png"),
    "rmdir service/slow/navigation.png");
 ok(unlink("$dir/services/slow/nav_request.png"),
    "rmdir service/slow/nav_request.png");
-ok(unlink("$dir/services/slow/update_request.png"),
-   "rmdir service/slow/update_request.png");
+#ok(unlink("$dir/services/slow/update_request.png"),
+#   "rmdir service/slow/update_request.png");
 ok(unlink("$dir/services/slow/index.html"),"unlink slow/index.html");
 ok(rmdir("$dir/services/service"),"unlink service/");
 ok(rmdir("$dir/services/slow"),"unlink slow/");
 ok(rmdir("$dir/services"),"unlink services/");
 ok(unlink("$dir/tags/summary/navigation.png"),"unlink summary/navigation.png");
-ok(unlink("$dir/tags/summary/update_request.png"),
-   "rmdir tags/summary/update_request.png");
+#ok(unlink("$dir/tags/summary/update_request.png"),
+#   "rmdir tags/summary/update_request.png");
 ok(unlink("$dir/tags/summary/nav_request.png"),
    "rmdir tags/summary/nav_request.png");
 ok(unlink("$dir/tags/summary/extensions.png"),"unlink summary/extensions.png");
@@ -122,10 +122,10 @@ ok(rmdir("$dir/tags/untagged"),"rmdir untagged/");
 ok(unlink("$dir/tags/Company/index.html"),"unlink Company/index.html");
 ok(unlink("$dir/tags/Company/navigation.png"),
    "unlink Company/navigation.png");
-ok(unlink("$dir/tags/Company/update_request.png"),
-   "rmdir tags/Company/update_request.png");
-ok(unlink("$dir/tags/Company/nav_request.png"),
-   "rmdir tags/Company/nav_request.png");
+#ok(unlink("$dir/tags/Company/update_request.png"),
+#   "rmdir tags/Company/update_request.png");
+#ok(unlink("$dir/tags/Company/nav_request.png"),
+#   "rmdir tags/Company/nav_request.png");
 ok(rmdir("$dir/tags/Company"),"rmdir Company/");
 ok(rmdir("$dir/tags"),"rmdir tags/");
 ok(rmdir($dir),"rmdir tmpdir");
