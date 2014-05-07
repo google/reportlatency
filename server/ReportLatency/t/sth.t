@@ -20,7 +20,7 @@ use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
 use HTML::Tidy;
-use Test::More tests => 22;
+use Test::More tests => 30;
 
 BEGIN { use lib '..'; }
 
@@ -31,7 +31,7 @@ my $dir = tempdir(CLEANUP => 1);
 my $dbfile = "$dir/latency.sqlite3";
 {
   open(my $sqlite3,"|-",'sqlite3',$dbfile) or die $!;
-  foreach my $source qw(sqlite3.sql views-sqlite3.sql) {
+  foreach my $source (qw(sqlite3.sql views-sqlite3.sql)) {
     open(my $sql,'<',"../sql/$source") or die $!;
     while (my $line = $sql->getline) {
       print $sqlite3 $line;
@@ -73,35 +73,44 @@ ok($dbh->do(q{
   INSERT INTO update_request(upload,name,service,count,total)
     VALUES(3,'news.google.com','news.google.com',10,3330);
 }), 'INSERT news.google.com update_request');
+ok($dbh->do(q{
+  INSERT INTO tag(service,tag) VALUES('mail.google.com','Mail');
+}), 'INSERT Mail tag');
 
 
 my $sth = $store->service_nreq_latencies_sth();
 $sth->execute('mail.google.com','0 seconds', "-300 seconds");
 my $row = $sth->fetchrow_hashref;
-
-cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
-cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
-is($row->{count}, 3, 'count');
+is($row->{count}, 3, 'mail.google.com nreq count');
 is($row->{total}, 2100, 'total');
 is($row->{low}, 600, 'low');
 is($row->{high}, 800, 'high');
-
+cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
+cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
 $row = $sth->fetchrow_hashref;
-is($row, undef, 'last row');
+is($row, undef, 'last mail.google.com nreq latency row');
 
 
+$sth = $store->tag_nav_latencies_sth();
+$sth->execute('0 seconds', "-300 seconds", 'Mail');
+$row = $sth->fetchrow_hashref;
+is($row->{count}, 1, 'Mail count');
+is($row->{total}, 2038, 'total');
+is($row->{low}, undef, 'low');
+is($row->{high}, undef, 'high');
+cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
+cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
+$row = $sth->fetchrow_hashref;
+is($row, undef, 'last Mail nav latency row');
 
 
 $sth = $store->service_select_sth();
 $sth->execute('mail.google.com');
-
-my $rows = 0;
-while (my $row = $sth->fetchrow_hashref) {
-  is($row->{ureq_count}, 10, '10 ureqs');
-  is($row->{ureq_latency}, 222, 'ureq latency');
-  is($row->{nav_count}, 1, '1 nav');
-  is($row->{nav_latency}, 2038, 'nav latency');
-  is($row->{name}, 'mail.google.com', 'mail.google.com server name');
-  $rows++;
-}
-is($rows, 1, "1 row for mail.google.com");
+$row = $sth->fetchrow_hashref;
+is($row->{name}, 'mail.google.com', 'mail.google.com server name');
+is($row->{ureq_count}, 10, '10 ureqs');
+is($row->{ureq_latency}, 222, 'ureq latency');
+is($row->{nav_count}, 1, '1 nav');
+is($row->{nav_latency}, 2038, 'nav latency');
+$row = $sth->fetchrow_hashref;
+is($row, undef, "last mail.google.com table row");
