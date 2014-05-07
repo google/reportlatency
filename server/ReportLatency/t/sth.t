@@ -20,7 +20,7 @@ use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
 use HTML::Tidy;
-use Test::More tests => 66;
+use Test::More tests => 79;
 
 BEGIN { use lib '..'; }
 
@@ -177,6 +177,19 @@ $row = $sth->fetchrow_hashref;
 is($row, undef, 'last total nreq latency row');
 
 
+$sth = $store->user_agent_sth();
+$sth->execute('-300 seconds', "0 seconds");
+for (my $i=0; $i<3; $i++) {
+  $row = $sth->fetchrow_hashref;
+  is($row->{measure}, undef, 'undef user_agent');
+  is($row->{amount}, 1, '1 user_agent count');
+  cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
+  cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
+}
+$row = $sth->fetchrow_hashref;
+is($row, undef, 'last user_agent row');
+
+
 $sth = $store->service_select_sth();
 $sth->execute('mail.google.com');
 $row = $sth->fetchrow_hashref;
@@ -187,3 +200,5 @@ is($row->{nav_count}, 1, '1 nav');
 is($row->{nav_latency}, 2038, 'nav latency');
 $row = $sth->fetchrow_hashref;
 is($row, undef, "last mail.google.com table row");
+
+
