@@ -331,6 +331,32 @@ sub service_nreq_latencies_sth {
   return $sth;
 }
 
+sub service_ureq_latencies_sth {
+  my ($self) = @_;
+
+  my $sth = $self->{service_ureq_latencies_sth};
+  if (! defined $sth) {
+    my $dbh = $self->{dbh};
+    my $statement='SELECT strftime("%s",u.timestamp) AS timestamp,' .
+      'ur.count AS count,' .
+      'ur.high AS high,' .
+      'ur.low AS low,' .
+      'ur.total AS total ' .
+      'FROM update_request ur, upload u ' .
+       "WHERE " .
+       "u.timestamp > datetime('now',?) AND " .
+       "u.timestamp <= datetime('now',?) AND " .
+       'ur.service = ? AND ' .
+       'ur.upload = u.id AND ' .
+       "ur.count IS NOT NULL AND ur.count != '' AND " .
+       "ur.count>0;";
+    $sth = $dbh->prepare($statement) or die $!;
+    $self->{service_ureq_latencies_sth} = $sth;
+  }
+
+  return $sth;
+}
+
 sub tag_nav_latencies_sth {
   my ($self) = @_;
 

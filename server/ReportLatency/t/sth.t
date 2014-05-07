@@ -164,6 +164,19 @@ $row = $sth->fetchrow_hashref;
 is($row, undef, 'last mail.google.com nreq latency row');
 
 
+$sth = $store->service_ureq_latencies_sth();
+$sth->execute("-300 seconds", '0 seconds', 'mail.google.com');
+$row = $sth->fetchrow_hashref;
+is($row->{count}, 3, 'mail.google.com ureq count');
+is($row->{total}, 2100, 'total');
+is($row->{low}, 600, 'low');
+is($row->{high}, 800, 'high');
+cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
+cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
+$row = $sth->fetchrow_hashref;
+is($row, undef, 'last mail.google.com nreq latency row');
+
+
 $sth = $store->total_nreq_latencies_sth();
 $sth->execute("-300 seconds", '0 seconds');
 $row = $sth->fetchrow_hashref;

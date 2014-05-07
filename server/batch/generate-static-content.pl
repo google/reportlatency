@@ -187,6 +187,23 @@ sub service_graph {
   $png = new ReportLatency::AtomicFile("services/$name/nav_request.png");
   print $png $spectrum->png();
   close($png);
+
+
+  $sth = $store->service_ureq_latencies_sth();
+
+  $spectrum = new ReportLatency::Spectrum( width => $width,
+					   height => $height,
+					   duration => $duration,
+					   ceiling => $latency_ceiling,
+					   border => 24 );
+
+  while (my $row = $sth->fetchrow_hashref) {
+    $spectrum->add_row($row);
+  }
+
+  $png = new ReportLatency::AtomicFile("services/$name/update_request.png");
+  print $png $spectrum->png();
+  close($png);
 }
 
 sub location_graph {
