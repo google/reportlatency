@@ -482,6 +482,30 @@ sub total_nreq_latencies_sth {
   return $sth;
 }
 
+sub total_ureq_latencies_sth {
+  my ($self) = @_;
+
+  my $sth = $self->{total_ureq_latencies_sth};
+  if (! defined $sth) {
+    my $dbh = $self->{dbh};
+    my $statement='SELECT strftime("%s",u.timestamp) AS timestamp,' .
+      'ur.count AS count,' .
+      'ur.high AS high,' .
+      'ur.low AS low,' .
+      'ur.total AS total ' .
+      'FROM update_request ur ' .
+      'INNER JOIN upload u ON u.id=ur.upload ' .
+       "WHERE u.timestamp > datetime('now',?) AND " .
+       "u.timestamp <= datetime('now',?) AND " .
+       "ur.count IS NOT NULL AND ur.count != '' AND " .
+       "ur.count>0;";
+    $sth = $dbh->prepare($statement) or die $!;
+    $self->{total_ureq_latencies_sth} = $sth;
+  }
+
+  return $sth;
+}
+
 sub untagged_nav_latencies_sth {
   my ($self) = @_;
 

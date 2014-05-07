@@ -20,7 +20,7 @@ use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
 use HTML::Tidy;
-use Test::More tests => 92;
+use Test::More tests => 106;
 
 BEGIN { use lib '..'; }
 
@@ -63,8 +63,8 @@ ok($dbh->do(q{
   INSERT INTO upload(location) VALUES("1.2.3.0");
 }), 'INSERT upload');
 ok($dbh->do(q{
-  INSERT INTO update_request(upload,name,service,count,total)
-    VALUES(2,'mail.google.com','mail.google.com',10,2220);
+  INSERT INTO update_request(upload,name,service,count,total,low,high)
+    VALUES(2,'mail.google.com','mail.google.com',10,2220,100,300);
 }), 'INSERT mail.google.com update_request');
 ok($dbh->do(q{
   INSERT INTO upload(location) VALUES("1.2.3.0");
@@ -164,19 +164,6 @@ $row = $sth->fetchrow_hashref;
 is($row, undef, 'last mail.google.com nreq latency row');
 
 
-$sth = $store->service_ureq_latencies_sth();
-$sth->execute("-300 seconds", '0 seconds', 'mail.google.com');
-$row = $sth->fetchrow_hashref;
-is($row->{count}, 3, 'mail.google.com ureq count');
-is($row->{total}, 2100, 'total');
-is($row->{low}, 600, 'low');
-is($row->{high}, 800, 'high');
-cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
-cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
-$row = $sth->fetchrow_hashref;
-is($row, undef, 'last mail.google.com nreq latency row');
-
-
 $sth = $store->total_nreq_latencies_sth();
 $sth->execute("-300 seconds", '0 seconds');
 $row = $sth->fetchrow_hashref;
@@ -188,6 +175,35 @@ cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
 cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
 $row = $sth->fetchrow_hashref;
 is($row, undef, 'last total nreq latency row');
+
+
+$sth = $store->service_ureq_latencies_sth();
+$sth->execute("-300 seconds", '0 seconds', 'mail.google.com');
+$row = $sth->fetchrow_hashref;
+is($row->{count}, 10, 'mail.google.com ureq count');
+is($row->{total}, 2220, 'total');
+is($row->{low}, 100, 'low');
+is($row->{high}, 300, 'high');
+cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
+cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
+$row = $sth->fetchrow_hashref;
+is($row, undef, 'last mail.google.com ureq latency row');
+
+{
+  $sth = $store->total_ureq_latencies_sth();
+  $sth->execute("-300 seconds", '0 seconds');
+  my ($count,$total,$rows);
+  while (my $row = $sth->fetchrow_hashref) {
+    $count += $row->{count};
+    $total += $row->{total};
+    $rows++;
+    cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
+    cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
+  }
+  is($rows, 2, '2 total ureq latency rows');
+  is($count, 20, '20 total ureq count');
+  is($total, 2220+3330, '5550 ms total ureq latency');
+}
 
 
 $sth = $store->extension_version_sth();

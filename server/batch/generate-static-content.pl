@@ -119,6 +119,24 @@ sub total_graph {
   print $png $spectrum->png();
   close($png);
 
+
+  $sth = $store->total_ureq_latencies_sth();
+
+  $latency_rc = $sth->execute(-$duration . " seconds", '0 seconds');
+
+  $spectrum = new ReportLatency::Spectrum( width => $width,
+					   height => $height,
+					   duration => $duration,
+					   ceiling => $latency_ceiling,
+					   border => 24 );
+
+  while (my $row = $sth->fetchrow_hashref) {
+    $spectrum->add_row($row);
+  }
+
+  $png = new ReportLatency::AtomicFile("tags/summary/update_request.png");
+  print $png $spectrum->png();
+  close($png);
 }
 
 sub total_report {
