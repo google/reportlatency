@@ -20,7 +20,7 @@ use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
 use HTML::Tidy;
-use Test::More tests => 44;
+use Test::More tests => 51;
 
 BEGIN { use lib '..'; }
 
@@ -127,6 +127,18 @@ cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
 cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
 $row = $sth->fetchrow_hashref;
 is($row, undef, 'last location 1.2.3.0 nav latency row');
+
+$sth = $store->total_nav_latencies_sth();
+$sth->execute('0 seconds', "-300 seconds");
+$row = $sth->fetchrow_hashref;
+is($row->{count}, 1, 'total nav latency count');
+is($row->{total}, 2038, 'total');
+is($row->{low}, undef, 'low');
+is($row->{high}, undef, 'high');
+cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
+cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
+$row = $sth->fetchrow_hashref;
+is($row, undef, 'last total nav latency row');
 
 
 $sth = $store->service_select_sth();
