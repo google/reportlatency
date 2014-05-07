@@ -20,7 +20,7 @@ use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
 use HTML::Tidy;
-use Test::More tests => 30;
+use Test::More tests => 44;
 
 BEGIN { use lib '..'; }
 
@@ -78,9 +78,21 @@ ok($dbh->do(q{
 }), 'INSERT Mail tag');
 
 
-my $sth = $store->service_nreq_latencies_sth();
-$sth->execute('mail.google.com','0 seconds', "-300 seconds");
+my $sth = $store->service_nav_latencies_sth();
+$sth->execute('mail.google.com', '0 seconds', "-300 seconds");
 my $row = $sth->fetchrow_hashref;
+is($row->{count}, 1, 'mail.google.com nav latency count');
+is($row->{total}, 2038, 'total');
+is($row->{low}, undef, 'low');
+is($row->{high}, undef, 'high');
+cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
+cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
+$row = $sth->fetchrow_hashref;
+is($row, undef, 'last mail.google.com nav latency row');
+
+$sth = $store->service_nreq_latencies_sth();
+$sth->execute('mail.google.com','0 seconds', "-300 seconds");
+$row = $sth->fetchrow_hashref;
 is($row->{count}, 3, 'mail.google.com nreq count');
 is($row->{total}, 2100, 'total');
 is($row->{low}, 600, 'low');
@@ -102,6 +114,19 @@ cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
 cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
 $row = $sth->fetchrow_hashref;
 is($row, undef, 'last Mail nav latency row');
+
+
+$sth = $store->location_nav_latencies_sth();
+$sth->execute('0 seconds', "-300 seconds", '1.2.3.0');
+$row = $sth->fetchrow_hashref;
+is($row->{count}, 1, 'location 1.2.3.0 nav latency count');
+is($row->{total}, 2038, 'total');
+is($row->{low}, undef, 'low');
+is($row->{high}, undef, 'high');
+cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
+cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
+$row = $sth->fetchrow_hashref;
+is($row, undef, 'last location 1.2.3.0 nav latency row');
 
 
 $sth = $store->service_select_sth();
