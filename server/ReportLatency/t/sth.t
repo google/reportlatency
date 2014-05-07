@@ -20,7 +20,7 @@ use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
 use HTML::Tidy;
-use Test::More tests => 79;
+use Test::More tests => 92;
 
 BEGIN { use lib '..'; }
 
@@ -177,12 +177,25 @@ $row = $sth->fetchrow_hashref;
 is($row, undef, 'last total nreq latency row');
 
 
+$sth = $store->extension_version_sth();
+$sth->execute('-300 seconds', "0 seconds");
+for (my $i=0; $i<3; $i++) {
+  $row = $sth->fetchrow_hashref;
+  is($row->{measure}, undef, 'undef extension_version');
+  is($row->{amount}, 1, '1 extension_version');
+  cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
+  cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
+}
+$row = $sth->fetchrow_hashref;
+is($row, undef, 'last extension_version row');
+
+
 $sth = $store->user_agent_sth();
 $sth->execute('-300 seconds', "0 seconds");
 for (my $i=0; $i<3; $i++) {
   $row = $sth->fetchrow_hashref;
   is($row->{measure}, undef, 'undef user_agent');
-  is($row->{amount}, 1, '1 user_agent count');
+  is($row->{amount}, 1, '1 user_agent');
   cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
   cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
 }
