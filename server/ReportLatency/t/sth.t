@@ -76,7 +76,7 @@ ok($dbh->do(q{
 
 
 my $sth = $store->untagged_nav_latencies_sth();
-$sth->execute('0 seconds', "-300 seconds");
+$sth->execute('-300 seconds', "0 seconds");
 my $row = $sth->fetchrow_hashref;
 is($row->{count}, 1, 'total nav latency count');
 is($row->{total}, 2038, 'total');
@@ -95,7 +95,7 @@ ok($dbh->do(q{
 
 
 $sth = $store->service_nav_latencies_sth();
-$sth->execute('mail.google.com', '0 seconds', "-300 seconds");
+$sth->execute("-300 seconds", '0 seconds', 'mail.google.com');
 $row = $sth->fetchrow_hashref;
 is($row->{count}, 1, 'mail.google.com nav latency count');
 is($row->{total}, 2038, 'total');
@@ -108,7 +108,7 @@ is($row, undef, 'last mail.google.com nav latency row');
 
 
 $sth = $store->tag_nav_latencies_sth();
-$sth->execute('0 seconds', "-300 seconds", 'Mail');
+$sth->execute("-300 seconds", '0 seconds', 'Mail');
 $row = $sth->fetchrow_hashref;
 is($row->{count}, 1, 'Mail count');
 is($row->{total}, 2038, 'total');
@@ -121,7 +121,7 @@ is($row, undef, 'last Mail nav latency row');
 
 
 $sth = $store->location_nav_latencies_sth();
-$sth->execute('0 seconds', "-300 seconds", '1.2.3.0');
+$sth->execute("-300 seconds", '0 seconds', '1.2.3.0');
 $row = $sth->fetchrow_hashref;
 is($row->{count}, 1, 'location 1.2.3.0 nav latency count');
 is($row->{total}, 2038, 'total');
@@ -133,7 +133,7 @@ $row = $sth->fetchrow_hashref;
 is($row, undef, 'last location 1.2.3.0 nav latency row');
 
 $sth = $store->total_nav_latencies_sth();
-$sth->execute('0 seconds', "-300 seconds");
+$sth->execute("-300 seconds", '0 seconds');
 $row = $sth->fetchrow_hashref;
 is($row->{count}, 1, 'total nav latency count');
 is($row->{total}, 2038, 'total');
@@ -146,13 +146,13 @@ is($row, undef, 'last total nav latency row');
 
 
 $sth = $store->untagged_nav_latencies_sth();
-$sth->execute('0 seconds', "-300 seconds");
+$sth->execute("-300 seconds", '0 seconds');
 $row = $sth->fetchrow_hashref;
 is($row, undef, 'last untagged nav latency row');
 
 
 $sth = $store->service_nreq_latencies_sth();
-$sth->execute('mail.google.com','0 seconds', "-300 seconds");
+$sth->execute("-300 seconds", '0 seconds', 'mail.google.com');
 $row = $sth->fetchrow_hashref;
 is($row->{count}, 3, 'mail.google.com nreq count');
 is($row->{total}, 2100, 'total');
@@ -165,7 +165,7 @@ is($row, undef, 'last mail.google.com nreq latency row');
 
 
 $sth = $store->total_nreq_latencies_sth();
-$sth->execute('0 seconds', "-300 seconds");
+$sth->execute("-300 seconds", '0 seconds');
 $row = $sth->fetchrow_hashref;
 is($row->{count}, 3, 'total nreq count');
 is($row->{total}, 2100, 'total');

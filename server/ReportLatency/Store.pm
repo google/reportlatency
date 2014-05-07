@@ -318,10 +318,10 @@ sub service_nreq_latencies_sth {
       'nr.total AS total ' .
       'FROM navigation_request nr, upload u ' .
        "WHERE " .
+       "u.timestamp > datetime('now',?) AND " .
+       "u.timestamp <= datetime('now',?) AND " .
        'nr.service = ? AND ' .
        'nr.upload = u.id AND ' .
-       "u.timestamp <= datetime('now',?) AND " .
-       "u.timestamp > datetime('now',?) AND " .
        "nr.count IS NOT NULL AND nr.count != '' AND " .
        "nr.count>0;";
     $sth = $dbh->prepare($statement) or die $!;
@@ -345,8 +345,8 @@ sub tag_nav_latencies_sth {
       'FROM navigation n ' .
       'INNER JOIN upload u ON u.id=n.upload ' .
       'INNER JOIN tag ON n.service = tag.service ' .
-       "WHERE u.timestamp <= datetime('now',?) AND " .
-       "u.timestamp > datetime('now',?) AND " .
+       "WHERE u.timestamp >  datetime('now',?) AND " .
+       "u.timestamp <= datetime('now',?) AND " .
        'tag.tag = ? AND ' .
        "n.count IS NOT NULL AND n.count != '' AND " .
        "n.count>0;";
@@ -370,10 +370,10 @@ sub service_nav_latencies_sth {
       'n.total AS total ' .
       'FROM navigation n, upload u ' .
        "WHERE " .
+       "u.timestamp > datetime('now',?) AND " .
+       "u.timestamp <= datetime('now',?) AND " .
        'n.service = ? AND ' .
        'n.upload = u.id AND ' .
-       "u.timestamp <= datetime('now',?) AND " .
-       "u.timestamp > datetime('now',?) AND " .
        "n.count IS NOT NULL AND n.count != '' AND " .
        "n.count>0;";
     $sth = $dbh->prepare($statement) or die $!;
@@ -396,8 +396,8 @@ sub location_nav_latencies_sth {
       'n.total AS total ' .
       'FROM navigation n ' .
       'INNER JOIN upload u ON u.id=n.upload ' .
-       "WHERE u.timestamp <= datetime('now',?) AND " .
-       "u.timestamp > datetime('now',?) AND " .
+       "WHERE u.timestamp > datetime('now',?) AND " .
+       "u.timestamp <= datetime('now',?) AND " .
        'u.location = ? AND ' .
        "n.count IS NOT NULL AND n.count != '' AND " .
        "n.count>0;";
@@ -421,8 +421,8 @@ sub total_nav_latencies_sth {
       'n.total AS total ' .
       'FROM navigation n ' .
       'INNER JOIN upload u ON u.id=n.upload ' .
-       "WHERE u.timestamp <= datetime('now',?) AND " .
-       "u.timestamp > datetime('now',?) AND " .
+       "WHERE u.timestamp > datetime('now',?) AND " .
+       "u.timestamp <= datetime('now',?) AND " .
        "n.count IS NOT NULL AND n.count != '' AND " .
        "n.count>0;";
     $sth = $dbh->prepare($statement) or die $!;
@@ -445,8 +445,8 @@ sub total_nreq_latencies_sth {
       'nr.total AS total ' .
       'FROM navigation_request nr ' .
       'INNER JOIN upload u ON u.id=nr.upload ' .
-       "WHERE u.timestamp <= datetime('now',?) AND " .
-       "u.timestamp > datetime('now',?) AND " .
+       "WHERE u.timestamp > datetime('now',?) AND " .
+       "u.timestamp <= datetime('now',?) AND " .
        "nr.count IS NOT NULL AND nr.count != '' AND " .
        "nr.count>0;";
     $sth = $dbh->prepare($statement) or die $!;
@@ -470,8 +470,8 @@ sub untagged_nav_latencies_sth {
       'FROM navigation n ' .
       'INNER JOIN upload u ON u.id=n.upload ' .
       'LEFT OUTER JOIN tag t ON n.service=t.service ' .
-       "WHERE u.timestamp <= datetime('now',?) AND " .
-       "u.timestamp > datetime('now',?) AND " .
+       "WHERE u.timestamp > datetime('now',?) AND " .
+       "u.timestamp <= datetime('now',?) AND " .
        "t.tag IS NULL AND " .
        "n.count IS NOT NULL AND n.count != '' AND " .
        "n.count>0;";
@@ -509,7 +509,7 @@ sub tag_service_sth {
                   ' FROM report AS r ' .
 		  'INNER JOIN tag ' .
 		  'ON r.service = tag.service ' .
-                  'WHERE r.timestamp >= ? AND r.timestamp <= ? ' .
+                  'WHERE r.timestamp > ? AND r.timestamp <= ? ' .
 		  'AND tag.tag = ? ' .
                   'GROUP BY r.service ' .
 		  'ORDER BY r.service;')
@@ -527,7 +527,7 @@ sub untagged_service_sth {
                   ' FROM report AS r ' .
 		  'LEFT OUTER JOIN tag ' .
 		  'ON r.service = tag.service ' .
-                  'WHERE r.timestamp >= ? AND r.timestamp <= ? ' .
+                  'WHERE r.timestamp > ? AND r.timestamp <= ? ' .
 		  'AND tag.tag IS NULL ' .
                   'GROUP BY r.service ' .
 		  'ORDER BY r.service;')
@@ -635,7 +635,7 @@ sub summary_tag_sth {
                   ' FROM report r ' .
 		  'INNER JOIN tag t ' .
 		  'ON r.service = t.service ' .
-                  'WHERE timestamp >= ? AND timestamp <= ? ' .
+                  'WHERE timestamp > ? AND timestamp <= ? ' .
                   'GROUP BY t.tag ' .
 		  'ORDER BY t.tag;')
       or die "prepare failed";
@@ -652,7 +652,7 @@ sub summary_untagged_sth {
                   ' FROM report r ' .
 		  'LEFT OUTER JOIN tag t ' .
 		  'ON r.service = t.service ' .
-                  'WHERE timestamp >= ? AND timestamp <= ? ' .
+                  'WHERE timestamp > ? AND timestamp <= ? ' .
 		  'AND t.tag is null;')
       or die "prepare failed";
   return $sth;
@@ -666,7 +666,7 @@ sub summary_location_sth {
                   'count(distinct service) AS services,' .
 		  $self->common_aggregate_fields() .
                   ' FROM report ' .
-                  'WHERE timestamp >= ? AND timestamp <= ? ' .
+                  'WHERE timestamp > ? AND timestamp <= ? ' .
                   'GROUP BY location ' .
 		  'ORDER BY location;')
       or die "prepare failed";
@@ -698,7 +698,7 @@ sub location_service_sth {
                   'count(distinct name) AS dependencies,' .
 		  $self->common_aggregate_fields() .
                   ' FROM report ' .
-                  'WHERE timestamp >= ? AND timestamp <= ? ' .
+                  'WHERE timestamp > ? AND timestamp <= ? ' .
 		  'AND location = ? ' .
                   'GROUP BY service ' .
 		  'ORDER BY service;')
@@ -712,7 +712,7 @@ sub extension_version_summary_sth {
   my $sth =
     $dbh->prepare('SELECT version AS name,count(*) AS value' .
                   ' FROM upload AS u ' .
-                  'WHERE timestamp >= ? AND timestamp <= ? ' .
+                  'WHERE timestamp > ? AND timestamp <= ? ' .
                   'GROUP BY version ' .
 		  'ORDER BY version;')
       or die "prepare failed";
@@ -726,7 +726,7 @@ sub extension_version_sth {
     $dbh->prepare('SELECT strftime("%s",u.timestamp) AS timestamp,' .
 		  'version AS measure,1 AS amount' .
                   ' FROM upload AS u ' .
-                  "WHERE timestamp >= datetime('now',?) AND " .
+                  "WHERE timestamp > datetime('now',?) AND " .
 		  "timestamp <= datetime('now',?);")
       or die "prepare failed";
   return $sth;
@@ -738,7 +738,7 @@ sub user_agent_summary_sth {
   my $sth =
     $dbh->prepare('SELECT user_agent AS name,count(*) AS value' .
                   ' FROM upload ' .
-                  'WHERE timestamp >= ? AND timestamp <= ? ' .
+                  'WHERE timestamp > ? AND timestamp <= ? ' .
                   'GROUP BY user_agent ' .
 		  'ORDER BY user_agent;')
       or die "prepare failed";
@@ -752,7 +752,7 @@ sub user_agent_sth {
     $dbh->prepare('SELECT strftime("%s",u.timestamp) AS timestamp,' .
 		  'user_agent AS measure,1 AS amount' .
                   ' FROM upload AS u ' .
-                  "WHERE timestamp >= datetime('now',?) AND " .
+                  "WHERE timestamp > datetime('now',?) AND " .
 		  "timestamp <= datetime('now',?);")
       or die "prepare failed";
   return $sth;

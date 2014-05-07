@@ -84,7 +84,7 @@ sub total_graph {
   my ($dbh) = $store->{dbh};
   my $sth = $store->total_nav_latencies_sth();
 
-  my $latency_rc = $sth->execute('0 seconds', -$duration . " seconds");
+  my $latency_rc = $sth->execute(-$duration . " seconds", '0 seconds');
 
   my $spectrum = new ReportLatency::Spectrum( width => $width,
 					      height => $height,
@@ -103,7 +103,7 @@ sub total_graph {
 
   $sth = $store->total_nreq_latencies_sth();
 
-  $latency_rc = $sth->execute('0 seconds', -$duration . " seconds");
+  $latency_rc = $sth->execute(-$duration . " seconds", '0 seconds');
 
   $spectrum = new ReportLatency::Spectrum( width => $width,
 					   height => $height,
@@ -157,7 +157,7 @@ sub service_graph {
   my $dbh = $store->{dbh};
   my $sth = $store->service_nav_latencies_sth();
 
-  my $latency_rc = $sth->execute($name, '0 seconds', -$duration . " seconds");
+  my $latency_rc = $sth->execute(-$duration . " seconds", '0 seconds', $name);
   my $spectrum = new ReportLatency::Spectrum( width => $width,
 					      height => $height,
 					      duration => $duration,
@@ -194,7 +194,7 @@ sub location_graph {
 
   my $dbh = $store->{dbh};
   my $sth = $store->location_nav_latencies_sth();
-  my $latency_rc = $sth->execute('0 seconds', -$duration . " seconds", $name);
+  my $latency_rc = $sth->execute(-$duration . " seconds", '0 seconds', $name);
 
   my $spectrum = new ReportLatency::Spectrum( width => $width,
 					      height => $height,
@@ -344,7 +344,7 @@ sub tag_graph {
 
   my $dbh = $store->{dbh};
   my $sth = $store->tag_nav_latencies_sth;
-  my $latency_rc = $sth->execute('0 seconds', -$duration . " seconds", $name);
+  my $latency_rc = $sth->execute(-$duration . " seconds", '0 seconds', $name);
   my $spectrum = new ReportLatency::Spectrum( width => $width,
 					      height => $height,
 					      duration => $duration,
@@ -365,7 +365,7 @@ sub untagged_graph {
 
   my $dbh = $store->{dbh};
   my $sth = $store->untagged_nav_latencies_sth;
-  my $latency_rc = $sth->execute('0 seconds', -$duration . " seconds");
+  my $latency_rc = $sth->execute(-$duration . " seconds", '0 seconds');
   my $spectrum = new ReportLatency::Spectrum( width => $width,
 					      height => $height,
 					      duration => $duration,
