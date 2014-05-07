@@ -20,7 +20,7 @@ use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
 use HTML::Tidy;
-use Test::More tests => 58;
+use Test::More tests => 66;
 
 BEGIN { use lib '..'; }
 
@@ -73,14 +73,30 @@ ok($dbh->do(q{
   INSERT INTO update_request(upload,name,service,count,total)
     VALUES(3,'news.google.com','news.google.com',10,3330);
 }), 'INSERT news.google.com update_request');
+
+
+my $sth = $store->untagged_nav_latencies_sth();
+$sth->execute('0 seconds', "-300 seconds");
+my $row = $sth->fetchrow_hashref;
+is($row->{count}, 1, 'total nav latency count');
+is($row->{total}, 2038, 'total');
+is($row->{low}, undef, 'low');
+is($row->{high}, undef, 'high');
+cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
+cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
+$row = $sth->fetchrow_hashref;
+is($row, undef, 'last untagged nav latency row');
+
+
+
 ok($dbh->do(q{
   INSERT INTO tag(service,tag) VALUES('mail.google.com','Mail');
 }), 'INSERT Mail tag');
 
 
-my $sth = $store->service_nav_latencies_sth();
+$sth = $store->service_nav_latencies_sth();
 $sth->execute('mail.google.com', '0 seconds', "-300 seconds");
-my $row = $sth->fetchrow_hashref;
+$row = $sth->fetchrow_hashref;
 is($row->{count}, 1, 'mail.google.com nav latency count');
 is($row->{total}, 2038, 'total');
 is($row->{low}, undef, 'low');
@@ -127,6 +143,12 @@ cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
 cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
 $row = $sth->fetchrow_hashref;
 is($row, undef, 'last total nav latency row');
+
+
+$sth = $store->untagged_nav_latencies_sth();
+$sth->execute('0 seconds', "-300 seconds");
+$row = $sth->fetchrow_hashref;
+is($row, undef, 'last untagged nav latency row');
 
 
 $sth = $store->service_nreq_latencies_sth();
