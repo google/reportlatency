@@ -234,6 +234,32 @@ sub dual_column_style {
 EOF
 }
 
+sub image_banner {
+  my ($self,$nav_img,$nreq_img,$ureq_img) = @_;
+  return <<EOF
+<div id="nav_column">
+  <p>
+    <img src="$nav_img" width="100%" alt="navigation latency">
+    <br>
+    Navigation (Pageload) Latency
+  </p>
+</div>
+<div id="req_column">
+  <p>
+    <img src="$nreq_img" width="90%" alt="nav request latency">
+    <br>
+    Request latency during navigation
+  </p>
+  <p>
+    <img src="$ureq_img" width="90%" alt="update request latency">
+    <br>
+    Request latency after navigation
+  </p>
+</div>
+EOF
+}
+
+
 sub summary_html {
   my ($self) = @_;
   my $store = $self->{store};
@@ -262,6 +288,8 @@ sub summary_html {
   my $header_2 = $self->common_header_2();
   my $altstyle = $self->alternate_style();
   my $twostyle = $self->dual_column_style();
+  my $image_banner = $self->image_banner($summary_img_url,$nreq_img_url,
+					 $ureq_img_url);
 
   my $tag_header = <<EOF;
 <tr>
@@ -287,25 +315,7 @@ $twostyle
 <body>
 
 <h1> ReportLatency Summary </h1>
-<div id="nav_column">
-  <p>
-    <img src="$summary_img_url" width="90%" alt="navigation latency spectrum">
-    <br>
-    Navigation (Pageload) Latency
-  </p>
-</div>
-<div id="req_column">
-  <p>
-    <img src="$nreq_img_url" width="90%" alt="nav request latency spectrum">
-    Request latency during navigation
-  </p>
-  <p>
-    <img src="$ureq_img_url" width="90%" alt="update request latency spectrum">
-    <br>
-    Request latency after navigation
-  </p>
-</div>
-
+$image_banner
 
 <table class="alternate" summary="Latency report for all services by tag">
 $tag_header
