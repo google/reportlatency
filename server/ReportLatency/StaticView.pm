@@ -649,6 +649,17 @@ sub service_img_url {
   return 'navigation.png';
 }
 
+sub service_nreq_img_url {
+  my ($self,$service) = @_;
+  return 'nav_request.png';
+}
+
+sub service_ureq_img_url {
+  my ($self,$service) = @_;
+  return 'update_request.png';
+}
+
+
 sub service_not_found($$) {
   my ($self,$name) = @_;
 
@@ -682,11 +693,16 @@ sub service_found {
     return $self->service_not_found($service);
   }
 
-  my $service_img_url = $self->service_img_url($service);
+  my $nav_img_url = $self->service_img_url($service);
+  my $nreq_img_url = $self->service_nreq_img_url($service);
+  my $ureq_img_url = $self->service_ureq_img_url($service);
+  my $image_banner = $self->image_banner($nav_img_url,$nreq_img_url,
+					 $ureq_img_url);
 
   my $header_1 = $self->common_header_1();
   my $header_2 = $self->common_header_2();
   my $altstyle = $self->alternate_style();
+  my $twostyle = $self->dual_column_style();
 
   print $io <<EOF;
 <!DOCTYPE html>
@@ -694,16 +710,14 @@ sub service_found {
 <head>
   <style type="text/css">
 $altstyle
+$twostyle
   </style>
   <title> $meta->{'date'} $service Latency </title>
 </head>
 <body>
 
 <h1> $service $meta->{'date'} Latency Report </h1>
-
-<p align=center>
-<img src="$service_img_url" width="80%" alt="latency spectrum">
-</p>
+$image_banner
 
 <h2> All locations, each request name </h2>
 
