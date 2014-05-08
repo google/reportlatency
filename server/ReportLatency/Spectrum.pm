@@ -324,7 +324,7 @@ sub img() {
     $color[$i] = $img->colorResolve($i-128,255,$i-128);
   }
 
-  my $avg_color = $img->colorResolve(128,0,0);
+  my $avg_color = $img->colorResolve(191,0,0);
 
   my ($last_x,$last_y);
 
