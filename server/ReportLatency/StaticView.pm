@@ -93,6 +93,16 @@ sub location_img_url {
   return "navigation.png";
 }
 
+sub location_nreq_img_url {
+  my ($self,$name) = @_;
+  return "nav_request.png";
+}
+
+sub location_ureq_img_url {
+  my ($self,$name) = @_;
+  return "update_request.png";
+}
+
 sub location_url_from_tag {
   my ($self,$name) = @_;
   return "../../locations/" . $self->location_url($name);
@@ -546,7 +556,11 @@ sub location_html {
   my $meta = $meta_sth->fetchrow_hashref;
   $meta_sth->finish;
 
-  my $location_img_url = $self->location_img_url($location);
+  my $nav_img_url = $self->location_img_url($location);
+  my $nreq_img_url = $self->location_nreq_img_url($location);
+  my $ureq_img_url = $self->location_ureq_img_url($location);
+  my $image_banner = $self->image_banner($nav_img_url,$nreq_img_url,
+					 $ureq_img_url);
 
   my $service_header = <<EOF;
 EOF
@@ -554,6 +568,7 @@ EOF
   my $header_1 = $self->common_header_1();
   my $header_2 = $self->common_header_2();
   my $altstyle = $self->alternate_style();
+  my $twostyle = $self->dual_column_style();
 
   my $title = 'Location ' . ($location||'');
   print $io <<EOF;
@@ -563,16 +578,14 @@ EOF
   <title>Latency Summary For $title</title>
   <style type="text/css">
 $altstyle
+$twostyle
   </style>
 </head>
 <body>
 
 <h1> Latency Summary For $title </h1>
 
-<p align=center>
-<img src="$location_img_url" width="80%"
- alt="latency spectrum">
-</p>
+$image_banner
 
 <table class="alternate" summary="Latency report for all services at $title">
 <tr>
