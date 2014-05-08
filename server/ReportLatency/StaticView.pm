@@ -450,8 +450,12 @@ sub untagged_html {
   my $service_header = <<EOF;
 EOF
 
-  my $untagged_img_url = $self->untagged_img_url;
+  my $nav_img_url = $self->untagged_img_url;
+  my $nreq_img_url = $self->tag_nreq_img_url('summary');
+  my $ureq_img_url = $self->tag_ureq_img_url('summary');
 
+  my $image_banner = $self->image_banner($nav_img_url,$nreq_img_url,
+					 $ureq_img_url);
   my $header_1 = $self->common_header_1();
   my $header_2 = $self->common_header_2();
   my $altstyle = $self->alternate_style();
@@ -468,11 +472,7 @@ $altstyle
 <body>
 
 <h1> Latency Summary For Untagged Services </h1>
-
-<p align=center>
-<img src="$untagged_img_url" width="80%"
- alt="latency spectrum">
-</p>
+$image_banner
 
 <table class="alternate" summary="Latency report for untagged services">
 <tr>

@@ -36,7 +36,10 @@ my $duration = $days * 86400;
 my $interval = $hours * 3600;
 my $border=24;
 
-my $latency_ceiling = 30000; # 30s max for all icons
+my $nav_ceiling = 30000; # 30s max for navigation images
+my $nreq_ceiling = 30000; # 30s max for navigation request images
+my $ureq_ceiling = 300000; # 300s max for update request images
+my $req_floor = 30; # 30ms min for request images
 
 sub user_agents {
   my ($store,$options) = @_;
@@ -89,7 +92,7 @@ sub total_graph {
   my $spectrum = new ReportLatency::Spectrum( width => $width,
 					      height => $height,
 					      duration => $duration,
-					      ceiling => $latency_ceiling,
+					      ceiling => $nav_ceiling,
 					      border => 24 );
   
   while (my $row = $sth->fetchrow_hashref) {
@@ -108,7 +111,8 @@ sub total_graph {
   $spectrum = new ReportLatency::Spectrum( width => $width,
 					   height => $height,
 					   duration => $duration,
-					   ceiling => $latency_ceiling,
+					   ceiling => $nreq_ceiling,
+					   floor   => $req_floor,
 					   border => 24 );
 
   while (my $row = $sth->fetchrow_hashref) {
@@ -127,7 +131,8 @@ sub total_graph {
   $spectrum = new ReportLatency::Spectrum( width => $width,
 					   height => $height,
 					   duration => $duration,
-					   ceiling => $latency_ceiling,
+					   ceiling => $ureq_ceiling,
+					   floor   => $req_floor,
 					   border => 24 );
 
   while (my $row = $sth->fetchrow_hashref) {
@@ -179,7 +184,7 @@ sub service_graph {
   my $spectrum = new ReportLatency::Spectrum( width => $width,
 					      height => $height,
 					      duration => $duration,
-					      ceiling => $latency_ceiling,
+					      ceiling => $nav_ceiling,
 					      border => 24 );
   
   while (my $row = $sth->fetchrow_hashref) {
@@ -195,7 +200,8 @@ sub service_graph {
   $spectrum = new ReportLatency::Spectrum( width => $width,
 					   height => $height,
 					   duration => $duration,
-					   ceiling => $latency_ceiling,
+					   ceiling => $nreq_ceiling,
+					   floor   => $req_floor,
 					   border => 24 );
 
   while (my $row = $sth->fetchrow_hashref) {
@@ -212,7 +218,8 @@ sub service_graph {
   $spectrum = new ReportLatency::Spectrum( width => $width,
 					   height => $height,
 					   duration => $duration,
-					   ceiling => $latency_ceiling,
+					   ceiling => $ureq_ceiling,
+					   floor   => $req_floor,
 					   border => 24 );
 
   while (my $row = $sth->fetchrow_hashref) {
@@ -234,7 +241,7 @@ sub location_graph {
   my $spectrum = new ReportLatency::Spectrum( width => $width,
 					      height => $height,
 					      duration => $duration,
-					      ceiling => $latency_ceiling,
+					      ceiling => $nav_ceiling,
 					      border => 24 );
   
   while (my $row = $sth->fetchrow_hashref) {
@@ -383,7 +390,7 @@ sub tag_graph {
   my $spectrum = new ReportLatency::Spectrum( width => $width,
 					      height => $height,
 					      duration => $duration,
-					      ceiling => $latency_ceiling,
+					      ceiling => $nav_ceiling,
 					      border => 24 );
   
   while (my $row = $sth->fetchrow_hashref) {
@@ -404,7 +411,7 @@ sub untagged_graph {
   my $spectrum = new ReportLatency::Spectrum( width => $width,
 					      height => $height,
 					      duration => $duration,
-					      ceiling => $latency_ceiling,
+					      ceiling => $nav_ceiling,
 					      border => 24 );
   while (my $row = $sth->fetchrow_hashref) {
     $spectrum->add_row($row);
