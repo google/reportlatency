@@ -461,14 +461,15 @@ sub untagged_html {
 EOF
 
   my $nav_img_url = $self->untagged_img_url;
-  my $nreq_img_url = $self->tag_nreq_img_url('summary');
-  my $ureq_img_url = $self->tag_ureq_img_url('summary');
+  my $nreq_img_url = $self->tag_nreq_img_url('untagged');
+  my $ureq_img_url = $self->tag_ureq_img_url('untagged');
 
   my $image_banner = $self->image_banner($nav_img_url,$nreq_img_url,
 					 $ureq_img_url);
   my $header_1 = $self->common_header_1();
   my $header_2 = $self->common_header_2();
   my $altstyle = $self->alternate_style();
+  my $twostyle = $self->dual_column_style();
 
   print $io <<EOF;
 <!DOCTYPE html>
@@ -477,6 +478,7 @@ EOF
   <title>Latency report for untagged services</title>
   <style type="text/css">
 $altstyle
+$twostyle
   </style>
 </head>
 <body>
