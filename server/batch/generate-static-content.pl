@@ -32,6 +32,12 @@ my $hours=0.5;
 my $width=$days*24/$hours;
 my $height=int($width/2);
 
+my $navwidth = $width;
+my $navheight = $height;
+
+my $reqwidth = 3*$width/4;
+my $reqheight = 3*$height/4;
+
 my $duration = $days * 86400;
 my $interval = $hours * 3600;
 my $border=24;
@@ -47,8 +53,8 @@ sub user_agents {
 
   my $rc = $sth->execute("-$duration seconds", '0 seconds');
 
-  my $graph = new ReportLatency::StackedGraph( width => $width/2,
-					      height => $height/2,
+  my $graph = new ReportLatency::StackedGraph( width => $reqwidth,
+					      height => $reqheight,
 					      duration => $duration,
 					      border => 24 );
   
@@ -67,8 +73,8 @@ sub extensions {
 
   my $rc = $sth->execute("-$duration seconds", '0 seconds');
 
-  my $graph = new ReportLatency::StackedGraph( width => $width/2,
-					      height => $height/2,
+  my $graph = new ReportLatency::StackedGraph( width => $reqwidth,
+					      height => $reqheight,
 					      duration => $duration,
 					      border => 24 );
   
@@ -89,8 +95,8 @@ sub total_graph {
 
   my $latency_rc = $sth->execute(-$duration . " seconds", '0 seconds');
 
-  my $spectrum = new ReportLatency::Spectrum( width => $width,
-					      height => $height,
+  my $spectrum = new ReportLatency::Spectrum( width => $navwidth,
+					      height => $navheight,
 					      duration => $duration,
 					      ceiling => $nav_ceiling,
 					      border => 24 );
@@ -108,8 +114,8 @@ sub total_graph {
 
   $latency_rc = $sth->execute(-$duration . " seconds", '0 seconds');
 
-  $spectrum = new ReportLatency::Spectrum( width => $width,
-					   height => $height,
+  $spectrum = new ReportLatency::Spectrum( width => $reqwidth,
+					   height => $reqheight,
 					   duration => $duration,
 					   ceiling => $nreq_ceiling,
 					   floor   => $req_floor,
@@ -128,8 +134,8 @@ sub total_graph {
 
   $latency_rc = $sth->execute(-$duration . " seconds", '0 seconds');
 
-  $spectrum = new ReportLatency::Spectrum( width => $width,
-					   height => $height,
+  $spectrum = new ReportLatency::Spectrum( width => $reqwidth,
+					   height => $reqheight,
 					   duration => $duration,
 					   ceiling => $ureq_ceiling,
 					   floor   => $req_floor,
@@ -181,8 +187,8 @@ sub service_graph {
   my $sth = $store->service_nav_latencies_sth();
 
   my $latency_rc = $sth->execute(-$duration . " seconds", '0 seconds', $name);
-  my $spectrum = new ReportLatency::Spectrum( width => $width,
-					      height => $height,
+  my $spectrum = new ReportLatency::Spectrum( width => $navwidth,
+					      height => $navheight,
 					      duration => $duration,
 					      ceiling => $nav_ceiling,
 					      border => 24 );
@@ -198,8 +204,8 @@ sub service_graph {
   $sth = $store->service_nreq_latencies_sth();
   $latency_rc = $sth->execute(-$duration . " seconds", '0 seconds', $name);
 
-  $spectrum = new ReportLatency::Spectrum( width => $width,
-					   height => $height,
+  $spectrum = new ReportLatency::Spectrum( width => $reqwidth,
+					   height => $reqheight,
 					   duration => $duration,
 					   ceiling => $nreq_ceiling,
 					   floor   => $req_floor,
@@ -217,8 +223,8 @@ sub service_graph {
   $sth = $store->service_ureq_latencies_sth();
   $latency_rc = $sth->execute(-$duration . " seconds", '0 seconds', $name);
 
-  $spectrum = new ReportLatency::Spectrum( width => $width,
-					   height => $height,
+  $spectrum = new ReportLatency::Spectrum( width => $reqwidth,
+					   height => $reqheight,
 					   duration => $duration,
 					   ceiling => $ureq_ceiling,
 					   floor   => $req_floor,
@@ -240,8 +246,8 @@ sub location_graph {
   my $sth = $store->location_nav_latencies_sth();
   my $latency_rc = $sth->execute(-$duration . " seconds", '0 seconds', $name);
 
-  my $spectrum = new ReportLatency::Spectrum( width => $width,
-					      height => $height,
+  my $spectrum = new ReportLatency::Spectrum( width => $navwidth,
+					      height => $navheight,
 					      duration => $duration,
 					      ceiling => $nav_ceiling,
 					      border => 24 );
@@ -258,8 +264,8 @@ sub location_graph {
   $sth = $store->location_nreq_latencies_sth();
   $latency_rc = $sth->execute(-$duration . " seconds", '0 seconds', $name);
 
-  $spectrum = new ReportLatency::Spectrum( width => $width,
-					   height => $height,
+  $spectrum = new ReportLatency::Spectrum( width => $reqwidth,
+					   height => $reqheight,
 					   duration => $duration,
 					   ceiling => $nreq_ceiling,
 					   floor   => $req_floor,
@@ -277,8 +283,8 @@ sub location_graph {
   $sth = $store->location_ureq_latencies_sth();
   $latency_rc = $sth->execute(-$duration . " seconds", '0 seconds', $name);
 
-  $spectrum = new ReportLatency::Spectrum( width => $width,
-					   height => $height,
+  $spectrum = new ReportLatency::Spectrum( width => $reqwidth,
+					   height => $reqheight,
 					   duration => $duration,
 					   ceiling => $ureq_ceiling,
 					   floor   => $req_floor,
@@ -427,8 +433,8 @@ sub tag_graph {
   my $dbh = $store->{dbh};
   my $sth = $store->tag_nav_latencies_sth;
   my $latency_rc = $sth->execute(-$duration . " seconds", '0 seconds', $name);
-  my $spectrum = new ReportLatency::Spectrum( width => $width,
-					      height => $height,
+  my $spectrum = new ReportLatency::Spectrum( width => $navwidth,
+					      height => $navheight,
 					      duration => $duration,
 					      ceiling => $nav_ceiling,
 					      border => 24 );
@@ -448,8 +454,8 @@ sub untagged_graph {
   my $dbh = $store->{dbh};
   my $sth = $store->untagged_nav_latencies_sth;
   my $latency_rc = $sth->execute(-$duration . " seconds", '0 seconds');
-  my $spectrum = new ReportLatency::Spectrum( width => $width,
-					      height => $height,
+  my $spectrum = new ReportLatency::Spectrum( width => $navwidth,
+					      height => $navheight,
 					      duration => $duration,
 					      ceiling => $nav_ceiling,
 					      border => 24 );
