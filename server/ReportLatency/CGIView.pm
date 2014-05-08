@@ -35,6 +35,16 @@ sub tag_img_url {
   return "../../reportlatency/tags/$tag/navigation.png";
 }
 
+sub tag_nreq_img_url {
+  my ($self,$tag) = @_;
+  return "../../reportlatency/tags/$tag/nav_request.png";
+}
+
+sub tag_ureq_img_url {
+  my ($self,$tag) = @_;
+  return "../../reportlatency/tags/$tag/update_request.png";
+}
+
 sub service_url {
   my ($self,$name) = @_;
   return "service?service=$name";

@@ -39,6 +39,16 @@ sub tag_img_url {
   return "navigation.png";
 }
 
+sub tag_nreq_img_url {
+  my ($self,$tag) = @_;
+  return "nav_request.png";
+}
+
+sub tag_ureq_img_url {
+  my ($self,$tag) = @_;
+  return "update_request.png";
+}
+
 sub useragents_url {
   my ($self,$tag) = @_;
   return "useragents.png";
@@ -205,10 +215,6 @@ EOF
 sub dual_column_style {
   my ($self) = @_;
   return <<EOF;
-#dual_column {
-   width:100%;
-   margin:0 auto;
-}
 #left_column {
    float:left;
    width:50%;
@@ -216,6 +222,14 @@ sub dual_column_style {
 #right_column {
    float:left;
    width:50%;
+}
+#nav_column {
+   float:left;
+   width:66%;
+}
+#req_column {
+   float:right;
+   width:33%;
 }
 EOF
 }
@@ -232,6 +246,8 @@ sub summary_html {
   my $user_agent_sth = $store->user_agent_summary_sth;
 
   my $summary_img_url = $self->tag_img_url('summary');
+  my $nreq_img_url = $self->tag_nreq_img_url('summary');
+  my $ureq_img_url = $self->tag_ureq_img_url('summary');
   my $useragents_url = $self->useragents_url('summary');
   my $extensions_url = $self->extensions_url('summary');
 
@@ -271,10 +287,25 @@ $twostyle
 <body>
 
 <h1> ReportLatency Summary </h1>
-<p align=center>
-<img src="$summary_img_url" width="80%"
- alt="latency spectrum">
-</p>
+<div id="nav_column">
+  <p>
+    <img src="$summary_img_url" width="90%" alt="navigation latency spectrum">
+    <br>
+    Navigation (Pageload) Latency
+  </p>
+</div>
+<div id="req_column">
+  <p>
+    <img src="$nreq_img_url" width="90%" alt="nav request latency spectrum">
+    Request latency during navigation
+  </p>
+  <p>
+    <img src="$ureq_img_url" width="90%" alt="update request latency spectrum">
+    <br>
+    Request latency after navigation
+  </p>
+</div>
+
 
 <table class="alternate" summary="Latency report for all services by tag">
 $tag_header
