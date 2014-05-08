@@ -20,7 +20,7 @@ use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
 use HTML::Tidy;
-use Test::More tests => 123;
+use Test::More tests => 137;
 
 BEGIN { use lib '..'; }
 
@@ -87,12 +87,36 @@ cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
 $row = $sth->fetchrow_hashref;
 is($row, undef, 'last untagged nav latency row');
 
+$sth = $store->untagged_nreq_latencies_sth();
+$sth->execute('-300 seconds', "0 seconds");
+$row = $sth->fetchrow_hashref;
+is($row->{count}, 3, 'total nreq latency count');
+is($row->{total}, 2100, 'total');
+is($row->{low}, 600, 'low');
+is($row->{high}, 800, 'high');
+cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
+cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
+$row = $sth->fetchrow_hashref;
+is($row, undef, 'last untagged nreq latency row');
+
 
 
 ok($dbh->do(q{
   INSERT INTO tag(service,tag) VALUES('mail.google.com','Mail');
 }), 'INSERT Mail tag');
 
+
+$sth = $store->untagged_ureq_latencies_sth();
+$sth->execute('-300 seconds', "0 seconds");
+$row = $sth->fetchrow_hashref;
+is($row->{count}, 10, 'untagged ureq latency count');
+is($row->{total}, 3330, 'total');
+is($row->{low}, undef, 'low');
+is($row->{high}, undef, 'high');
+cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
+cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
+$row = $sth->fetchrow_hashref;
+is($row, undef, 'last untagged ureq latency row');
 
 $sth = $store->service_nav_latencies_sth();
 $sth->execute("-300 seconds", '0 seconds', 'mail.google.com');

@@ -466,6 +466,46 @@ sub untagged_graph {
   my $png = new ReportLatency::AtomicFile("tags/untagged/navigation.png");
   print $png $spectrum->png();
   close($png);
+
+
+  $sth = $store->untagged_nreq_latencies_sth();
+
+  $latency_rc = $sth->execute(-$duration . " seconds", '0 seconds');
+
+  $spectrum = new ReportLatency::Spectrum( width => $reqwidth,
+					   height => $reqheight,
+					   duration => $duration,
+					   ceiling => $nreq_ceiling,
+					   floor   => $req_floor,
+					   border => 24 );
+
+  while (my $row = $sth->fetchrow_hashref) {
+    $spectrum->add_row($row);
+  }
+
+  $png = new ReportLatency::AtomicFile("tags/untagged/nav_request.png");
+  print $png $spectrum->png();
+  close($png);
+
+
+  $sth = $store->untagged_ureq_latencies_sth();
+
+  $latency_rc = $sth->execute(-$duration . " seconds", '0 seconds');
+
+  $spectrum = new ReportLatency::Spectrum( width => $reqwidth,
+					   height => $reqheight,
+					   duration => $duration,
+					   ceiling => $ureq_ceiling,
+					   floor   => $req_floor,
+					   border => 24 );
+
+  while (my $row = $sth->fetchrow_hashref) {
+    $spectrum->add_row($row);
+  }
+
+  $png = new ReportLatency::AtomicFile("tags/untagged/update_request.png");
+  print $png $spectrum->png();
+  close($png);
 }
 
 
