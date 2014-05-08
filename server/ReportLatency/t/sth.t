@@ -20,7 +20,7 @@ use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
 use HTML::Tidy;
-use Test::More tests => 106;
+use Test::More tests => 123;
 
 BEGIN { use lib '..'; }
 
@@ -192,6 +192,40 @@ is($row, undef, 'last mail.google.com ureq latency row');
 {
   $sth = $store->total_ureq_latencies_sth();
   $sth->execute("-300 seconds", '0 seconds');
+  my ($count,$total,$rows);
+  while (my $row = $sth->fetchrow_hashref) {
+    $count += $row->{count};
+    $total += $row->{total};
+    $rows++;
+    cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
+    cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
+  }
+  is($rows, 2, '2 total ureq latency rows');
+  is($count, 20, '20 total ureq count');
+  is($total, 2220+3330, '5550 ms total ureq latency');
+}
+
+$sth = $store->location_nreq_latencies_sth();
+$sth->execute("-300 seconds", '0 seconds', '3.2.1.0');
+is($sth->fetchrow_hashref, undef, 'no nreq for 3.2.1.0 location');
+$sth->execute("-300 seconds", '0 seconds', '1.2.3.0');
+$row = $sth->fetchrow_hashref;
+is($row->{count}, 3, 'location nreq count');
+is($row->{total}, 2100, 'total');
+is($row->{low}, 600, 'low');
+is($row->{high}, 800, 'high');
+cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
+cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
+$row = $sth->fetchrow_hashref;
+is($row, undef, 'last location nreq latency row');
+
+
+{
+  $sth = $store->location_ureq_latencies_sth();
+  $sth->execute("-300 seconds", '0 seconds', '3.2.1.0');
+  is($sth->fetchrow_hashref, undef, 'nothing for 3.2.1.0 location');
+  ok($sth->finish, 'finish empty location ureq latencies');
+  $sth->execute("-300 seconds", '0 seconds', '1.2.3.0');
   my ($count,$total,$rows);
   while (my $row = $sth->fetchrow_hashref) {
     $count += $row->{count};

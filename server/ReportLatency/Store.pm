@@ -420,15 +420,65 @@ sub location_nav_latencies_sth {
       'n.high AS high,' .
       'n.low AS low,' .
       'n.total AS total ' .
-      'FROM navigation n ' .
-      'INNER JOIN upload u ON u.id=n.upload ' .
+      'FROM upload u, navigation n ' .
        "WHERE u.timestamp > datetime('now',?) AND " .
        "u.timestamp <= datetime('now',?) AND " .
        'u.location = ? AND ' .
+       'u.id=n.upload AND ' .
        "n.count IS NOT NULL AND n.count != '' AND " .
        "n.count>0;";
     $sth = $dbh->prepare($statement) or die $!;
     $self->{location_nav_latencies_sth} = $sth;
+  }
+
+  return $sth;
+}
+
+sub location_nreq_latencies_sth {
+  my ($self) = @_;
+
+  my $sth = $self->{location_nreq_latencies_sth};
+  if (! defined $sth) {
+    my $dbh = $self->{dbh};
+    my $statement='SELECT strftime("%s",u.timestamp) AS timestamp,' .
+      'nr.count AS count,' .
+      'nr.high AS high,' .
+      'nr.low AS low,' .
+      'nr.total AS total ' .
+      'FROM upload u, navigation_request nr ' .
+       "WHERE u.timestamp > datetime('now',?) AND " .
+       "u.timestamp <= datetime('now',?) AND " .
+       'u.location = ? AND ' .
+       'u.id=nr.upload AND ' .
+       "nr.count IS NOT NULL AND nr.count != '' AND " .
+       "nr.count>0;";
+    $sth = $dbh->prepare($statement) or die $!;
+    $self->{location_nreq_latencies_sth} = $sth;
+  }
+
+  return $sth;
+}
+
+sub location_ureq_latencies_sth {
+  my ($self) = @_;
+
+  my $sth = $self->{location_ureq_latencies_sth};
+  if (! defined $sth) {
+    my $dbh = $self->{dbh};
+    my $statement='SELECT strftime("%s",u.timestamp) AS timestamp,' .
+      'ur.count AS count,' .
+      'ur.high AS high,' .
+      'ur.low AS low,' .
+      'ur.total AS total ' .
+      'FROM upload u, update_request ur ' .
+       "WHERE u.timestamp > datetime('now',?) AND " .
+       "u.timestamp <= datetime('now',?) AND " .
+       'u.location = ? AND ' .
+       'u.id=ur.upload AND ' .
+       "ur.count IS NOT NULL AND ur.count != '' AND " .
+       "ur.count>0;";
+    $sth = $dbh->prepare($statement) or die $!;
+    $self->{location_ureq_latencies_sth} = $sth;
   }
 
   return $sth;

@@ -196,6 +196,7 @@ sub service_graph {
   close($png);
 
   $sth = $store->service_nreq_latencies_sth();
+  $latency_rc = $sth->execute(-$duration . " seconds", '0 seconds', $name);
 
   $spectrum = new ReportLatency::Spectrum( width => $width,
 					   height => $height,
@@ -214,6 +215,7 @@ sub service_graph {
 
 
   $sth = $store->service_ureq_latencies_sth();
+  $latency_rc = $sth->execute(-$duration . " seconds", '0 seconds', $name);
 
   $spectrum = new ReportLatency::Spectrum( width => $width,
 					   height => $height,
@@ -249,6 +251,44 @@ sub location_graph {
   }
 
   my $png = new ReportLatency::AtomicFile("locations/$name/navigation.png");
+  print $png $spectrum->png();
+  close($png);
+
+
+  $sth = $store->location_nreq_latencies_sth();
+  $latency_rc = $sth->execute(-$duration . " seconds", '0 seconds', $name);
+
+  $spectrum = new ReportLatency::Spectrum( width => $width,
+					   height => $height,
+					   duration => $duration,
+					   ceiling => $nreq_ceiling,
+					   floor   => $req_floor,
+					   border => 24 );
+
+  while (my $row = $sth->fetchrow_hashref) {
+    $spectrum->add_row($row);
+  }
+
+  $png = new ReportLatency::AtomicFile("locations/$name/nav_request.png");
+  print $png $spectrum->png();
+  close($png);
+
+
+  $sth = $store->location_ureq_latencies_sth();
+  $latency_rc = $sth->execute(-$duration . " seconds", '0 seconds', $name);
+
+  $spectrum = new ReportLatency::Spectrum( width => $width,
+					   height => $height,
+					   duration => $duration,
+					   ceiling => $ureq_ceiling,
+					   floor   => $req_floor,
+					   border => 24 );
+
+  while (my $row = $sth->fetchrow_hashref) {
+    $spectrum->add_row($row);
+  }
+
+  $png = new ReportLatency::AtomicFile("locations/$name/update_request.png");
   print $png $spectrum->png();
   close($png);
 }

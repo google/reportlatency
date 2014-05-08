@@ -18,7 +18,7 @@
 
 use strict;
 use DBI;
-use Test::More tests => 34;
+use Test::More tests => 36;
 use File::Temp qw(tempfile tempdir);
 
 $ENV{'PATH'} = '/usr/bin';
@@ -80,10 +80,10 @@ unlink($dbfile);
 rmdir("$dir/data");
 ok(unlink("$dir/locations/office.google.com./navigation.png"),
    "unlink location png");
-#ok(unlink("$dir/locations/office.google.com./update_request.png"),
-#   "rmdir locations/office.google.com./update_request.png");
-#ok(unlink("$dir/locations/office.google.com./nav_request.png"),
-#   "rmdir locations/office.google.com./nav_request.png");
+ok(unlink("$dir/locations/office.google.com./update_request.png"),
+   "rm locations/office.google.com./update_request.png");
+ok(unlink("$dir/locations/office.google.com./nav_request.png"),
+   "rm locations/office.google.com./nav_request.png");
 ok(unlink("$dir/locations/office.google.com./index.html"),
    "unlink location html");
 ok(rmdir("$dir/locations/office.google.com."),"rmdir office.google.com.");
