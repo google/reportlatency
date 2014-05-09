@@ -44,8 +44,8 @@ my $border=24;
 
 my $nav_ceiling = 30000; # 30s max for navigation images
 my $nreq_ceiling = 30000; # 30s max for navigation request images
-my $ureq_ceiling = 300000; # 300s max for update request images
-my $req_floor = 30; # 30ms min for request images
+my $ureq_ceiling = 500000; # 300s max for update request images
+my $req_floor = 10; # 30ms min for request images
 
 sub user_agents {
   my ($store,$options) = @_;
