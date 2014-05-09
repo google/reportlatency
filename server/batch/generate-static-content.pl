@@ -47,116 +47,6 @@ my $nreq_ceiling = 30000; # 30s max for navigation request images
 my $ureq_ceiling = 500000; # 300s max for update request images
 my $req_floor = 10; # 30ms min for request images
 
-sub user_agents {
-  my ($store,$options) = @_;
-  my $sth = $store->user_agent_sth();
-
-  my $rc = $sth->execute("-$duration seconds", '0 seconds');
-
-  my $graph = new ReportLatency::StackedGraph( width => $reqwidth,
-					      height => $reqheight,
-					      duration => $duration,
-					      border => 24 );
-  
-  while (my $row = $sth->fetchrow_hashref) {
-    $graph->add_row($row);
-  }
-
-  my $png = new ReportLatency::AtomicFile("tags/summary/useragents.png");
-  print $png $graph->img()->png();
-  close($png);
-}
-
-sub extensions {
-  my ($store,$options) = @_;
-  my $sth = $store->extension_version_sth();
-
-  my $rc = $sth->execute("-$duration seconds", '0 seconds');
-
-  my $graph = new ReportLatency::StackedGraph( width => $reqwidth,
-					      height => $reqheight,
-					      duration => $duration,
-					      border => 24 );
-  
-  while (my $row = $sth->fetchrow_hashref) {
-    $graph->add_row($row);
-  }
-
-  my $png = new ReportLatency::AtomicFile("tags/summary/extensions.png");
-  print $png $graph->img()->png();
-  close($png);
-}
-
-sub total_graph {
-  my ($store,$options) = @_;
-
-  my ($dbh) = $store->{dbh};
-  my $sth = $store->total_nav_latencies_sth();
-
-  my $latency_rc = $sth->execute(-$duration . " seconds", '0 seconds');
-
-  my $spectrum = new ReportLatency::Spectrum( width => $navwidth,
-					      height => $navheight,
-					      duration => $duration,
-					      ceiling => $nav_ceiling,
-					      border => 24 );
-  
-  while (my $row = $sth->fetchrow_hashref) {
-    $spectrum->add_row($row);
-  }
-
-  my $png = new ReportLatency::AtomicFile("tags/summary/navigation.png");
-  print $png $spectrum->png();
-  close($png);
-
-
-  $sth = $store->total_nreq_latencies_sth();
-
-  $latency_rc = $sth->execute(-$duration . " seconds", '0 seconds');
-
-  $spectrum = new ReportLatency::Spectrum( width => $reqwidth,
-					   height => $reqheight,
-					   duration => $duration,
-					   ceiling => $nreq_ceiling,
-					   floor   => $req_floor,
-					   border => 24 );
-
-  while (my $row = $sth->fetchrow_hashref) {
-    $spectrum->add_row($row);
-  }
-
-  $png = new ReportLatency::AtomicFile("tags/summary/nav_request.png");
-  print $png $spectrum->png();
-  close($png);
-
-
-  $sth = $store->total_ureq_latencies_sth();
-
-  $latency_rc = $sth->execute(-$duration . " seconds", '0 seconds');
-
-  $spectrum = new ReportLatency::Spectrum( width => $reqwidth,
-					   height => $reqheight,
-					   duration => $duration,
-					   ceiling => $ureq_ceiling,
-					   floor   => $req_floor,
-					   border => 24 );
-
-  while (my $row = $sth->fetchrow_hashref) {
-    $spectrum->add_row($row);
-  }
-
-  $png = new ReportLatency::AtomicFile("tags/summary/update_request.png");
-  print $png $spectrum->png();
-  close($png);
-}
-
-sub total_report {
-  my ($view,$options) = @_;
-  my $html = new ReportLatency::AtomicFile("tags/summary/index.html");
-  print $html $view->summary_html();
-  close($html);
-}
-
 sub service_report {
   my ($view,$name,$options) = @_;
 
@@ -561,12 +451,6 @@ sub main() {
   $dbh->begin_work() || die "Unable to open transaction";
   my $store = new ReportLatency::Store( dbh => $dbh );
   my $view = new ReportLatency::StaticView($store);
-
-  print "total\n";
-  total_graph($store,\%options);
-  total_report($view,\%options);
-  user_agents($store);
-  extensions($store);
 
   print "untagged\n";
   untagged_graph($store,\%options);

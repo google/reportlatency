@@ -18,7 +18,7 @@
 
 use strict;
 use DBI;
-use Test::More tests => 40;
+use Test::More tests => 32;
 use File::Temp qw(tempfile tempdir);
 
 $ENV{'PATH'} = '/usr/bin';
@@ -70,11 +70,6 @@ chdir($dir);
 
 main();
 
-open(my $id,"-|","identify", "$dir/tags/summary/navigation.png") or die $!;
-my $line = $id->getline;
-like($line,
-     qr/navigation\.png PNG \d+x\d+/,
-     'PNG');
 
 unlink($dbfile);
 rmdir("$dir/data");
@@ -106,15 +101,6 @@ ok(unlink("$dir/services/slow/index.html"),"unlink slow/index.html");
 ok(rmdir("$dir/services/service"),"unlink service/");
 ok(rmdir("$dir/services/slow"),"unlink slow/");
 ok(rmdir("$dir/services"),"unlink services/");
-ok(unlink("$dir/tags/summary/navigation.png"),"unlink summary/navigation.png");
-ok(unlink("$dir/tags/summary/update_request.png"),
-   "rm tags/summary/update_request.png");
-ok(unlink("$dir/tags/summary/nav_request.png"),
-   "rm tags/summary/nav_request.png");
-ok(unlink("$dir/tags/summary/extensions.png"),"unlink summary/extensions.png");
-ok(unlink("$dir/tags/summary/useragents.png"),"unlink summary/useragents.png");
-ok(unlink("$dir/tags/summary/index.html"),"unlink summary/index.html");
-ok(rmdir("$dir/tags/summary"),"rmdir summary/");
 ok(unlink("$dir/tags/untagged/index.html"),"unlink untagged/index.html");
 ok(unlink("$dir/tags/untagged/navigation.png"),
    "unlink untagged/navigation.png");
