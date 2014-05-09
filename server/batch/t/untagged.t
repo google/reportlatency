@@ -18,14 +18,14 @@
 
 use strict;
 use DBI;
-use Test::More tests => 27;
+use Test::More tests => 10;
 use File::Temp qw(tempfile tempdir);
 
 $ENV{'PATH'} = '/usr/bin';
 
 BEGIN { use lib ".."; }
 
-require_ok('./generate-static-content.pl');
+require_ok('./untagged.pl');
 
 my $dir = tempdir(CLEANUP => 1);
 mkdir("$dir/data");
@@ -73,43 +73,13 @@ main();
 
 unlink($dbfile);
 rmdir("$dir/data");
-ok(unlink("$dir/locations/office.google.com./navigation.png"),
-   "unlink location png");
-ok(unlink("$dir/locations/office.google.com./update_request.png"),
-   "rm locations/office.google.com./update_request.png");
-ok(unlink("$dir/locations/office.google.com./nav_request.png"),
-   "rm locations/office.google.com./nav_request.png");
-ok(unlink("$dir/locations/office.google.com./index.html"),
-   "unlink location html");
-ok(rmdir("$dir/locations/office.google.com."),"rmdir office.google.com.");
-ok(rmdir("$dir/locations"),"rmdir locations/");
-ok(unlink("$dir/services/service/navigation.png"),
-   "rm service/service/navigation.png");
-ok(unlink("$dir/services/service/nav_request.png"),
-   "rm service/service/nav_request.png");
-ok(unlink("$dir/services/service/update_request.png"),
-   "rm service/service/update_request.png");
-ok(unlink("$dir/services/service/index.html"),
-   "unlink service/index.html");
-ok(unlink("$dir/services/slow/navigation.png"),
-   "rm service/slow/navigation.png");
-ok(unlink("$dir/services/slow/nav_request.png"),
-   "rm service/slow/nav_request.png");
-ok(unlink("$dir/services/slow/update_request.png"),
-   "rm service/slow/update_request.png");
-ok(unlink("$dir/services/slow/index.html"),"unlink slow/index.html");
-ok(rmdir("$dir/services/service"),"unlink service/");
-ok(rmdir("$dir/services/slow"),"unlink slow/");
-ok(rmdir("$dir/services"),"unlink services/");
-ok(unlink("$dir/tags/Company/index.html"),"unlink Company/index.html");
-ok(unlink("$dir/tags/Company/navigation.png"),
-   "unlink Company/navigation.png");
-ok(unlink("$dir/tags/Company/update_request.png"),
-   "rm tags/Company/update_request.png");
-ok(unlink("$dir/tags/Company/nav_request.png"),
-   "rm tags/Company/nav_request.png");
-ok(rmdir("$dir/tags/Company"),"rmdir Company/");
+ok(unlink("$dir/tags/untagged/index.html"),"unlink untagged/index.html");
+ok(unlink("$dir/tags/untagged/navigation.png"),
+   "unlink untagged/navigation.png");
+ok(unlink("$dir/tags/untagged/update_request.png"),
+   "rm tags/untagged/update_request.png");
+ok(unlink("$dir/tags/untagged/nav_request.png"),
+   "rm tags/untagged/nav_request.png");
+ok(rmdir("$dir/tags/untagged"),"rmdir untagged/");
 ok(rmdir("$dir/tags"),"rmdir tags/");
 ok(rmdir($dir),"rmdir tmpdir");
-
-

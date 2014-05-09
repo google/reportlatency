@@ -18,7 +18,6 @@
 use ReportLatency::utils;
 use ReportLatency::AtomicFile;
 use ReportLatency::Spectrum;
-use ReportLatency::StackedGraph;
 use ReportLatency::StaticView;
 use ReportLatency::Store;
 use DBI;
@@ -47,70 +46,35 @@ my $nreq_ceiling = 30000; # 30s max for navigation request images
 my $ureq_ceiling = 500000; # 300s max for update request images
 my $req_floor = 10; # 30ms min for request images
 
-sub user_agents {
-  my ($store,$options) = @_;
-  my $sth = $store->user_agent_sth();
+sub untagged_report {
+  my ($view,$options) = @_;
 
-  my $rc = $sth->execute("-$duration seconds", '0 seconds');
-
-  my $graph = new ReportLatency::StackedGraph( width => $reqwidth,
-					      height => $reqheight,
-					      duration => $duration,
-					      border => 24 );
-  
-  while (my $row = $sth->fetchrow_hashref) {
-    $graph->add_row($row);
-  }
-
-  my $png = new ReportLatency::AtomicFile("tags/summary/useragents.png");
-  print $png $graph->img()->png();
-  close($png);
+  my $report = new ReportLatency::AtomicFile("tags/untagged/index.html");
+  print $report $view->untagged_html();
+  close($report);
 }
 
-sub extensions {
-  my ($store,$options) = @_;
-  my $sth = $store->extension_version_sth();
-
-  my $rc = $sth->execute("-$duration seconds", '0 seconds');
-
-  my $graph = new ReportLatency::StackedGraph( width => $reqwidth,
-					      height => $reqheight,
-					      duration => $duration,
-					      border => 24 );
-  
-  while (my $row = $sth->fetchrow_hashref) {
-    $graph->add_row($row);
-  }
-
-  my $png = new ReportLatency::AtomicFile("tags/summary/extensions.png");
-  print $png $graph->img()->png();
-  close($png);
-}
-
-sub total_graph {
+sub untagged_graph {
   my ($store,$options) = @_;
 
-  my ($dbh) = $store->{dbh};
-  my $sth = $store->total_nav_latencies_sth();
-
+  my $dbh = $store->{dbh};
+  my $sth = $store->untagged_nav_latencies_sth;
   my $latency_rc = $sth->execute(-$duration . " seconds", '0 seconds');
-
   my $spectrum = new ReportLatency::Spectrum( width => $navwidth,
 					      height => $navheight,
 					      duration => $duration,
 					      ceiling => $nav_ceiling,
 					      border => 24 );
-  
   while (my $row = $sth->fetchrow_hashref) {
     $spectrum->add_row($row);
   }
 
-  my $png = new ReportLatency::AtomicFile("tags/summary/navigation.png");
+  my $png = new ReportLatency::AtomicFile("tags/untagged/navigation.png");
   print $png $spectrum->png();
   close($png);
 
 
-  $sth = $store->total_nreq_latencies_sth();
+  $sth = $store->untagged_nreq_latencies_sth();
 
   $latency_rc = $sth->execute(-$duration . " seconds", '0 seconds');
 
@@ -125,12 +89,12 @@ sub total_graph {
     $spectrum->add_row($row);
   }
 
-  $png = new ReportLatency::AtomicFile("tags/summary/nav_request.png");
+  $png = new ReportLatency::AtomicFile("tags/untagged/nav_request.png");
   print $png $spectrum->png();
   close($png);
 
 
-  $sth = $store->total_ureq_latencies_sth();
+  $sth = $store->untagged_ureq_latencies_sth();
 
   $latency_rc = $sth->execute(-$duration . " seconds", '0 seconds');
 
@@ -145,18 +109,10 @@ sub total_graph {
     $spectrum->add_row($row);
   }
 
-  $png = new ReportLatency::AtomicFile("tags/summary/update_request.png");
+  $png = new ReportLatency::AtomicFile("tags/untagged/update_request.png");
   print $png $spectrum->png();
   close($png);
 }
-
-sub total_report {
-  my ($view,$options) = @_;
-  my $html = new ReportLatency::AtomicFile("tags/summary/index.html");
-  print $html $view->summary_html();
-  close($html);
-}
-
 
 
 sub main() {
@@ -173,10 +129,8 @@ sub main() {
   my $store = new ReportLatency::Store( dbh => $dbh );
   my $view = new ReportLatency::StaticView($store);
 
-  total_graph($store,\%options);
-  user_agents($store);
-  extensions($store);
-  total_report($view,\%options);
+  untagged_graph($store,\%options);
+  untagged_report($view,\%options);
 
   $dbh->rollback() ||
     die "Unable to rollback, but there should be no changes anyway";
@@ -188,7 +142,7 @@ __END__
 
 =head1 NAME
 
-summary.pl - generate summary total latency spectrum graphs and tables from a sqlite database
+untagged.pl - generate the untagged latency report from a sqlite database
 
 =head1 SYNOPSIS
 
@@ -198,7 +152,7 @@ ls -l latency.sqlite3
 
 cd ../www
 
-summary.pl
+untagged.pl
 
  Options:
    -help      brief help message

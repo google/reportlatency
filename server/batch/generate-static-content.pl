@@ -62,14 +62,6 @@ sub tag_report {
   close($report);
 }
 
-sub untagged_report {
-  my ($view,$options) = @_;
-
-  my $report = new ReportLatency::AtomicFile("tags/untagged/index.html");
-  print $report $view->untagged_html();
-  close($report);
-}
-
 sub service_graph {
   my ($store,$name,$options) = @_;
 
@@ -376,67 +368,6 @@ sub tag_graph {
   close($png);
 }
 
-sub untagged_graph {
-  my ($store,$options) = @_;
-
-  my $dbh = $store->{dbh};
-  my $sth = $store->untagged_nav_latencies_sth;
-  my $latency_rc = $sth->execute(-$duration . " seconds", '0 seconds');
-  my $spectrum = new ReportLatency::Spectrum( width => $navwidth,
-					      height => $navheight,
-					      duration => $duration,
-					      ceiling => $nav_ceiling,
-					      border => 24 );
-  while (my $row = $sth->fetchrow_hashref) {
-    $spectrum->add_row($row);
-  }
-
-  my $png = new ReportLatency::AtomicFile("tags/untagged/navigation.png");
-  print $png $spectrum->png();
-  close($png);
-
-
-  $sth = $store->untagged_nreq_latencies_sth();
-
-  $latency_rc = $sth->execute(-$duration . " seconds", '0 seconds');
-
-  $spectrum = new ReportLatency::Spectrum( width => $reqwidth,
-					   height => $reqheight,
-					   duration => $duration,
-					   ceiling => $nreq_ceiling,
-					   floor   => $req_floor,
-					   border => 24 );
-
-  while (my $row = $sth->fetchrow_hashref) {
-    $spectrum->add_row($row);
-  }
-
-  $png = new ReportLatency::AtomicFile("tags/untagged/nav_request.png");
-  print $png $spectrum->png();
-  close($png);
-
-
-  $sth = $store->untagged_ureq_latencies_sth();
-
-  $latency_rc = $sth->execute(-$duration . " seconds", '0 seconds');
-
-  $spectrum = new ReportLatency::Spectrum( width => $reqwidth,
-					   height => $reqheight,
-					   duration => $duration,
-					   ceiling => $ureq_ceiling,
-					   floor   => $req_floor,
-					   border => 24 );
-
-  while (my $row = $sth->fetchrow_hashref) {
-    $spectrum->add_row($row);
-  }
-
-  $png = new ReportLatency::AtomicFile("tags/untagged/update_request.png");
-  print $png $spectrum->png();
-  close($png);
-}
-
-
 sub main() {
   my %options;
   my $r = GetOptions(\%options,
@@ -451,10 +382,6 @@ sub main() {
   $dbh->begin_work() || die "Unable to open transaction";
   my $store = new ReportLatency::Store( dbh => $dbh );
   my $view = new ReportLatency::StaticView($store);
-
-  print "untagged\n";
-  untagged_graph($store,\%options);
-  untagged_report($view,\%options);
 
   my (@services,@tags,@locations);
   if ($options{'all'}) {
