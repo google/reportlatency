@@ -383,6 +383,58 @@ sub tag_nav_latencies_sth {
   return $sth;
 }
 
+sub tag_nreq_latencies_sth {
+  my ($self) = @_;
+
+  my $sth = $self->{tag_nreq_latencies_sth};
+  if (! defined $sth) {
+    my $dbh = $self->{dbh};
+    my $statement='SELECT strftime("%s",u.timestamp) AS timestamp,' .
+      'nr.count AS count,' .
+      'nr.high AS high,' .
+      'nr.low AS low,' .
+      'nr.total AS total ' .
+      'FROM navigation_request nr ' .
+      'INNER JOIN upload u ON u.id=nr.upload ' .
+      'INNER JOIN tag ON nr.service = tag.service ' .
+       "WHERE u.timestamp >  datetime('now',?) AND " .
+       "u.timestamp <= datetime('now',?) AND " .
+       'tag.tag = ? AND ' .
+       "nr.count IS NOT NULL AND nr.count != '' AND " .
+       "nr.count>0;";
+    $sth = $dbh->prepare($statement) or die $!;
+    $self->{tag_nreq_latencies_sth} = $sth;
+  }
+
+  return $sth;
+}
+
+sub tag_ureq_latencies_sth {
+  my ($self) = @_;
+
+  my $sth = $self->{tag_ureq_latencies_sth};
+  if (! defined $sth) {
+    my $dbh = $self->{dbh};
+    my $statement='SELECT strftime("%s",u.timestamp) AS timestamp,' .
+      'ur.count AS count,' .
+      'ur.high AS high,' .
+      'ur.low AS low,' .
+      'ur.total AS total ' .
+      'FROM update_request ur ' .
+      'INNER JOIN upload u ON u.id=ur.upload ' .
+      'INNER JOIN tag ON ur.service = tag.service ' .
+       "WHERE u.timestamp >  datetime('now',?) AND " .
+       "u.timestamp <= datetime('now',?) AND " .
+       'tag.tag = ? AND ' .
+       "ur.count IS NOT NULL AND ur.count != '' AND " .
+       "ur.count>0;";
+    $sth = $dbh->prepare($statement) or die $!;
+    $self->{tag_ureq_latencies_sth} = $sth;
+  }
+
+  return $sth;
+}
+
 sub service_nav_latencies_sth {
   my ($self) = @_;
 

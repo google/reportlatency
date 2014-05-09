@@ -20,7 +20,7 @@ use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
 use HTML::Tidy;
-use Test::More tests => 137;
+use Test::More tests => 151;
 
 BEGIN { use lib '..'; }
 
@@ -142,6 +142,32 @@ cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
 cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
 $row = $sth->fetchrow_hashref;
 is($row, undef, 'last Mail nav latency row');
+
+
+$sth = $store->tag_nreq_latencies_sth();
+$sth->execute('-300 seconds', "0 seconds", 'Mail');
+$row = $sth->fetchrow_hashref;
+is($row->{count}, 3, 'Mail nreq latency count');
+is($row->{total}, 2100, 'total');
+is($row->{low}, 600, 'low');
+is($row->{high}, 800, 'high');
+cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
+cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
+$row = $sth->fetchrow_hashref;
+is($row, undef, 'last Mail nreq latency row');
+
+
+$sth = $store->tag_ureq_latencies_sth();
+$sth->execute('-300 seconds', "0 seconds", 'Mail');
+$row = $sth->fetchrow_hashref;
+is($row->{count}, 10, 'Mail ureq latency count');
+is($row->{total}, 2220, 'total');
+is($row->{low}, 100, 'low');
+is($row->{high}, 300, 'high');
+cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
+cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
+$row = $sth->fetchrow_hashref;
+is($row, undef, 'last Mail ureq latency row');
 
 
 $sth = $store->location_nav_latencies_sth();

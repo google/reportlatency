@@ -18,7 +18,7 @@
 
 use strict;
 use DBI;
-use Test::More tests => 38;
+use Test::More tests => 40;
 use File::Temp qw(tempfile tempdir);
 
 $ENV{'PATH'} = '/usr/bin';
@@ -126,10 +126,10 @@ ok(rmdir("$dir/tags/untagged"),"rmdir untagged/");
 ok(unlink("$dir/tags/Company/index.html"),"unlink Company/index.html");
 ok(unlink("$dir/tags/Company/navigation.png"),
    "unlink Company/navigation.png");
-#ok(unlink("$dir/tags/Company/update_request.png"),
-#   "rmdir tags/Company/update_request.png");
-#ok(unlink("$dir/tags/Company/nav_request.png"),
-#   "rmdir tags/Company/nav_request.png");
+ok(unlink("$dir/tags/Company/update_request.png"),
+   "rm tags/Company/update_request.png");
+ok(unlink("$dir/tags/Company/nav_request.png"),
+   "rm tags/Company/nav_request.png");
 ok(rmdir("$dir/tags/Company"),"rmdir Company/");
 ok(rmdir("$dir/tags"),"rmdir tags/");
 ok(rmdir($dir),"rmdir tmpdir");
