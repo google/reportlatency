@@ -33,7 +33,7 @@ my $dbfile="$dir/data/backup.sqlite3";
 
 {
   open(my $sqlite3,"|-",'sqlite3',$dbfile) or die $!;
-  foreach my $source qw(sqlite3.sql views-sqlite3.sql) {
+  foreach my $source (qw(sqlite3.sql views-sqlite3.sql)) {
     open(my $sql,'<',"../sql/$source") or die $!;
     while (my $line = $sql->getline) {
       print $sqlite3 $line;
