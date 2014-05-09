@@ -133,8 +133,7 @@ sub img() {
   my $graph = new GD::Graph::area($w,$h) or die $!;
   $self->{graph} = $graph;
 
-  $graph->set(x_label => 'Day',
-	      cumulate => 1,
+  $graph->set(cumulate => 1,
 	      transparent => 0);
 	     
   $self->_label_days();
