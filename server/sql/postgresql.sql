@@ -25,28 +25,9 @@ CREATE TABLE upload (
   options	INTEGER
 );
 
-CREATE INDEX upload_collected_on ON upload(collected_on);
-CREATE INDEX upload_timestamp ON upload(timestamp);
-CREATE INDEX upload_location ON upload(location);
-CREATE INDEX upload_user_agent ON upload(user_agent);
-CREATE INDEX upload_tz ON upload(tz);
-CREATE INDEX upload_version ON upload(version);
-CREATE INDEX upload_options ON upload(options);
-
-CREATE OR REPLACE FUNCTION upload_timestamp()
-RETURNS TRIGGER AS $timestamp$
-   BEGIN
-      NEW.timestamp := current_timestamp;
-      RETURN NEW;
-   END;
-$timestamp$ LANGUAGE plpgsql;
-
-CREATE TRIGGER upload_timestamp AFTER INSERT ON upload
-   FOR EACH ROW EXECUTE PROCEDURE upload_timestamp();
-
-
-CREATE TABLE request (
-  upload	INTEGER REFERENCES upload(id),
+-- requests that happen during a navigation event
+CREATE TABLE navigation_request (
+  upload	INTEGER,
   name		TEXT,
   service	TEXT,
   count		INTEGER,
@@ -54,13 +35,32 @@ CREATE TABLE request (
   high		REAL,
   low		REAL,
   tabclosed	INTEGER,
-  error		INTEGER
+  response200	INTEGER,
+  response300	INTEGER,
+  response400	INTEGER,
+  response500	INTEGER,
+  FOREIGN KEY(upload) REFERENCES upload(id)
 );
-CREATE INDEX request_name ON request(name);
-CREATE INDEX request_service ON request(service);
+
+-- requests that occur after navigation completes
+CREATE TABLE update_request (
+  upload	INTEGER,
+  name		TEXT,
+  service	TEXT,
+  count		INTEGER,
+  total		REAL,
+  high		REAL,
+  low		REAL,
+  tabclosed	INTEGER,
+  response200	INTEGER,
+  response300	INTEGER,
+  response400	INTEGER,
+  response500	INTEGER,
+  FOREIGN KEY(upload) REFERENCES upload(id)
+);
 
 CREATE TABLE navigation (
-  upload	INTEGER REFERENCES upload(id),
+  upload	INTEGER,
   name		TEXT,
   service	TEXT,
   count		INTEGER,
@@ -68,18 +68,21 @@ CREATE TABLE navigation (
   high		REAL,
   low		REAL,
   tabclosed	INTEGER,
-  error		INTEGER
+  response200	INTEGER,
+  response300	INTEGER,
+  response400	INTEGER,
+  response500	INTEGER,
+  FOREIGN KEY(upload) REFERENCES upload(id)
 );
-CREATE INDEX navigation_name ON navigation(name);
-CREATE INDEX navigation_service ON navigation(service);
+
+CREATE TRIGGER upload_timestamp AFTER INSERT ON upload
+  FOR EACH ROW EXECUTE PROCEDURE upload_timestamp();
 
 -- tags to represent platform,owner, groups and other tech used for services
 CREATE TABLE tag (
   service	TEXT,
-  tag		TEXT
+  tag  TEXT
 );
-CREATE INDEX tag_tag on tag(tag);
-CREATE INDEX tag_service on tag(service);
 
 -- For speed cache reverse DNS lookups on REMOTE_ADDR or HTTP_X_FORWARDED_FOR.
 -- Location defaults to the class C or subdomain if available,
@@ -91,17 +94,16 @@ CREATE TABLE location (
   rdns	TEXT,
   location TEXT
 );
-CREATE INDEX location_location ON location(location);
-CREATE INDEX location_timestamp ON location(timestamp);
-CREATE INDEX location_ip ON location(ip);
-
 
 CREATE TABLE match (
-  re	TEXT,
-  tag	TEXT
+  tag TEXT,
+  re TEXT
 );
 
 CREATE TABLE notmatch (
-  re	TEXT,
-  tag	TEXT
+  tag TEXT,
+  re TEXT
 );
+
+-- All other databases need to map last_insert_rowid() to their local
+-- function.  sqlite3 doesn't have a procedural language and can't map.
