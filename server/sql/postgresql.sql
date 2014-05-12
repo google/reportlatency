@@ -22,7 +22,7 @@ CREATE TABLE upload (
   user_agent	TEXT,
   tz		TEXT,
   version	TEXT,
-  options	INTEGER
+  options	BIGINT
 );
 
 -- requests that happen during a navigation event
@@ -74,6 +74,14 @@ CREATE TABLE navigation (
   response500	INTEGER,
   FOREIGN KEY(upload) REFERENCES upload(id)
 );
+
+CREATE OR REPLACE FUNCTION upload_timestamp()
+RETURNS TRIGGER AS $timestamp$
+   BEGIN
+      NEW.timestamp := current_timestamp;
+      RETURN NEW;
+   END;
+$timestamp$ LANGUAGE plpgsql;
 
 CREATE TRIGGER upload_timestamp AFTER INSERT ON upload
   FOR EACH ROW EXECUTE PROCEDURE upload_timestamp();
