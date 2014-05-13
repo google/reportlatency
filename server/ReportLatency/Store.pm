@@ -39,6 +39,12 @@ sub new {
   return $self;
 }
 
+sub unix_timestamp {
+  my ($self,$field) = @_;
+  return "strftime(\"%s\",$field)";
+#  return "extract(epoch from $field)";
+}
+
 sub register_option {
   my ($opt,$mask) = @_;
   $options{$opt} = $mask;
@@ -311,7 +317,8 @@ sub service_nreq_latencies_sth {
   my $sth = $self->{service_nreq_latencies_sth};
   if (! defined $sth) {
     my $dbh = $self->{dbh};
-    my $statement='SELECT strftime("%s",u.timestamp) AS timestamp,' .
+    my $statement='SELECT ' .
+      $self->unix_timestamp('u.timestamp') . ' AS timestamp,' .
       'nr.count AS count,' .
       'nr.high AS high,' .
       'nr.low AS low,' .
@@ -337,7 +344,8 @@ sub service_ureq_latencies_sth {
   my $sth = $self->{service_ureq_latencies_sth};
   if (! defined $sth) {
     my $dbh = $self->{dbh};
-    my $statement='SELECT strftime("%s",u.timestamp) AS timestamp,' .
+    my $statement='SELECT ' .
+      $self->unix_timestamp('u.timestamp') . ' AS timestamp,' .
       'ur.count AS count,' .
       'ur.high AS high,' .
       'ur.low AS low,' .
@@ -363,7 +371,8 @@ sub tag_nav_latencies_sth {
   my $sth = $self->{tag_nav_latencies_sth};
   if (! defined $sth) {
     my $dbh = $self->{dbh};
-    my $statement='SELECT strftime("%s",u.timestamp) AS timestamp,' .
+    my $statement='SELECT ' .
+      $self->unix_timestamp('u.timestamp') . ' AS timestamp,' .
       'n.count AS count,' .
       'n.high AS high,' .
       'n.low AS low,' .
@@ -389,7 +398,8 @@ sub tag_nreq_latencies_sth {
   my $sth = $self->{tag_nreq_latencies_sth};
   if (! defined $sth) {
     my $dbh = $self->{dbh};
-    my $statement='SELECT strftime("%s",u.timestamp) AS timestamp,' .
+    my $statement='SELECT ' .
+      $self->unix_timestamp('u.timestamp') . ' AS timestamp,' .
       'nr.count AS count,' .
       'nr.high AS high,' .
       'nr.low AS low,' .
@@ -415,7 +425,8 @@ sub tag_ureq_latencies_sth {
   my $sth = $self->{tag_ureq_latencies_sth};
   if (! defined $sth) {
     my $dbh = $self->{dbh};
-    my $statement='SELECT strftime("%s",u.timestamp) AS timestamp,' .
+    my $statement='SELECT ' .
+      $self->unix_timestamp('u.timestamp') . ' AS timestamp,' .
       'ur.count AS count,' .
       'ur.high AS high,' .
       'ur.low AS low,' .
@@ -441,7 +452,8 @@ sub service_nav_latencies_sth {
   my $sth = $self->{service_nav_latencies_sth};
   if (! defined $sth) {
     my $dbh = $self->{dbh};
-    my $statement='SELECT strftime("%s",u.timestamp) AS timestamp,' .
+    my $statement='SELECT ' .
+      $self->unix_timestamp('u.timestamp') . ' AS timestamp,' .
       'n.count AS count,' .
       'n.high AS high,' .
       'n.low AS low,' .
@@ -467,7 +479,8 @@ sub location_nav_latencies_sth {
   my $sth = $self->{location_nav_latencies_sth};
   if (! defined $sth) {
     my $dbh = $self->{dbh};
-    my $statement='SELECT strftime("%s",u.timestamp) AS timestamp,' .
+    my $statement='SELECT ' .
+      $self->unix_timestamp('u.timestamp') . ' AS timestamp,' .
       'n.count AS count,' .
       'n.high AS high,' .
       'n.low AS low,' .
@@ -492,7 +505,8 @@ sub location_nreq_latencies_sth {
   my $sth = $self->{location_nreq_latencies_sth};
   if (! defined $sth) {
     my $dbh = $self->{dbh};
-    my $statement='SELECT strftime("%s",u.timestamp) AS timestamp,' .
+    my $statement='SELECT ' .
+      $self->unix_timestamp('u.timestamp') . ' AS timestamp,' .
       'nr.count AS count,' .
       'nr.high AS high,' .
       'nr.low AS low,' .
@@ -517,7 +531,8 @@ sub location_ureq_latencies_sth {
   my $sth = $self->{location_ureq_latencies_sth};
   if (! defined $sth) {
     my $dbh = $self->{dbh};
-    my $statement='SELECT strftime("%s",u.timestamp) AS timestamp,' .
+    my $statement='SELECT ' .
+      $self->unix_timestamp('u.timestamp') . ' AS timestamp,' .
       'ur.count AS count,' .
       'ur.high AS high,' .
       'ur.low AS low,' .
@@ -542,7 +557,8 @@ sub total_nav_latencies_sth {
   my $sth = $self->{total_nav_latencies_sth};
   if (! defined $sth) {
     my $dbh = $self->{dbh};
-    my $statement='SELECT strftime("%s",u.timestamp) AS timestamp,' .
+    my $statement='SELECT ' .
+      $self->unix_timestamp('u.timestamp') . ' AS timestamp,' .
       'n.count AS count,' .
       'n.high AS high,' .
       'n.low AS low,' .
@@ -566,7 +582,8 @@ sub total_nreq_latencies_sth {
   my $sth = $self->{total_nreq_latencies_sth};
   if (! defined $sth) {
     my $dbh = $self->{dbh};
-    my $statement='SELECT strftime("%s",u.timestamp) AS timestamp,' .
+    my $statement='SELECT ' .
+      $self->unix_timestamp('u.timestamp') . ' AS timestamp,' .
       'nr.count AS count,' .
       'nr.high AS high,' .
       'nr.low AS low,' .
@@ -590,7 +607,8 @@ sub total_ureq_latencies_sth {
   my $sth = $self->{total_ureq_latencies_sth};
   if (! defined $sth) {
     my $dbh = $self->{dbh};
-    my $statement='SELECT strftime("%s",u.timestamp) AS timestamp,' .
+    my $statement='SELECT ' .
+      $self->unix_timestamp('u.timestamp') . ' AS timestamp,' .
       'ur.count AS count,' .
       'ur.high AS high,' .
       'ur.low AS low,' .
@@ -614,7 +632,8 @@ sub untagged_nav_latencies_sth {
   my $sth = $self->{untagged_nav_latencies_sth};
   if (! defined $sth) {
     my $dbh = $self->{dbh};
-    my $statement='SELECT strftime("%s",u.timestamp) AS timestamp,' .
+    my $statement='SELECT ' .
+      $self->unix_timestamp('u.timestamp') . ' AS timestamp,' .
       'n.count AS count,' .
       'n.high AS high,' .
       'n.low AS low,' .
@@ -640,7 +659,8 @@ sub untagged_nreq_latencies_sth {
   my $sth = $self->{untagged_nreq_latencies_sth};
   if (! defined $sth) {
     my $dbh = $self->{dbh};
-    my $statement='SELECT strftime("%s",u.timestamp) AS timestamp,' .
+    my $statement='SELECT ' .
+      $self->unix_timestamp('u.timestamp') . ' AS timestamp,' .
       'nr.count AS count,' .
       'nr.high AS high,' .
       'nr.low AS low,' .
@@ -666,7 +686,8 @@ sub untagged_ureq_latencies_sth {
   my $sth = $self->{untagged_ureq_latencies_sth};
   if (! defined $sth) {
     my $dbh = $self->{dbh};
-    my $statement='SELECT strftime("%s",u.timestamp) AS timestamp,' .
+    my $statement='SELECT ' .
+      $self->unix_timestamp('u.timestamp') . ' AS timestamp,' .
       'ur.count AS count,' .
       'ur.high AS high,' .
       'ur.low AS low,' .
@@ -927,7 +948,8 @@ sub extension_version_sth {
   my ($self) = @_;
   my $dbh = $self->{dbh};
   my $sth =
-    $dbh->prepare('SELECT strftime("%s",u.timestamp) AS timestamp,' .
+    $dbh->prepare('SELECT ' .
+		  $self->unix_timestamp('u.timestamp') . ' AS timestamp,' .
 		  'version AS measure,1 AS amount' .
                   ' FROM upload AS u ' .
                   "WHERE timestamp > datetime('now',?) AND " .
@@ -953,7 +975,8 @@ sub user_agent_sth {
   my ($self) = @_;
   my $dbh = $self->{dbh};
   my $sth =
-    $dbh->prepare('SELECT strftime("%s",u.timestamp) AS timestamp,' .
+    $dbh->prepare('SELECT ' .
+		  $self->unix_timestamp('u.timestamp') . ' AS timestamp,' .
 		  'user_agent AS measure,1 AS amount' .
                   ' FROM upload AS u ' .
                   "WHERE timestamp > datetime('now',?) AND " .
