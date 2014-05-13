@@ -1,0 +1,12 @@
+DROP TABLE location;
+DROP TABLE match;
+DROP TABLE notmatch;
+DROP TABLE tag;
+DROP VIEW report;
+DROP VIEW report3;
+DROP VIEW report2;
+DROP TABLE navigation;
+DROP TABLE navigation_request;
+DROP TABLE update_request;
+DROP TABLE upload;
+DROP FUNCTION upload_timestamp();
