@@ -1,4 +1,5 @@
 .mode csv
+.headers on
 .output upload.csv
 select id,collected_on,timestamp,location,user_agent,tz,version,options from upload;
 .output navigation.csv
