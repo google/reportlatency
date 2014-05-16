@@ -126,7 +126,6 @@ sub main() {
 
   my $store = new ReportLatency::Store( dsn => latency_dsn('backup') );
   my $dbh = $store->{dbh};
-  $dbh->begin_work() || die "Unable to open transaction";
 
   my $view = new ReportLatency::StaticView($store);
 

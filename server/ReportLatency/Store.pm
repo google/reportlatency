@@ -44,11 +44,18 @@ sub new {
     $self->{dialect} = latency_dialect();
   }
 
-  $self->{dbh} = DBI->connect($self->{dsn},
-			      {AutoCommit => 0, RaiseError => 1}, '')
-    or die $self->{dbh}->errstr;
+  print STDERR "new Store() dsn=" . $self->{dsn} . "\n";
+
+  $self->{dbh} = DBI->connect($self->{dsn}, '', '',
+			      {AutoCommit => 0, RaiseError => 1})
+    or die $DBI::errstr;
 
   return $self;
+}
+
+sub DESTROY {
+  my $self = shift;
+  $self->{dbh}->disconnect;
 }
 
 sub unix_timestamp {
@@ -277,8 +284,6 @@ sub parse_json {
   $obj->{options} = $options;
   $obj->{location} = $location;
   $obj->{user_agent} = $user_agent;
-
-  $dbh->begin_work or die $dbh->errstr;
 
   my $upload_id = $self->new_upload($obj);
 
