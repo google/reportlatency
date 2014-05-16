@@ -38,16 +38,10 @@ my $dbfile = "$dir/latency.sqlite3";
   ok(close($sqlite3),'latency schema');
 }
 
-my $dbh;
-$dbh = DBI->connect("dbi:SQLite:dbname=$dbfile",
-		       {AutoCommit => 0}, '')
-  or die $dbh->errstr;
-
-my $store = new ReportLatency::Store(dbh => $dbh);
+my $store = new ReportLatency::Store(dsn => "dbi:SQLite:dbname=$dbfile");
 
 isa_ok($store, 'ReportLatency::Store');
-
-is($store->{dbh}, $dbh, "dbh");
+isa_ok($store->{dbh}, 'DBI::db');
 
 is($store->aggregate_remote_address('8.8.8.8'),'google.com.',
    'aggregate_remote_address(8.8.8.8)');

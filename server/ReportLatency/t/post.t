@@ -40,12 +40,8 @@ my $dbfile = "$dir/latency.sqlite3";
   ok(close($sqlite3),'latency schema');
 }
 
-my $dbh;
-$dbh = DBI->connect("dbi:SQLite:dbname=$dbfile",
-		       {AutoCommit => 0}, '')
-  or die $dbh->errstr;
-
-my $store = new ReportLatency::Store(dbh => $dbh);
+my $store = new ReportLatency::Store(dsn => "dbi:SQLite:dbname=$dbfile");
+my $dbh = $store->{dbh};
 
 $ENV{'HTTP_USER_AGENT'} = 'TestAgent';
 $ENV{'REMOTE_ADDR'} = '1.2.3.4';

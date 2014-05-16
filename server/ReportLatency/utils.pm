@@ -24,7 +24,7 @@ use File::Spec;
 use base 'Exporter';
 our @EXPORT    = qw(sanitize sanitize_service sanitize_location service_path
 		    mynum myround average
-		    latency_dbh net_class_c
+		    latency_dsn latency_dialect net_class_c
 		    reverse_dns aggregate_user_agent);
 
 #
@@ -32,8 +32,7 @@ our @EXPORT    = qw(sanitize sanitize_service sanitize_location service_path
 # TODO: customize for different environments, allow overrides by local SA, etc.
 #
 
-our %dbh;
-$dbh{'latency'} = ReportLatency::utils::latency_dbh();
+our %dsn;
 
 sub config_file {
   my $file = $ENV{'REPORTLATENCY_CONFIG_FILE'} || "/etc/reportlatency.conf";
@@ -59,18 +58,21 @@ sub latency_db_file {
   }
 }
 
-sub latency_dbh {
+sub latency_dsn {
   my ($role) = @_;
   $role = 'latency' unless defined $role;
-  if (! defined $dbh{$role}) {
+  if (! defined $dsn{$role}) {
     my $dbfile = latency_db_file($role);
-    if ($dbfile) {
-      $dbh{$role} = DBI->connect("dbi:SQLite:dbname=$dbfile",
-			  {AutoCommit => 0, RaiseError => 1}, '')
-	or die $dbh{$role}->errstr;
-    }
+    $dsn{$role} = "dbi:SQLite:dbname=$dbfile";
+    $dialect{$role} = 'SQLite';
   }
-  $dbh{$role};
+  $dsn{$role};
+}
+
+sub latency_dialect {
+  my ($role) = @_;
+  $role = 'latency' unless defined $role;
+  $dialect{$role};
 }
 
 #

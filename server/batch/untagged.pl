@@ -124,9 +124,10 @@ sub main() {
   pod2usage(-verbose => 2) if $options{'man'};
   pod2usage(1) if $options{'help'};
 
-  my $dbh = latency_dbh('backup') || die "Unable to open db";
+  my $store = new ReportLatency::Store( dsn => latency_dsn('backup') );
+  my $dbh = $store->{dbh};
   $dbh->begin_work() || die "Unable to open transaction";
-  my $store = new ReportLatency::Store( dbh => $dbh );
+
   my $view = new ReportLatency::StaticView($store);
 
   untagged_graph($store,\%options);

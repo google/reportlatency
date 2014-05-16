@@ -42,11 +42,8 @@ my $dbfile = "$dir/latency.sqlite3";
   ok(close($sqlite3),'latency schema');
 }
 
-my $dbh;
-$dbh = DBI->connect("dbi:SQLite:dbname=$dbfile", {}, '')
-  or die $dbh->errstr;
-
-my $store = new ReportLatency::Store(dbh => $dbh);
+my $store = new ReportLatency::Store(dsn => "dbi:SQLite:dbname=$dbfile");
+my $dbh = $store->{dbh};
 
 my $view = new ReportLatency::StaticView($store);
 

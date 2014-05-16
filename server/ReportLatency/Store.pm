@@ -34,7 +34,19 @@ sub new {
 
   my $self  = bless {}, $class;
 
-  $self->{dbh} = (defined $p{dbh} ? $p{dbh} : latency_dbh() );
+  if (defined $p{dsn}) {
+    my ($scheme, $driver, $attr_string, $attr_hash, $driver_dsn) =
+      DBI->parse_dsn($p{dsn});
+    $self->{dialect} = $driver;
+    $self->{dsn} = $p{dsn};
+  } else {
+    $self->{dsn} = latency_dsn();
+    $self->{dialect} = latency_dialect();
+  }
+
+  $self->{dbh} = DBI->connect($self->{dsn},
+			      {AutoCommit => 0, RaiseError => 1}, '')
+    or die $self->{dbh}->errstr;
 
   return $self;
 }
