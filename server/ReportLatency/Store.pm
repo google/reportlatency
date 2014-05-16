@@ -58,8 +58,11 @@ sub DESTROY {
 
 sub unix_timestamp {
   my ($self,$field) = @_;
-  return "strftime(\"%s\",$field)";
-#  return "extract(epoch from $field)";
+  if ($self->{dialect} eq 'Pg') {
+    return "extract(epoch from $field)";
+  } else {
+    return "strftime(\"%s\",$field)";
+  }
 }
 
 sub register_option {
