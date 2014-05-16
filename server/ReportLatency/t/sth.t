@@ -20,7 +20,7 @@ use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
 use HTML::Tidy;
-use Test::More tests => 151;
+use Test::More tests => 160;
 
 BEGIN { use lib '..'; }
 
@@ -322,5 +322,20 @@ is($row->{nav_count}, 1, '1 nav');
 is($row->{nav_latency}, 2038, 'nav latency');
 $row = $sth->fetchrow_hashref;
 is($row, undef, "last mail.google.com table row");
+
+
+$sth = $store->summary_meta_sth();
+$sth->execute();
+$row = $sth->fetchrow_hashref;
+is($row->{tag}, 'total', 'summary meta tagged "total"');
+is($row->{services}, 2, '2 services');
+is($row->{nav_count}, 1, '1 nav');
+is($row->{nav_latency}, 2038, 'nav latency');
+is($row->{nreq_count}, 3, '3 nreqs');
+is($row->{nreq_latency}, 700, 'nreq latency');
+is($row->{ureq_count}, 20, '20 ureqs');
+is($row->{ureq_latency}, 5550/20, 'ureq latency');
+$row = $sth->fetchrow_hashref;
+is($row, undef, "one row from summary metadata");
 
 
