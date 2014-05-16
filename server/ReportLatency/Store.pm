@@ -44,8 +44,6 @@ sub new {
     $self->{dialect} = latency_dialect();
   }
 
-  print STDERR "new Store() dsn=" . $self->{dsn} . "\n";
-
   $self->{dbh} = DBI->connect($self->{dsn}, '', '',
 			      {AutoCommit => 0, RaiseError => 1})
     or die $DBI::errstr;
