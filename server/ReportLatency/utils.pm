@@ -33,6 +33,7 @@ our @EXPORT    = qw(sanitize sanitize_service sanitize_location service_path
 #
 
 our %dsn;
+our $duration = 14*24*3600; # two week graphs and reports
 
 sub config_file {
   my $file = $ENV{'REPORTLATENCY_CONFIG_FILE'} || "/etc/reportlatency.conf";

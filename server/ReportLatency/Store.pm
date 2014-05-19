@@ -20,7 +20,6 @@ use ReportLatency::utils;
 use IO::String;
 use URI::Escape;
 use JSON;
-use Data::Dumper;
 
 $VERSION     = 0.1;
 %options = ();
@@ -861,8 +860,10 @@ sub summary_meta_sth {
                   'max(timestamp) AS max_timestamp,' .
                   'count(distinct service) AS services,' .
 		  $self->common_aggregate_fields() .
-                  ' FROM report ' .
-                  "WHERE timestamp >= datetime('now','-14 days');" )
+                  ' FROM upload, report3 ' .
+                  "WHERE timestamp BETWEEN datetime(?,'unixepoch') AND " .
+		  "datetime(?,'unixepoch') AND " .
+		  "upload=id;" )
       or die "prepare failed";
   return $sth;
 }

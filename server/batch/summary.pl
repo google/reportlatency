@@ -152,7 +152,8 @@ sub total_graph {
 sub total_report {
   my ($view,$options) = @_;
   my $html = new ReportLatency::AtomicFile("tags/summary/index.html");
-  print $html $view->summary_html();
+  my $t = time;
+  print $html $view->summary_html($t-$duration,$t);
   close($html);
 }
 

@@ -325,8 +325,9 @@ is($row, undef, "last mail.google.com table row");
 
 
 $sth = $store->summary_meta_sth();
-$sth->execute();
+$sth->execute(time-300, time);
 $row = $sth->fetchrow_hashref;
+
 is($row->{tag}, 'total', 'summary meta tagged "total"');
 is($row->{services}, 2, '2 services');
 is($row->{nav_count}, 1, '1 nav');
