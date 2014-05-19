@@ -271,7 +271,7 @@ EOF
 
 
 sub summary_html {
-  my ($self) = @_;
+  my ($self,$begin,$end) = @_;
   my $store = $self->{store};
 
   my $meta_sth = $store->summary_meta_sth;
@@ -288,7 +288,7 @@ sub summary_html {
   my $extensions_url = $self->extensions_url('summary');
 
 
-  my $rc = $meta_sth->execute();
+  my $rc = $meta_sth->execute($begin,$end);
   my $meta = $meta_sth->fetchrow_hashref;
   $meta_sth->finish;
 

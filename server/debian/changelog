@@ -1,3 +1,9 @@
+reportlatency (1.5.10) precise; urgency=low
+
+  * remove hardcoded two week duration for reports and graphs
+
+ -- Drake Diedrich <dld@google.com>  Mon, 19 May 2014 13:53:39 -0700
+
 reportlatency (1.5.9) precise; urgency=low
 
   * separate the summary and utnagged reports into their own scripts, so

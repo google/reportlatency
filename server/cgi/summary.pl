@@ -29,7 +29,8 @@ sub main {
   my $view = new ReportLatency::CGIView($store);
   my $q = new CGI;
   print $q->header(-type => 'text/html');
-  print $view->summary_html();
+  my $t = time;
+  print $view->summary_html($t-$Reportlatency::utils::duration, $t);
 }
 
 
