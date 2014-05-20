@@ -19,7 +19,7 @@
 use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
-use Test::More tests => 7;
+use Test::More tests => 8;
 
 BEGIN { use lib '..'; }
 
@@ -50,3 +50,6 @@ is($store->aggregate_remote_address('8.8.8.8'),'google.com.',
 is($store->aggregate_remote_address('0.0.0.1'),'0.0.0.0',
    'aggregate_remote_address(0.0.0.1)');
 
+my $t = time;
+my $timestamp = $store->db_timestamp($t);
+like($timestamp,qr/^20\d{2}-\d{2}-\d{2} /,"$timestamp = unixepoch $t, has ISO date");

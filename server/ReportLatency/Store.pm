@@ -64,6 +64,27 @@ sub unix_timestamp {
   }
 }
 
+sub db_timestamp {
+  my ($self,$unix_time) = @_;
+  my $dbh = $self->{dbh};
+  if ($self->{dialect} eq 'Pg') {
+    my ($t) = $dbh->selectrow_array("SELECT timestamp 'epoch' " +
+				    $unix_time + " seconds;");
+    return $t;
+
+  } elsif ($self->{dialect} eq 'SQLite') {
+    my $sth = $self->{db_timestamp_sth};
+    if (! defined $sth) {
+      $sth = $dbh->prepare("SELECT datetime(?,'unixepoch');") or die $!;
+    }
+    $sth->execute($unix_time);
+    my ($t) = $sth->fetchrow_array;
+    return $t;
+  } else {
+    die $self->{dialect} . ' support unimplemented';
+  }
+}
+
 sub register_option {
   my ($opt,$mask) = @_;
   $options{$opt} = $mask;
