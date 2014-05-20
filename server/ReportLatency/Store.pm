@@ -568,6 +568,17 @@ sub location_ureq_latencies_sth {
   return $sth;
 }
 
+sub is_positive {
+  my ($self,$field) = @_;
+  my $expression = "$field IS NOT NULL";
+  if ($self->{dialect} eq 'SQLite') {
+    $expression .= " AND $field != ''";
+  }
+  $expression .= " AND $field>0";
+  print STDERR "is_positive($field) = $expression\n";
+  return $expression;
+}
+
 sub total_nav_latencies_sth {
   my ($self) = @_;
 
@@ -583,8 +594,9 @@ sub total_nav_latencies_sth {
       'FROM navigation n ' .
       'INNER JOIN upload u ON u.id=n.upload ' .
        "WHERE " . $self->unix_timestamp('u.timestamp') . " BETWEEN ? AND ? " .
-       " AND n.count IS NOT NULL AND n.count != '' AND " .
-       "n.count>0;";
+       " AND " . $self->is_positive('n.count') . ";";
+    print STDERR "$statement\n";
+
     $sth = $dbh->prepare($statement) or die $!;
     $self->{total_nav_latencies_sth} = $sth;
   }
