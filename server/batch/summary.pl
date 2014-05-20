@@ -91,9 +91,8 @@ sub total_graph {
   my ($store,$options) = @_;
 
   my $sth = $store->total_nav_latencies_sth();
-
-  my $latency_rc = $sth->execute(-$ReportLatency::utils::duration . " seconds",
-				 '0 seconds');
+  my $t = time;
+  my $latency_rc = $sth->execute($t-$ReportLatency::utils::duration, $t);
 
   my $spectrum = new ReportLatency::Spectrum( width => $navwidth,
 					      height => $navheight,

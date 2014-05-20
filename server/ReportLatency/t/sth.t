@@ -21,6 +21,7 @@ use DBI;
 use File::Temp qw(tempfile tempdir);
 use HTML::Tidy;
 use Test::More tests => 160;
+use Data::Dumper;
 
 BEGIN { use lib '..'; }
 
@@ -179,7 +180,7 @@ $row = $sth->fetchrow_hashref;
 is($row, undef, 'last location 1.2.3.0 nav latency row');
 
 $sth = $store->total_nav_latencies_sth();
-$sth->execute("-300 seconds", '0 seconds');
+$sth->execute(time-300, time+2);
 $row = $sth->fetchrow_hashref;
 is($row->{count}, 1, 'total nav latency count');
 is($row->{total}, 2038, 'total');

@@ -582,9 +582,8 @@ sub total_nav_latencies_sth {
       'n.total AS total ' .
       'FROM navigation n ' .
       'INNER JOIN upload u ON u.id=n.upload ' .
-       "WHERE u.timestamp > datetime('now',?) AND " .
-       "u.timestamp <= datetime('now',?) AND " .
-       "n.count IS NOT NULL AND n.count != '' AND " .
+       "WHERE " . $self->unix_timestamp('u.timestamp') . " BETWEEN ? AND ? " .
+       " AND n.count IS NOT NULL AND n.count != '' AND " .
        "n.count>0;";
     $sth = $dbh->prepare($statement) or die $!;
     $self->{total_nav_latencies_sth} = $sth;
@@ -861,9 +860,9 @@ sub summary_meta_sth {
                   'count(distinct service) AS services,' .
 		  $self->common_aggregate_fields() .
                   ' FROM upload, report3 ' .
-                  "WHERE timestamp BETWEEN datetime(?,'unixepoch') AND " .
-		  "datetime(?,'unixepoch') AND " .
-		  "upload=id;" )
+                  "WHERE " . $self->unix_timestamp('timestamp') .
+		  " BETWEEN ? AND ? " .
+		  "AND upload=id;" )
       or die "prepare failed";
   return $sth;
 }
