@@ -58,7 +58,8 @@ ok($dbh->do(q{
   INSERT INTO update_request(upload,name,service,count,total) VALUES(1,'google.com','google.com',2,1998);
 }), 'INSERT google.com report');
 
-my $summary_html = $view->summary_html(time-300, time);
+my $summary_html = $view->summary_html($store->db_timestamp(time-300),
+				       $store->db_timestamp(time));
 
 my $tidy = new HTML::Tidy;
 is($tidy->parse('summary_html',$summary_html), undef, 'summary.html');

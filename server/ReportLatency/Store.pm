@@ -68,14 +68,23 @@ sub db_timestamp {
   my ($self,$unix_time) = @_;
   my $dbh = $self->{dbh};
   if ($self->{dialect} eq 'Pg') {
-    my ($t) = $dbh->selectrow_array("SELECT timestamp 'epoch' " +
-				    $unix_time + " seconds;");
+    my $statement = "SELECT timestamp 'epoch' + '$unix_time seconds';";
+    my ($t) = $dbh->selectrow_array($statement);
     return $t;
 
   } elsif ($self->{dialect} eq 'SQLite') {
     my $sth = $self->{db_timestamp_sth};
     if (! defined $sth) {
       $sth = $dbh->prepare("SELECT datetime(?,'unixepoch');") or die $!;
+    }
+    $sth->execute($unix_time);
+    my ($t) = $sth->fetchrow_array;
+    return $t;
+
+  } elsif ($self->{dialect} eq 'MySQL') {
+    my $sth = $self->{db_timestamp_sth};
+    if (! defined $sth) {
+      $sth = $dbh->prepare("SELECT from_unixtime(?);") or die $!;
     }
     $sth->execute($unix_time);
     my ($t) = $sth->fetchrow_array;
@@ -596,7 +605,6 @@ sub is_positive {
     $expression .= " AND $field != ''";
   }
   $expression .= " AND $field>0";
-  print STDERR "is_positive($field) = $expression\n";
   return $expression;
 }
 
@@ -614,10 +622,8 @@ sub total_nav_latencies_sth {
       'n.total AS total ' .
       'FROM navigation n ' .
       'INNER JOIN upload u ON u.id=n.upload ' .
-       "WHERE " . $self->unix_timestamp('u.timestamp') . " BETWEEN ? AND ? " .
+       "WHERE u.timestamp BETWEEN ? AND ? " .
        " AND " . $self->is_positive('n.count') . ";";
-    print STDERR "$statement\n";
-
     $sth = $dbh->prepare($statement) or die $!;
     $self->{total_nav_latencies_sth} = $sth;
   }
@@ -639,10 +645,8 @@ sub total_nreq_latencies_sth {
       'nr.total AS total ' .
       'FROM navigation_request nr ' .
       'INNER JOIN upload u ON u.id=nr.upload ' .
-       "WHERE u.timestamp > datetime('now',?) AND " .
-       "u.timestamp <= datetime('now',?) AND " .
-       "nr.count IS NOT NULL AND nr.count != '' AND " .
-       "nr.count>0;";
+       "WHERE u.timestamp BETWEEN ? AND ?  AND " .
+       $self->is_positive('nr.count') . ";";
     $sth = $dbh->prepare($statement) or die $!;
     $self->{total_nreq_latencies_sth} = $sth;
   }
@@ -664,10 +668,8 @@ sub total_ureq_latencies_sth {
       'ur.total AS total ' .
       'FROM update_request ur ' .
       'INNER JOIN upload u ON u.id=ur.upload ' .
-       "WHERE u.timestamp > datetime('now',?) AND " .
-       "u.timestamp <= datetime('now',?) AND " .
-       "ur.count IS NOT NULL AND ur.count != '' AND " .
-       "ur.count>0;";
+       "WHERE u.timestamp BETWEEN ? AND ? AND " .
+       $self->is_positive('ur.count') . ";";
     $sth = $dbh->prepare($statement) or die $!;
     $self->{total_ureq_latencies_sth} = $sth;
   }
@@ -893,8 +895,7 @@ sub summary_meta_sth {
                   'count(distinct service) AS services,' .
 		  $self->common_aggregate_fields() .
                   ' FROM upload, report3 ' .
-                  "WHERE " . $self->unix_timestamp('timestamp') .
-		  " BETWEEN ? AND ? " .
+                  "WHERE timestamp BETWEEN ? AND ? " .
 		  "AND upload=id;" )
       or die "prepare failed";
   return $sth;
@@ -988,7 +989,7 @@ sub extension_version_summary_sth {
   my $sth =
     $dbh->prepare('SELECT version AS name,count(*) AS value' .
                   ' FROM upload AS u ' .
-                  'WHERE timestamp > ? AND timestamp <= ? ' .
+                  'WHERE timestamp BETWEEN ? AND ? ' .
                   'GROUP BY version ' .
 		  'ORDER BY version;')
       or die "prepare failed";
@@ -1003,8 +1004,7 @@ sub extension_version_sth {
 		  $self->unix_timestamp('u.timestamp') . ' AS timestamp,' .
 		  'version AS measure,1 AS amount' .
                   ' FROM upload AS u ' .
-                  "WHERE timestamp > datetime('now',?) AND " .
-		  "timestamp <= datetime('now',?);")
+                  "WHERE u.timestamp BETWEEN ? AND ? ;")
       or die "prepare failed";
   return $sth;
 }
@@ -1015,7 +1015,7 @@ sub user_agent_summary_sth {
   my $sth =
     $dbh->prepare('SELECT user_agent AS name,count(*) AS value' .
                   ' FROM upload ' .
-                  'WHERE timestamp > ? AND timestamp <= ? ' .
+                  'WHERE timestamp BETWEEN ? AND ? ' .
                   'GROUP BY user_agent ' .
 		  'ORDER BY user_agent;')
       or die "prepare failed";
@@ -1030,8 +1030,7 @@ sub user_agent_sth {
 		  $self->unix_timestamp('u.timestamp') . ' AS timestamp,' .
 		  'user_agent AS measure,1 AS amount' .
                   ' FROM upload AS u ' .
-                  "WHERE timestamp > datetime('now',?) AND " .
-		  "timestamp <= datetime('now',?);")
+                  "WHERE u.timestamp BETWEEN ? AND ?;")
       or die "prepare failed";
   return $sth;
 }

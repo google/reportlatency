@@ -50,8 +50,10 @@ sub user_agents {
   my ($store,$options) = @_;
   my $sth = $store->user_agent_sth();
 
-  my $rc = $sth->execute("-$ReportLatency::utils::duration seconds",
-			 '0 seconds');
+  my $t = time;
+  my $begin = $store->db_timestamp($t - $ReportLatency::utils::duration);
+  my $end = $store->db_timestamp($t);
+  my $rc = $sth->execute($begin, $end);
 
   my $graph = new ReportLatency::StackedGraph( width => $reqwidth,
 					      height => $reqheight,
@@ -71,7 +73,10 @@ sub extensions {
   my ($store,$options) = @_;
   my $sth = $store->extension_version_sth();
 
-  my $rc = $sth->execute("-$ReportLatency::utils::duration seconds", '0 seconds');
+  my $t = time;
+  my $begin = $store->db_timestamp($t - $ReportLatency::utils::duration);
+  my $end = $store->db_timestamp($t);
+  my $rc = $sth->execute($begin, $end);
 
   my $graph = new ReportLatency::StackedGraph( width => $reqwidth,
 					      height => $reqheight,
@@ -90,9 +95,13 @@ sub extensions {
 sub total_graph {
   my ($store,$options) = @_;
 
-  my $sth = $store->total_nav_latencies_sth();
   my $t = time;
-  my $latency_rc = $sth->execute($t-$ReportLatency::utils::duration, $t);
+  my $begin = $store->db_timestamp($t - $ReportLatency::utils::duration);
+  my $end = $store->db_timestamp($t);
+
+  my $sth = $store->total_nav_latencies_sth();
+  
+  my $latency_rc = $sth->execute($begin, $end);
 
   my $spectrum = new ReportLatency::Spectrum( width => $navwidth,
 					      height => $navheight,
@@ -111,8 +120,7 @@ sub total_graph {
 
   $sth = $store->total_nreq_latencies_sth();
 
-  $latency_rc = $sth->execute(-$ReportLatency::utils::duration . " seconds",
-			      '0 seconds');
+  $latency_rc = $sth->execute($begin, $end);
 
   $spectrum = new ReportLatency::Spectrum( width => $reqwidth,
 					   height => $reqheight,
@@ -132,7 +140,7 @@ sub total_graph {
 
   $sth = $store->total_ureq_latencies_sth();
 
-  $latency_rc = $sth->execute(-$ReportLatency::utils::duration . " seconds", '0 seconds');
+  $latency_rc = $sth->execute($begin, $end);
 
   $spectrum = new ReportLatency::Spectrum( width => $reqwidth,
 					   height => $reqheight,
@@ -153,8 +161,11 @@ sub total_graph {
 sub total_report {
   my ($view,$options) = @_;
   my $html = new ReportLatency::AtomicFile("tags/summary/index.html");
+  my $store = $view->{store};
   my $t = time;
-  print $html $view->summary_html($t-$ReportLatency::utils::duration, $t);
+  my $begin = $store->db_timestamp($t-$ReportLatency::utils::duration);
+  my $end = $store->db_timestamp($t);
+  print $html $view->summary_html($begin, $end);
   close($html);
 }
 

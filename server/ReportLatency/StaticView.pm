@@ -288,7 +288,7 @@ sub summary_html {
   my $extensions_url = $self->extensions_url('summary');
 
 
-  my $rc = $meta_sth->execute($begin,$end);
+  my $rc = $meta_sth->execute($begin, $end);
   my $meta = $meta_sth->fetchrow_hashref;
   $meta_sth->finish;
 
@@ -331,8 +331,7 @@ $image_banner
 $tag_header
 EOF
 
-  $rc = $tag_sth->execute($meta->{'min_timestamp'},
-				$meta->{'max_timestamp'});
+  $rc = $tag_sth->execute($begin, $end);
 
   while (my $tag = $tag_sth->fetchrow_hashref) {
     my $name = $tag->{tag};
@@ -342,8 +341,7 @@ EOF
   }
   $tag_sth->finish;
 
-  $rc = $other_sth->execute($meta->{'min_timestamp'},
-			    $meta->{'max_timestamp'});
+  $rc = $other_sth->execute($begin, $end);
   my $other = $other_sth->fetchrow_hashref;
   my $url = $self->untagged_url();
   print $io $self->latency_summary_row('untagged',$url,
@@ -377,8 +375,7 @@ EOF
 <table class="alternate" summary="Latency report for all services by location">
 $location_header
 EOF
-  $rc = $location_sth->execute($meta->{'min_timestamp'},
-			       $meta->{'max_timestamp'});
+  $rc = $location_sth->execute($begin, $end);
 
   while (my $location = $location_sth->fetchrow_hashref) {
     my $name = $location->{location};
@@ -400,8 +397,7 @@ EOF
         <tr> <th>User Agent</th> <th>Uploads</th> </tr>
 EOF
 
-  $rc = $user_agent_sth->execute($meta->{'min_timestamp'},
-				 $meta->{'max_timestamp'});
+  $rc = $user_agent_sth->execute($begin, $end);
 
   while (my $ua = $user_agent_sth->fetchrow_hashref) {
     print $io $self->name_value_row($ua);
@@ -417,8 +413,7 @@ print $io <<EOF;
         <tr> <th>Extension Version</th> <th>Uploads</th> </tr>
 EOF
 
-  $rc = $extension_version_sth->execute($meta->{'min_timestamp'},
-					$meta->{'max_timestamp'});
+  $rc = $extension_version_sth->execute($begin, $end);
 
   while (my $v = $extension_version_sth->fetchrow_hashref) {
     print $io $self->name_value_row($v);
