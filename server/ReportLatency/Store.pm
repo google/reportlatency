@@ -889,7 +889,7 @@ sub summary_meta_sth {
   my ($self) = @_;
   my $dbh = $self->{dbh};
   my $sth =
-    $dbh->prepare('SELECT "total" AS tag,' .
+    $dbh->prepare("SELECT 'total' AS tag," .
 		  'min(timestamp) AS min_timestamp,' .
                   'max(timestamp) AS max_timestamp,' .
                   'count(distinct service) AS services,' .
