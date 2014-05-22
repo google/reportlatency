@@ -10,3 +10,4 @@ DROP TABLE IF EXISTS navigation_request;
 DROP TABLE IF EXISTS update_request;
 DROP TABLE IF EXISTS upload;
 DROP FUNCTION IF EXISTS upload_timestamp();
+DROP FUNCTION IF EXISTS last_insert_rowid();

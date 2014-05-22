@@ -115,7 +115,7 @@ CREATE TABLE notmatch (
 
 -- All other databases need to map last_insert_rowid() to their local
 -- function.  sqlite3 doesn't have a procedural language and can't map.
-CREATE FUNCTION last_insert_rowid()
+CREATE OR REPLACE FUNCTION last_insert_rowid()
  RETURNS INTEGER AS $$
 BEGIN
 	RETURN LASTVAL();
