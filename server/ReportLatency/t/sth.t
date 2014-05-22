@@ -288,10 +288,9 @@ is($row, undef, 'last location nreq latency row');
 
 
 $sth = $store->extension_version_sth();
-$sth->execute(time-300, time);
+$sth->execute($store->db_timestamp(time-300), $store->db_timestamp(time));
 for (my $i=0; $i<3; $i++) {
   $row = $sth->fetchrow_hashref;
-  print STDERR Dumper($row);
   is($row->{measure}, undef, 'undef extension_version');
   is($row->{amount}, 1, '1 extension_version');
   cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
@@ -302,7 +301,7 @@ is($row, undef, 'last extension_version row');
 
 
 $sth = $store->user_agent_sth();
-$sth->execute(time-300, time);
+$sth->execute($store->db_timestamp(time-300), $store->db_timestamp(time));
 for (my $i=0; $i<3; $i++) {
   $row = $sth->fetchrow_hashref;
   is($row->{measure}, undef, 'undef user_agent');

@@ -81,7 +81,6 @@ my ($count) = $count_sth->fetchrow_array;
 is($count, 2, '2 tag');
 $count_sth->finish;
 
-
 chdir($dir);
 
 
