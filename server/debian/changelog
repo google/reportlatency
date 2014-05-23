@@ -1,8 +1,12 @@
 reportlatency (1.5.10) precise; urgency=low
 
   * remove hardcoded two week duration for reports and graphs
+  * Updated views and schema - better performance
+  * some working Postgres support (summary.pl)
+  * begin transition to native SQL timestamps and procedural unix
+    timestamps only
 
- -- Drake Diedrich <dld@google.com>  Mon, 19 May 2014 13:53:39 -0700
+ -- Drake Diedrich <dld@google.com>  Fri, 23 May 2014 14:46:26 -0700
 
 reportlatency (1.5.9) precise; urgency=low
 
