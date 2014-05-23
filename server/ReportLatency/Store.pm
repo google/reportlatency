@@ -912,7 +912,7 @@ sub summary_tag_sth {
                   ' FROM report r ' .
 		  'INNER JOIN tag t ' .
 		  'ON r.service = t.service ' .
-                  'WHERE timestamp > ? AND timestamp <= ? ' .
+                  'WHERE timestamp BETWEEN ? AND ? ' .
                   'GROUP BY t.tag ' .
 		  'ORDER BY t.tag;')
       or die "prepare failed";
@@ -926,10 +926,11 @@ sub summary_untagged_sth {
     $dbh->prepare('SELECT ' .
                   'count(distinct r.service) AS services,' .
 		  $self->common_aggregate_fields() .
-                  ' FROM report r ' .
+                  ' FROM upload u ' .
+		  'INNER JOIN report3 r ON u.id=r.upload ' .
 		  'LEFT OUTER JOIN tag t ' .
 		  'ON r.service = t.service ' .
-                  'WHERE timestamp > ? AND timestamp <= ? ' .
+                  'WHERE timestamp BETWEEN ? AND ? ' .
 		  'AND t.tag is null;')
       or die "prepare failed";
   return $sth;
