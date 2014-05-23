@@ -103,6 +103,8 @@ ok($dbh->do(q{
 }), 'INSERT Mail tag');
 
 
+$dbh->commit;
+
 $sth = $store->untagged_ureq_latencies_sth();
 $sth->execute('-300 seconds', "0 seconds");
 $row = $sth->fetchrow_hashref;
@@ -339,5 +341,3 @@ is($row->{ureq_count}, 20, '20 ureqs');
 is($row->{ureq_latency}, 5550/20, 'ureq latency');
 $row = $sth->fetchrow_hashref;
 is($row, undef, "one row from summary metadata");
-
-
