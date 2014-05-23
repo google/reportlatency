@@ -3,3 +3,4 @@
 \copy navigation_request (upload,name,service,count,total,high,low,tabclosed,response200,response300,response400,response500) FROM 'navigation_request.csv' DELIMITER ',' NULL AS '';
 \copy update_request (upload,name,service,count,total,high,low,tabclosed,response200,response300,response400,response500) FROM 'update_request.csv' DELIMITER ',' NULL AS '';
 select setval('upload_id_seq', (SELECT max(id)+1 from upload));
+\copy tag (service,tag) FROM 'tag.csv' DELIMITER ',' NULL AS '';

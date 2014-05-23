@@ -8,3 +8,5 @@ select upload,name,service,count,total,high,low,tabclosed,response200,response30
 select upload,name,service,count,total,high,low,tabclosed,response200,response300,response400,response500 from navigation_request WHERE navigation_request.upload IN (SELECT id FROM upload);
 .output update_request.csv
 select upload,name,service,count,total,high,low,tabclosed,response200,response300,response400,response500 from update_request WHERE update_request.upload IN (SELECT id FROM upload);
+.output tag.csv
+select service,tag FROM tag;
