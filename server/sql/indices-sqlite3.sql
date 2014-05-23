@@ -21,6 +21,7 @@ CREATE INDEX navigation_request_service_upload ON
 CREATE INDEX update_request_upload ON update_request(upload);
 CREATE INDEX update_request_service_upload ON update_request(service,upload);
 CREATE INDEX navigation_service_upload ON navigation(service,upload);
+CREATE INDEX navigation_upload ON navigation(upload);
 CREATE INDEX tag_tag_service on tag(tag,service);
 CREATE INDEX tag_service_tag on tag(service,tag);
 CREATE INDEX location_location ON location(location);

@@ -1,5 +1,5 @@
 -- upgrade the previous schema to the current schema
--- 1.5.3->1.5.4 in this version
+-- 1.5.9->1.5.10 in this version
 --
 -- Copyright 2013,2014 Google Inc. All Rights Reserved.
 --
@@ -19,8 +19,6 @@ BEGIN;
 DROP VIEW report;
 DROP VIEW report3;
 DROP VIEW report2;
-DROP VIEW names;
-DROP VIEW services;
 DROP INDEX location_ip;
 DROP INDEX location_location;
 DROP INDEX location_timestamp;
@@ -43,10 +41,6 @@ DROP INDEX upload_timestamp;
 DROP INDEX upload_tz;
 DROP INDEX upload_user_agent;
 DROP INDEX upload_version;
-ALTER TABLE navigation ADD COLUMN response200 INTEGER;
-ALTER TABLE navigation ADD COLUMN response300 INTEGER;
-ALTER TABLE navigation ADD COLUMN response400 INTEGER;
-ALTER TABLE navigation ADD COLUMN response500 INTEGER;
 .read views-sqlite3.sql
 .read indices-sqlite3.sql
 END;
