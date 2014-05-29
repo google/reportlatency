@@ -64,7 +64,7 @@ test('LatencyData.*Navigation', function() {
   ld.startNavigation(data);
   ts = ld.tab[30].stat;
   equal(ts.count('nav'), 0, '0 navigation for tab 30');
-  ld.tabRemoved(30, {});
+  ld.tabRemoved(30, { timeStamp: 5500 });
   equal(ld.countable('nav','tabclosed'), 1,
 	'1 tabclosed events');
 });

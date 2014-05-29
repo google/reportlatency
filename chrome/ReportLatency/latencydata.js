@@ -122,7 +122,12 @@ LatencyData.prototype.tabRemoved = function(tabId, removeInfo) {
 	      removeInfo);
   }
   if (tabId in this.tab) {
-    this.tab[tabId].tabClosed(this.stats);
+    this.tab[tabId].tabRemoved(removeInfo);
+    var navigation = this.tab[tabId].navigation;
+    if (navigation) {
+      var service = aggregateName(this.tab[tabId].navigation.url);
+      this.stats.transfer(service, this.tab[tabId].stat);
+    }
     delete this.tab[tabId];
   } else {
     if (localStorage['debug_tabs'] == 'true') {
