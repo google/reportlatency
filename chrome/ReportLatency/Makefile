@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-TARGETS=eventPage.js testable.js tests.js options.js ReportLatency.zip
+TARGETS=eventPage.js options.js ReportLatency.zip
 
 SHIP=manifest.json icon128.png options.html $(TARGETS)
 
@@ -29,12 +29,6 @@ SOURCE=functions.js stat.js latencystats.js namestats.js servicestats.js tabdata
 all: $(TARGETS)
 
 eventPage.js: globals.js $(GLOBAL_DEFAULTS) $(SOURCE) $(SERVICE_SOURCE) handlers.js
-	cat $^ >$@
-
-testable.js: globals.js $(SOURCE) $(SERVICE_SOURCE)
-	cat $^ >$@
-
-tests.js: $(TEST_SOURCE)
 	cat $^ >$@
 
 options.js: globals.js $(GLOBAL_DEFAULTS) $(OPTION_SOURCE)
