@@ -134,9 +134,9 @@ sub availability {
   my $r400 = ($row->{$type . "_400"} || 0);
   my $r500 = ($row->{$type . "_500"} || 0);
   my $closed = ($row->{$type . "_tabclosed"} || 0);
-  my $denom = $count + $closed - $r300;
+  my $denom = $count - $r300;
   if ($denom > 0) {
-    return ($count - $r500 - $r400 - $r300) / $denom;
+    return ($count - $r500 - $r400 - $r300 - $closed) / $denom;
   } else {
     return undef;
   }
