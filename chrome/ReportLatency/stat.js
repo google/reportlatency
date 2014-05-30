@@ -34,6 +34,7 @@ function Stat() {
 }
 
 
+
 /**
  * Adds a new measurement to a Stat (statistical measurement).
  * Limited data on the distribution is maintained, currently just
@@ -62,6 +63,22 @@ Stat.prototype.add = function(delta) {
   if (this.count>2) {
     if (delta < this.low) {
       this.low = delta;
+    }
+  }
+
+  if (delta <= 1000) {
+    if (delta <= 100) {
+      this.increment('m100');
+    } else if (delta <= 500) {
+      this.increment('m500');
+    } else {
+      this.increment('m1000');
+    }
+  } else {
+    if (delta <= 2000) {
+      this.increment('m2000');
+    } else if (delta <= 10000) {
+      this.increment('m10000');
     }
   }
 };

@@ -43,6 +43,20 @@ test('Stat.add', function() {
   equal(s.high, 1500, 'triple high');
   equal(s.low, 30, 'triple low');
 
+  equal(s.m10000, undefined, 'no 10s bin yet');
+
+  s.add(300);
+  s.add(330);
+  s.add(360);
+  s.add(5000);
+  s.add(6000);
+  s.add(59000);
+
+  equal(s.m100, 1, '1 100ms bin');
+  equal(s.m500, 3, '3 500ms bin');
+  equal(s.m1000, 1, '1 1s bin');
+  equal(s.m2000, 1, '1 2s bin');
+  equal(s.m10000, 2, '2 10s bin');
 });
 
 test('Stat.increment', function() {
