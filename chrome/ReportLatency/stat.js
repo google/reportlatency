@@ -42,23 +42,27 @@ function Stat() {
  * @param {number} delta The is a new measurement to incorporate in the stat.
  */
 Stat.prototype.add = function(delta) {
+  if (this.count == 1) {
+    this.high = this.total;
+  }
+
+  if (this.count == 2) {
+    this.low = this.total - this.high;
+  }
+
   this.count++;
   this.total += delta;
 
-  if (this.high) {
+  if (this.count>1) {
     if (delta > this.high) {
       this.high = delta;
     }
-  } else {
-    this.high = delta;
   }
 
-  if (this.low) {
+  if (this.count>2) {
     if (delta < this.low) {
       this.low = delta;
     }
-  } else {
-    this.low = delta;
   }
 };
 

@@ -23,17 +23,19 @@ test('Stat.add', function() {
   equal(s.count, 0, 'empty count');
   equal(s.total, 0, 'empty total');
   equal(s.high, undefined, 'empty high');
+  equal(s.low, undefined, 'empty low');
 
   s.add(550);
   equal(s.count, 1, 'single count');
   equal(s.total, 550, 'single total');
-  equal(s.high, 550, 'single high');
+  equal(s.high, undefined, 'single high');
+  equal(s.low, undefined, 'empty low');
 
   s.add(30);
   equal(s.count, 2, 'double count');
   equal(s.total, 580, 'double total');
   equal(s.high, 550, 'double high');
-  equal(s.low, 30, 'triple low');
+  equal(s.low, undefined, 'triple low');
 
   s.add(1500);
   equal(s.count, 3, 'triple count');
