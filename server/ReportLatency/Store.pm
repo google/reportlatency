@@ -238,10 +238,6 @@ sub add_name_stats {
     $self->add_navigation_request_stats($upload_id, $service, $name,
 					$namestats->{'nreq'});
   } 
-  if (defined $namestats->{'request'}) { # older extension.  delete soon.
-    $self->add_navigation_request_stats($upload_id, $service, $name,
-					$namestats->{'request'});
-  }
   if (defined $namestats->{'ureq'}) {
     $self->add_update_request_stats($upload_id, $service, $name,
 				    $namestats->{'ureq'});
@@ -249,10 +245,6 @@ sub add_name_stats {
   if (defined $namestats->{'nav'}) {
     $self->add_navigation_stats($upload_id, $service, $name,
 				$namestats->{'nav'});
-  }
-  if (defined $namestats->{'navigation'}) { # older extension. delete soon.
-    $self->add_navigation_stats($upload_id, $service, $name,
-				$namestats->{'navigation'});
   }
 }
 

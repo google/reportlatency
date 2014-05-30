@@ -89,7 +89,7 @@ is($count, 1, '1 upload');
 is($count, 1, '1 update request entry');
 
 ($count) = $dbh->selectrow_array("SELECT count(*) FROM navigation_request");
-is($count, 2, '2 navigation request entry');
+is($count, 1, '1 navigation request entry');
 
 ($count) = $dbh->selectrow_array("SELECT count(*) FROM navigation");
 is($count, 1, '1 navigation entry');
