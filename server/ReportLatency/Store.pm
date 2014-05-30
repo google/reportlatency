@@ -182,7 +182,12 @@ sub insert_stats {
 		   $stats->{'r200'},
 		   $stats->{'r300'},
 		   $stats->{'r400'},
-		   $stats->{'r500'});
+		   $stats->{'r500'},
+		   $stats->{'m100'},
+		   $stats->{'m500'},
+		   $stats->{'m1000'},
+		   $stats->{'m2000'},
+		   $stats->{'m10000'} );
 }
 
 sub add_navigation_request_stats {
@@ -192,8 +197,9 @@ sub add_navigation_request_stats {
     $self->{dbh}->prepare("INSERT INTO navigation_request " .
 			  "(upload, service, name, count, total, high, low, " .
 			  "tabclosed, response200, response300, " .
-			  "response400, response500) " .
-			  "VALUES(?,?,?,?,?,?,?,?,?,?,?,?);")
+			  "response400, response500, " .
+			  "m100, m500, m1000, m2000, m10000) " .
+			  "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);")
       unless defined $self->{insert_navigation_requests};
 
   $self->insert_stats($self->{insert_navigation_requests},
@@ -207,8 +213,9 @@ sub add_update_request_stats {
     $self->{dbh}->prepare("INSERT INTO update_request " .
 			  "(upload, service, name, count, total, high, low, " .
 			  "tabclosed, response200, response300, " .
-			  "response400, response500 ) " .
-			  "VALUES(?,?,?,?,?,?,?,?,?,?,?,?);")
+			  "response400, response500, " .
+			  "m100, m500, m1000, m2000, m10000) " .
+			  "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);")
       unless defined $self->{insert_update_requests};
 
   $self->insert_stats($self->{insert_update_requests},
@@ -222,8 +229,9 @@ sub add_navigation_stats {
     $self->{dbh}->prepare("INSERT INTO navigation " .
 			  "(upload, service, name, count, total, high, low, " .
 			  "tabclosed, response200, response300, " .
-			 "response400, response500) " .
-			  "VALUES(?,?,?,?,?,?,?,?,?,?,?,?);")
+			 "response400, response500, " .
+			  "m100, m500, m1000, m2000, m10000) " .
+			  "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);")
       unless defined $self->{insert_navigations};
 
   $self->insert_stats($self->{insert_navigations},

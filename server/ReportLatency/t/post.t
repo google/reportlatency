@@ -21,7 +21,7 @@ use DBI;
 use CGI;
 use IO::String;
 use File::Temp qw(tempfile tempdir);
-use Test::More tests => 16;
+use Test::More tests => 21;
 
 BEGIN { use lib '..'; }
 
@@ -58,15 +58,20 @@ print $postdata <<EOF;
    "w3.org":{
      "w3.org":{
        "nreq":{
+         "m100":1,
+         "m500":2,
+         "m1000":1,
          "count":4,
          "total":461.09619140625},
        "request":{
          "count":1,
          "total":333.3},
        "ureq":{
+         "m10000":1,
          "count":2,
          "total":64000},
        "nav":{
+         "m1000":1,
          "count":1,
          "total":900}}}}}
 EOF
@@ -94,6 +99,21 @@ is($count, 1, '1 navigation request entry');
 ($count) = $dbh->selectrow_array("SELECT count(*) FROM navigation");
 is($count, 1, '1 navigation entry');
 
+
+my ($sum) = $dbh->selectrow_array("SELECT sum(m100) FROM navigation_request");
+is($sum, 1, "1 - 100ms nreq");
+
+($sum) = $dbh->selectrow_array("SELECT sum(m500) FROM navigation_request");
+is($sum, 2, "2 - 500ms nreq");
+
+($sum) = $dbh->selectrow_array("SELECT sum(m1000) FROM navigation_request");
+is($sum, 1, "1 - 1000ms nreq");
+
+($sum) = $dbh->selectrow_array("SELECT sum(m10000) FROM update_request");
+is($sum, 1, "1 - 10000ms ureq");
+
+($sum) = $dbh->selectrow_array("SELECT sum(m1000) FROM navigation");
+is($sum, 1, "1 - 1000ms nav");
 
 my ($timestamp,$location) =
   $dbh->selectrow_array("SELECT timestamp,location " .
