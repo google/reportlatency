@@ -1,3 +1,10 @@
+reportlatency (1.6.0) precise; urgency=low
+
+  * schema and POST change to support timed bins at 100ms, 500ms, 1s,
+    2s, and 10s
+
+ -- Drake Diedrich <dld@google.com>  Mon, 02 Jun 2014 10:53:55 -0700
+
 reportlatency (1.5.10) precise; urgency=low
 
   * remove hardcoded two week duration for reports and graphs
