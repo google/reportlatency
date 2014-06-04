@@ -84,10 +84,10 @@ ok(unlink("$dir/tags/summary/nav_latency.png"),
    "unlink summary/nav_latency.png");
 ok(unlink("$dir/tags/summary/nav_error.png"),
    "unlink summary/nav_error.png");
-ok(unlink("$dir/tags/summary/update_request.png"),
-   "rm tags/summary/update_request.png");
-ok(unlink("$dir/tags/summary/nav_request.png"),
-   "rm tags/summary/nav_request.png");
+ok(unlink("$dir/tags/summary/ureq_spectrum.png"),
+   "rm summary/ureq_spectrum.png");
+ok(unlink("$dir/tags/summary/nreq_spectrum.png"),
+   "rm summary/nreq_spectrum.png");
 ok(unlink("$dir/tags/summary/extensions.png"),"unlink summary/extensions.png");
 ok(unlink("$dir/tags/summary/useragents.png"),"unlink summary/useragents.png");
 ok(unlink("$dir/tags/summary/index.html"),"unlink summary/index.html");

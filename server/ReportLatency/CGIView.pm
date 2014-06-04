@@ -30,6 +30,11 @@ sub untagged_img_url {
   return "../../reportlatency/tags/untagged/navigation.png";
 }
 
+sub tag_img_prefix {
+  my ($self,$tag) = @_;
+  return "../../reportlatency/tags/$tag/";
+}
+
 sub tag_img_url {
   my ($self,$tag) = @_;
   return "../../reportlatency/tags/$tag/navigation.png";

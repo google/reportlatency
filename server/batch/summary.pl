@@ -133,7 +133,7 @@ sub total_graph {
     $spectrum->add_row($row);
   }
 
-  $png = new ReportLatency::AtomicFile("tags/summary/nav_request.png");
+  $png = new ReportLatency::AtomicFile("tags/summary/nreq_spectrum.png");
   print $png $spectrum->png();
   close($png);
 
@@ -153,7 +153,7 @@ sub total_graph {
     $spectrum->add_row($row);
   }
 
-  $png = new ReportLatency::AtomicFile("tags/summary/update_request.png");
+  $png = new ReportLatency::AtomicFile("tags/summary/ureq_spectrum.png");
   print $png $spectrum->png();
   close($png);
 

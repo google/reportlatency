@@ -34,6 +34,11 @@ sub new {
   return $self;
 }
 
+sub tag_img_prefix {
+  my ($self,$tag) = @_;
+  return "";
+}
+
 sub tag_img_url {
   my ($self,$tag) = @_;
   return "navigation.png";
@@ -250,31 +255,43 @@ EOF
 }
 
 sub image_banner {
-  my ($self,$nav_img,$nreq_img,$ureq_img) = @_;
+  my ($self,$img_prefix) = @_;
   return <<EOF
 <div id="nav">
   <p>
-    <img src="nav_latency.png" width="95%" alt="navigation latency spectrum">
+    <img src="${img_prefix}nav_latency.png" width="95%" alt="navigation latency spectrum">
   </p>
   <p>
-    <img src="nav_error.png" width="95%" alt="navigation errors over time">
+    <img src="${img_prefix}nav_error.png" width="95%" alt="navigation errors over time">
   </p>
   <p>
-    <img src="$nav_img" width="95%" alt="navigation latency spectrum">
+    <img src="${img_prefix}nav_spectrum.png" width="95%" alt="navigation latency spectrum">
     <br>
     Navigation (Pageload)
   </p>
 </div>
 <div id="nreq">
   <p>
-    <img src="$nreq_img" width="90%" alt="nav request latency">
+    <img src="${img_prefix}nreq_latency.png" width="95%" alt="nav request latency">
+  </p>
+  <p>
+    <img src="${img_prefix}nreq_error.png" width="95%" alt="navigation request errors over time">
+  </p>
+  <p>
+    <img src="${img_prefix}nreq_spectrum.png" width="95%" alt="navigation request latency spectrum">
     <br>
-    Request latency during navigation
+    Requests during navigation
   </p>
 </div>
 <div id="ureq">
   <p>
-    <img src="$ureq_img" width="90%" alt="update request latency">
+    <img src="${img_prefix}ureq_latency.png" width="95%" alt="update request latency">
+  </p>
+  <p>
+    <img src="${img_prefix}ureq_error.png" width="95%" alt="update request errors over time">
+  </p>
+  <p>
+    <img src="${img_prefix}ureq_spectrum.png" width="95%" alt="update request latency spectrum">
     <br>
     Request latency after navigation
   </p>
@@ -294,12 +311,7 @@ sub summary_html {
   my $extension_version_sth = $store->extension_version_summary_sth;
   my $user_agent_sth = $store->user_agent_summary_sth;
 
-  my $summary_img_url = $self->tag_img_url('summary');
-  my $nreq_img_url = $self->tag_nreq_img_url('summary');
-  my $ureq_img_url = $self->tag_ureq_img_url('summary');
-  my $useragents_url = $self->useragents_url('summary');
-  my $extensions_url = $self->extensions_url('summary');
-
+  my $image_prefix = $self->tag_img_prefix('summary');
 
   my $rc = $meta_sth->execute($begin, $end);
   my $meta = $meta_sth->fetchrow_hashref;
@@ -311,8 +323,7 @@ sub summary_html {
   my $header_2 = $self->common_header_2();
   my $altstyle = $self->alternate_style();
   my $twostyle = $self->dual_column_style();
-  my $image_banner = $self->image_banner($summary_img_url,$nreq_img_url,
-					 $ureq_img_url);
+  my $image_banner = $self->image_banner($image_prefix);
 
   my $tag_header = <<EOF;
 <tr>
@@ -405,7 +416,7 @@ EOF
 
 <h2> Client Summary </h2>
     <div id="left_column">
-<img src="useragents.png" alt="user_agent distribution over time"><br>
+<img src="${image_prefix}useragents.png" alt="user_agent distribution over time"><br>
       <table class="alternate" summary="Distribution of User Agents">
         <tr> <th>User Agent</th> <th>Uploads</th> </tr>
 EOF
@@ -421,7 +432,7 @@ print $io <<EOF;
       </table>
     </div>
     <div id="right_column">
-<img src="$extensions_url" alt="Distribution of User Agents over time"><br>
+<img src="${image_prefix}extensions.png" alt="Distribution of User Agents over time"><br>
       <table class="alternate" summary="Distribution of User Agents (browsers)">
         <tr> <th>Extension Version</th> <th>Uploads</th> </tr>
 EOF
