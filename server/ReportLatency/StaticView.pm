@@ -233,33 +233,46 @@ sub dual_column_style {
    float:left;
    width:50%;
 }
-#nav_column {
+#nav {
    float:left;
-   width:66%;
+   width:33%;
 }
-#req_column {
+#nreq {
+   float:left;
+   width:33%;
+}
+#ureq {
    float:right;
    width:33%;
 }
+
 EOF
 }
 
 sub image_banner {
   my ($self,$nav_img,$nreq_img,$ureq_img) = @_;
   return <<EOF
-<div id="nav_column">
+<div id="nav">
   <p>
-    <img src="$nav_img" width="100%" alt="navigation latency">
+    <img src="nav_latency.png" width="95%" alt="navigation latency spectrum">
+  </p>
+  <p>
+    <img src="nav_error.png" width="95%" alt="navigation errors over time">
+  </p>
+  <p>
+    <img src="$nav_img" width="95%" alt="navigation latency spectrum">
     <br>
-    Navigation (Pageload) Latency
+    Navigation (Pageload)
   </p>
 </div>
-<div id="req_column">
+<div id="nreq">
   <p>
     <img src="$nreq_img" width="90%" alt="nav request latency">
     <br>
     Request latency during navigation
   </p>
+</div>
+<div id="ureq">
   <p>
     <img src="$ureq_img" width="90%" alt="update request latency">
     <br>

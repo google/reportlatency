@@ -70,17 +70,18 @@ chdir($dir);
 
 main();
 
-open(my $id,"-|","identify", "$dir/tags/summary/navigation.png") or die $!;
+open(my $id,"-|","identify", "$dir/tags/summary/nav_spectrum.png") or die $!;
 my $line = $id->getline;
 like($line,
-     qr/navigation\.png PNG \d+x\d+/,
+     qr/nav_spectrum\.png PNG \d+x\d+/,
      'PNG');
 
 unlink($dbfile);
 rmdir("$dir/data");
-ok(unlink("$dir/tags/summary/navigation.png"),"unlink summary/navigation.png");
-ok(unlink("$dir/tags/summary/nav_latency_histogram.png"),
-   "unlink summary/nav_latency_histogram.png");
+ok(unlink("$dir/tags/summary/nav_spectrum.png"),
+   "unlink summary/nav_spectrum.png");
+ok(unlink("$dir/tags/summary/nav_latency.png"),
+   "unlink summary/nav_latency.png");
 ok(unlink("$dir/tags/summary/nav_error.png"),
    "unlink summary/nav_error.png");
 ok(unlink("$dir/tags/summary/update_request.png"),

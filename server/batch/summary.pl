@@ -29,14 +29,14 @@ use strict;
 
 my $days=14;
 my $hours=0.5;
-my $width=$days*24/$hours;
+my $width=$days*24/$hours * 3 / 4;
 my $height=int($width/2);
 
 my $navwidth = $width;
 my $navheight = $height;
 
-my $reqwidth = 3*$width/4;
-my $reqheight = 3*$height/4;
+my $reqwidth = $width;
+my $reqheight = $height;
 
 my $interval = $hours * 3600;
 my $border=24;
@@ -113,7 +113,7 @@ sub total_graph {
     $spectrum->add_row($row);
   }
 
-  my $png = new ReportLatency::AtomicFile("tags/summary/navigation.png");
+  my $png = new ReportLatency::AtomicFile("tags/summary/nav_spectrum.png");
   print $png $spectrum->png();
   close($png);
 
@@ -168,7 +168,7 @@ sub total_graph {
     $graph->add_row($row);
   }
 
-  $png = new ReportLatency::AtomicFile("tags/summary/nav_latency_histogram.png");
+  $png = new ReportLatency::AtomicFile("tags/summary/nav_latency.png");
   print $png $graph->img()->png();
   close($png);
 
