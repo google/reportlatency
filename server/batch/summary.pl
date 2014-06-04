@@ -182,6 +182,8 @@ sub total_graph {
     $graph->add_row($row);
   }
 
+  $graph->reorder('300','400','500','closed');
+
   $png = new ReportLatency::AtomicFile("tags/summary/nav_response_histogram.png");
   print $png $graph->img()->png();
   close($png);

@@ -75,12 +75,24 @@ sub _x {
   return $x;
 }
 
+sub reorder {
+  my ($self,@neworder) = @_;
+  $self->{order} = [];
+  foreach my $measure (@neworder) {
+    if (defined $self->{data}{$measure}) {
+      push(@{$self->{order}}, $measure);
+    }
+  }
+}
+
 sub add {
   my ($self,$timestamp,$measure,$amount) = @_;
   if ($amount>0) {
     my $x = $self->_x($timestamp);
     if (defined $x) {
       if (! defined $self->{data}{$measure}) {
+	$self->{order} = [] unless defined $self->{order};
+	push(@{$self->{order}}, $measure);
 	$self->{data}{$measure} = [];
 	foreach my $i (0..$self->width-1) {
 	  $self->{data}{$measure}[$i] = 0;
@@ -142,10 +154,10 @@ sub img() {
   my (@data);
   push(@data,$self->{xlabel});
 
-  foreach my $measure (sort keys %{$self->{data}}) {
+  foreach my $measure (@{$self->{order}}) {
     push(@data,$self->{data}{$measure});
   }
-  $graph->set_legend(sort keys %{$self->{data}});
+  $graph->set_legend(@{$self->{order}});
   my $gd = $graph->plot(\@data) or die $graph->error;
   $self->{img} = $gd;
   $gd;
