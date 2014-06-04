@@ -91,8 +91,6 @@ sub add {
     my $x = $self->_x($timestamp);
     if (defined $x) {
       if (! defined $self->{data}{$measure}) {
-	$self->{order} = [] unless defined $self->{order};
-	push(@{$self->{order}}, $measure);
 	$self->{data}{$measure} = [];
 	foreach my $i (0..$self->width-1) {
 	  $self->{data}{$measure}[$i] = 0;
@@ -153,6 +151,10 @@ sub img() {
 
   my (@data);
   push(@data,$self->{xlabel});
+
+  if (!defined $self->{order}) {
+    $self->{order} = [ sort keys %{$self->{data}} ];
+  }
 
   foreach my $measure (@{$self->{order}}) {
     push(@data,$self->{data}{$measure});
