@@ -81,8 +81,8 @@ rmdir("$dir/data");
 ok(unlink("$dir/tags/summary/navigation.png"),"unlink summary/navigation.png");
 ok(unlink("$dir/tags/summary/nav_latency_histogram.png"),
    "unlink summary/nav_latency_histogram.png");
-ok(unlink("$dir/tags/summary/nav_response_histogram.png"),
-   "unlink summary/nav_response_histogram.png");
+ok(unlink("$dir/tags/summary/nav_error.png"),
+   "unlink summary/nav_error.png");
 ok(unlink("$dir/tags/summary/update_request.png"),
    "rm tags/summary/update_request.png");
 ok(unlink("$dir/tags/summary/nav_request.png"),
