@@ -984,37 +984,54 @@ sub location_service_sth {
   return $sth;
 }
 
-sub nav_latency_histogram_summary_sth {
-  my ($self) = @_;
+sub current_uploads {
+  my ($self,$begin,$end) = @_;
+  if (!defined $self->{current_uploads}) {
+    my $dbh = $self->{dbh};
+    my $sth =
+      $dbh->prepare('CREATE TEMP TABLE current AS ' .
+		    'SELECT *,' .
+		    $self->unix_timestamp('timestamp') . ' AS utimestamp ' .
+		    'FROM upload WHERE timestamp BETWEEN ? AND ?; ')
+	or die "prepare failed";
+    my $rc = $sth->execute($begin,$end);
+    $self->{current_uploads} = $rc;
+  }
+}
+
+sub nav_latency_histogram_summary {
+  my ($self,$begin,$end) = @_;
+
+  $self->current_uploads($begin,$end);
+
   my $dbh = $self->{dbh};
   my $sth =
     $dbh->prepare("SELECT " . 
-		  $self->unix_timestamp('u.timestamp') . ' AS timestamp,' .
+		  'utimestamp AS timestamp,' .
 		  "'closed' AS measure,tabclosed AS amount " .
-                  'FROM upload AS u, navigation AS n ' .
-                  'WHERE timestamp BETWEEN ? AND ? ' .
-		  'AND n.upload=u.id ' .
-		  'AND tabclosed>0 ' .
-                  'GROUP BY version ' .
-		  'ORDER BY version;')
+                  'FROM current AS u, navigation AS n ' .
+                  'WHERE n.upload=u.id ' .
+		  'AND tabclosed>0;')
       or die "prepare failed";
+  $sth->execute();
   return $sth;
 }
 
-sub nav_response_histogram_summary_sth {
-  my ($self) = @_;
+
+sub nav_response_histogram_summary {
+  my ($self,$begin,$end) = @_;
+
+  $self->current_uploads($begin,$end);
+
   my $dbh = $self->{dbh};
   my $sth =
-    $dbh->prepare("SELECT " .
-		  $self->unix_timestamp('u.timestamp') . ' AS timestamp,' .
+    $dbh->prepare('SELECT utimestamp AS timestamp,' .
 		  "'closed' AS measure,tabclosed AS amount " .
-                  'FROM upload AS u, navigation AS n ' .
-                  'WHERE timestamp BETWEEN ? AND ? ' .
-		  'AND n.upload=u.id ' .
-		  'AND tabclosed>0 ' .
-                  'GROUP BY version ' .
-		  'ORDER BY version;')
+                  'FROM current AS u, navigation AS n ' .
+                  'WHERE n.upload=u.id ' .
+		  'AND tabclosed>0;')
       or die "prepare failed";
+  $sth->execute();
   return $sth;
 }
 

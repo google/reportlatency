@@ -158,8 +158,7 @@ sub total_graph {
   close($png);
 
 
-  $sth = $store->nav_latency_histogram_summary_sth();
-  my $rc = $sth->execute($begin, $end);
+  $sth = $store->nav_latency_histogram_summary($begin, $end);
   my $graph = new ReportLatency::StackedGraph( width => $reqwidth,
 					      height => $reqheight,
 					      duration => $ReportLatency::utils::duration,
@@ -173,8 +172,7 @@ sub total_graph {
   print $png $graph->img()->png();
   close($png);
 
-  $sth = $store->nav_response_histogram_summary_sth();
-  $rc = $sth->execute($begin, $end);
+  $sth = $store->nav_response_histogram_summary($begin, $end);
   $graph = new ReportLatency::StackedGraph( width => $reqwidth,
 					      height => $reqheight,
 					      duration => $ReportLatency::utils::duration,
