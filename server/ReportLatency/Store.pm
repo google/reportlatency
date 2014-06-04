@@ -1006,25 +1006,6 @@ sub nav_latency_histogram_summary {
 
   my $dbh = $self->{dbh};
   my $sth =
-    $dbh->prepare("SELECT " . 
-		  'utimestamp AS timestamp,' .
-		  "'closed' AS measure,tabclosed AS amount " .
-                  'FROM current AS u, navigation AS n ' .
-                  'WHERE n.upload=u.id ' .
-		  'AND tabclosed>0;')
-      or die "prepare failed";
-  $sth->execute();
-  return $sth;
-}
-
-
-sub nav_response_histogram_summary {
-  my ($self,$begin,$end) = @_;
-
-  $self->current_uploads($begin,$end);
-
-  my $dbh = $self->{dbh};
-  my $sth =
     $dbh->prepare('SELECT utimestamp AS timestamp,' .
 		  "'closed' AS measure,tabclosed AS amount " .
                   'FROM current AS u, navigation AS n ' .
@@ -1034,6 +1015,40 @@ sub nav_response_histogram_summary {
   $sth->execute();
   return $sth;
 }
+
+sub nav_response_histogram_summary {
+  my ($self,$begin,$end) = @_;
+
+  $self->current_uploads($begin,$end);
+
+  my $dbh = $self->{dbh};
+  my $sth =
+    $dbh->prepare( <<EOS ) or die "prepare failed";
+SELECT utimestamp AS timestamp, 'closed' AS measure,tabclosed AS amount 
+FROM current AS u, navigation AS n
+WHERE n.upload=u.id AND tabclosed>0
+UNION
+SELECT utimestamp AS timestamp, '500' AS measure,response500 AS amount 
+FROM current AS u, navigation AS n
+WHERE n.upload=u.id AND response500>0
+UNION
+SELECT utimestamp AS timestamp, '400' AS measure,response400 AS amount 
+FROM current AS u, navigation AS n
+WHERE n.upload=u.id AND response400>0
+UNION
+SELECT utimestamp AS timestamp, '300' AS measure,response300 AS amount 
+FROM current AS u, navigation AS n
+WHERE n.upload=u.id AND response300>0
+UNION
+SELECT utimestamp AS timestamp, '200' AS measure,response200 AS amount 
+FROM current AS u, navigation AS n
+WHERE n.upload=u.id AND response200>0;
+EOS
+
+  $sth->execute();
+  return $sth;
+}
+
 
 sub extension_version_summary_sth {
   my ($self) = @_;
