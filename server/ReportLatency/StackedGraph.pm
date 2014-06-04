@@ -100,6 +100,7 @@ sub add_row {
   my $timestamp = $row->{'timestamp'};
   my $measure = $row->{'measure'};
   my $amount = $row->{'amount'};
+
   return $self->add($timestamp, $measure, $amount);
 }
 

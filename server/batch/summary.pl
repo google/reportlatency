@@ -156,6 +156,38 @@ sub total_graph {
   $png = new ReportLatency::AtomicFile("tags/summary/update_request.png");
   print $png $spectrum->png();
   close($png);
+
+
+  $sth = $store->nav_latency_histogram_summary_sth();
+  my $rc = $sth->execute($begin, $end);
+  my $graph = new ReportLatency::StackedGraph( width => $reqwidth,
+					      height => $reqheight,
+					      duration => $ReportLatency::utils::duration,
+					      border => 24 );
+  
+  while (my $row = $sth->fetchrow_hashref) {
+    $graph->add_row($row);
+  }
+
+  $png = new ReportLatency::AtomicFile("tags/summary/nav_latency_histogram.png");
+  print $png $graph->img()->png();
+  close($png);
+
+  $sth = $store->nav_response_histogram_summary_sth();
+  $rc = $sth->execute($begin, $end);
+  $graph = new ReportLatency::StackedGraph( width => $reqwidth,
+					      height => $reqheight,
+					      duration => $ReportLatency::utils::duration,
+					      border => 24 );
+  
+  while (my $row = $sth->fetchrow_hashref) {
+    $graph->add_row($row);
+  }
+
+  $png = new ReportLatency::AtomicFile("tags/summary/nav_response_histogram.png");
+  print $png $graph->img()->png();
+  close($png);
+
 }
 
 sub total_report {

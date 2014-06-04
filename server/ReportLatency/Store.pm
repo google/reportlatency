@@ -984,6 +984,40 @@ sub location_service_sth {
   return $sth;
 }
 
+sub nav_latency_histogram_summary_sth {
+  my ($self) = @_;
+  my $dbh = $self->{dbh};
+  my $sth =
+    $dbh->prepare("SELECT " . 
+		  $self->unix_timestamp('u.timestamp') . ' AS timestamp,' .
+		  "'closed' AS measure,tabclosed AS amount " .
+                  'FROM upload AS u, navigation AS n ' .
+                  'WHERE timestamp BETWEEN ? AND ? ' .
+		  'AND n.upload=u.id ' .
+		  'AND tabclosed>0 ' .
+                  'GROUP BY version ' .
+		  'ORDER BY version;')
+      or die "prepare failed";
+  return $sth;
+}
+
+sub nav_response_histogram_summary_sth {
+  my ($self) = @_;
+  my $dbh = $self->{dbh};
+  my $sth =
+    $dbh->prepare("SELECT " .
+		  $self->unix_timestamp('u.timestamp') . ' AS timestamp,' .
+		  "'closed' AS measure,tabclosed AS amount " .
+                  'FROM upload AS u, navigation AS n ' .
+                  'WHERE timestamp BETWEEN ? AND ? ' .
+		  'AND n.upload=u.id ' .
+		  'AND tabclosed>0 ' .
+                  'GROUP BY version ' .
+		  'ORDER BY version;')
+      or die "prepare failed";
+  return $sth;
+}
+
 sub extension_version_summary_sth {
   my ($self) = @_;
   my $dbh = $self->{dbh};

@@ -18,7 +18,7 @@
 
 use strict;
 use DBI;
-use Test::More tests => 13;
+use Test::More tests => 15;
 use File::Temp qw(tempfile tempdir);
 
 $ENV{'PATH'} = '/usr/bin';
@@ -56,7 +56,7 @@ INSERT INTO upload(location,version,user_agent)
 UPDATE upload SET timestamp=DATETIME('now','-2 days') WHERE id=1;
 UPDATE upload SET timestamp=DATETIME('now','-1 days') WHERE id=2;
 INSERT INTO navigation(upload,service,count,total) VALUES(1,'service',3,333);
-INSERT INTO navigation(upload,service,count,total) VALUES(2,'service',3,999);
+INSERT INTO navigation(upload,service,count,tabclosed,total) VALUES(2,'service',3,1,999);
 INSERT INTO navigation(upload,service,count,total) VALUES(3,'service',3,666);
 INSERT INTO navigation(upload,service,count,total) VALUES(3,'slow',1,6666);
 INSERT INTO tag(service,tag) VALUES('service','Company');
@@ -79,6 +79,10 @@ like($line,
 unlink($dbfile);
 rmdir("$dir/data");
 ok(unlink("$dir/tags/summary/navigation.png"),"unlink summary/navigation.png");
+ok(unlink("$dir/tags/summary/nav_latency_histogram.png"),
+   "unlink summary/nav_latency_histogram.png");
+ok(unlink("$dir/tags/summary/nav_response_histogram.png"),
+   "unlink summary/nav_response_histogram.png");
 ok(unlink("$dir/tags/summary/update_request.png"),
    "rm tags/summary/update_request.png");
 ok(unlink("$dir/tags/summary/nav_request.png"),
