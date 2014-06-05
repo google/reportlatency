@@ -100,59 +100,47 @@ sub total_graph {
   my $end = $store->db_timestamp($t);
 
   my $sth = $store->total_nav_latencies_sth();
-  
   my $latency_rc = $sth->execute($begin, $end);
-
   my $spectrum = new ReportLatency::Spectrum( width => $navwidth,
 					      height => $navheight,
 					      duration => $ReportLatency::utils::duration,
 					      ceiling => $nav_ceiling,
-					      border => 24 );
-  
+					      border => 24 );  
   while (my $row = $sth->fetchrow_hashref) {
     $spectrum->add_row($row);
   }
-
   my $png = new ReportLatency::AtomicFile("tags/summary/nav_spectrum.png");
   print $png $spectrum->png();
   close($png);
 
 
   $sth = $store->total_nreq_latencies_sth();
-
   $latency_rc = $sth->execute($begin, $end);
-
   $spectrum = new ReportLatency::Spectrum( width => $reqwidth,
 					   height => $reqheight,
 					   duration => $ReportLatency::utils::duration,
 					   ceiling => $nreq_ceiling,
 					   floor   => $req_floor,
 					   border => 24 );
-
   while (my $row = $sth->fetchrow_hashref) {
     $spectrum->add_row($row);
   }
-
   $png = new ReportLatency::AtomicFile("tags/summary/nreq_spectrum.png");
   print $png $spectrum->png();
   close($png);
 
 
   $sth = $store->total_ureq_latencies_sth();
-
   $latency_rc = $sth->execute($begin, $end);
-
   $spectrum = new ReportLatency::Spectrum( width => $reqwidth,
 					   height => $reqheight,
 					   duration => $ReportLatency::utils::duration,
 					   ceiling => $ureq_ceiling,
 					   floor   => $req_floor,
 					   border => 24 );
-
   while (my $row = $sth->fetchrow_hashref) {
     $spectrum->add_row($row);
   }
-
   $png = new ReportLatency::AtomicFile("tags/summary/ureq_spectrum.png");
   print $png $spectrum->png();
   close($png);
@@ -163,13 +151,10 @@ sub total_graph {
 					      height => $reqheight,
 					      duration => $ReportLatency::utils::duration,
 					      border => 24 );
-  
   while (my $row = $sth->fetchrow_hashref) {
     $graph->add_row($row);
   }
-
   $graph->reorder('closed','long','10s','2s','1s','500ms','100ms');
-
   $png = new ReportLatency::AtomicFile("tags/summary/nav_latency.png");
   print $png $graph->img()->png();
   close($png);
@@ -179,17 +164,48 @@ sub total_graph {
 					      height => $reqheight,
 					      duration => $ReportLatency::utils::duration,
 					      border => 24 );
-  
   while (my $row = $sth->fetchrow_hashref) {
     $graph->add_row($row);
   }
-
   $graph->reorder('300','400','500','closed');
-
   $png = new ReportLatency::AtomicFile("tags/summary/nav_error.png");
   print $png $graph->img()->png();
   close($png);
 
+  $sth = $store->nreq_latency_histogram_summary($begin, $end);
+  $graph = new ReportLatency::StackedGraph( width => $reqwidth,
+					    height => $reqheight,
+					    duration => $ReportLatency::utils::duration,
+					    border => 24 );
+  my $count = 0;
+  while (my $row = $sth->fetchrow_hashref) {
+    $graph->add_row($row);
+    $count++;
+  }
+  if ($count>0) {
+    $graph->reorder('closed','long','10s','2s','1s','500ms','100ms');
+    $png = new ReportLatency::AtomicFile("tags/summary/nreq_latency.png");
+    print $png $graph->img()->png();
+    close($png);
+  }
+
+  $sth = $store->nreq_response_histogram_summary($begin, $end);
+  $graph = new ReportLatency::StackedGraph( width => $reqwidth,
+					      height => $reqheight,
+					      duration => $ReportLatency::utils::duration,
+					      border => 24 );
+  $count = 0;
+  while (my $row = $sth->fetchrow_hashref) {
+    $graph->add_row($row);
+    $count++;
+  }
+  if ($count>0) {
+    $graph->reorder('300','400','500','closed');
+
+    $png = new ReportLatency::AtomicFile("tags/summary/nreq_error.png");
+    print $png $graph->img()->png();
+    close($png);
+  }
 }
 
 sub total_report {
