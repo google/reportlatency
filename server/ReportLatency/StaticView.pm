@@ -293,7 +293,7 @@ sub image_banner {
   <p>
     <img src="${img_prefix}ureq_spectrum.png" width="95%" alt="update request latency spectrum">
     <br>
-    Request latency after navigation
+    Requests after navigation
   </p>
 </div>
 EOF
