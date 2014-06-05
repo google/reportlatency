@@ -168,6 +168,8 @@ sub total_graph {
     $graph->add_row($row);
   }
 
+  $graph->reorder('closed','long','10s','2s','1s','500ms','100ms');
+
   $png = new ReportLatency::AtomicFile("tags/summary/nav_latency.png");
   print $png $graph->img()->png();
   close($png);
