@@ -38,6 +38,9 @@ my $navheight = $height;
 my $reqwidth = $width;
 my $reqheight = $height;
 
+my $histwidth = $width/4;
+my $histheight = $height;
+
 my $interval = $hours * 3600;
 my $border=24;
 
@@ -55,8 +58,8 @@ sub user_agents {
   my $end = $store->db_timestamp($t);
   my $rc = $sth->execute($begin, $end);
 
-  my $graph = new ReportLatency::StackedGraph( width => $reqwidth,
-					      height => $reqheight,
+  my $graph = new ReportLatency::StackedGraph( width => $histwidth,
+					      height => $histheight,
 					      duration => $ReportLatency::utils::duration,
 					      border => 24 );
   
@@ -78,8 +81,8 @@ sub extensions {
   my $end = $store->db_timestamp($t);
   my $rc = $sth->execute($begin, $end);
 
-  my $graph = new ReportLatency::StackedGraph( width => $reqwidth,
-					      height => $reqheight,
+  my $graph = new ReportLatency::StackedGraph( width => $histwidth,
+					      height => $histheight,
 					      duration => $ReportLatency::utils::duration,
 					      border => 24 );
   
@@ -147,8 +150,8 @@ sub total_graph {
 
 
   $sth = $store->nav_latency_histogram_summary($begin, $end);
-  my $graph = new ReportLatency::StackedGraph( width => $reqwidth,
-					      height => $reqheight,
+  my $graph = new ReportLatency::StackedGraph( width => $histwidth,
+					      height => $histheight,
 					      duration => $ReportLatency::utils::duration,
 					      border => 24 );
   while (my $row = $sth->fetchrow_hashref) {
@@ -160,8 +163,8 @@ sub total_graph {
   close($png);
 
   $sth = $store->nav_response_histogram_summary($begin, $end);
-  $graph = new ReportLatency::StackedGraph( width => $reqwidth,
-					      height => $reqheight,
+  $graph = new ReportLatency::StackedGraph( width => $histwidth,
+					      height => $histheight,
 					      duration => $ReportLatency::utils::duration,
 					      border => 24 );
   while (my $row = $sth->fetchrow_hashref) {
@@ -173,8 +176,8 @@ sub total_graph {
   close($png);
 
   $sth = $store->nreq_latency_histogram_summary($begin, $end);
-  $graph = new ReportLatency::StackedGraph( width => $reqwidth,
-					    height => $reqheight,
+  $graph = new ReportLatency::StackedGraph( width => $histwidth,
+					    height => $histheight,
 					    duration => $ReportLatency::utils::duration,
 					    border => 24 );
   my $count = 0;
@@ -189,8 +192,8 @@ sub total_graph {
   }
 
   $sth = $store->nreq_response_histogram_summary($begin, $end);
-  $graph = new ReportLatency::StackedGraph( width => $reqwidth,
-					      height => $reqheight,
+  $graph = new ReportLatency::StackedGraph( width => $histwidth,
+					      height => $histheight,
 					      duration => $ReportLatency::utils::duration,
 					      border => 24 );
   $count = 0;
@@ -206,8 +209,8 @@ sub total_graph {
   }
 
   $sth = $store->ureq_latency_histogram_summary($begin, $end);
-  $graph = new ReportLatency::StackedGraph( width => $reqwidth,
-					    height => $reqheight,
+  $graph = new ReportLatency::StackedGraph( width => $histwidth,
+					    height => $histheight,
 					    duration => $ReportLatency::utils::duration,
 					    border => 24 );
   $count = 0;
@@ -222,8 +225,8 @@ sub total_graph {
   }
 
   $sth = $store->ureq_response_histogram_summary($begin, $end);
-  $graph = new ReportLatency::StackedGraph( width => $reqwidth,
-					      height => $reqheight,
+  $graph = new ReportLatency::StackedGraph( width => $histwidth,
+					      height => $histheight,
 					      duration => $ReportLatency::utils::duration,
 					      border => 24 );
   $count = 0;

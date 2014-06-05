@@ -30,10 +30,11 @@ sub new {
   $p{height} = 250 unless exists $p{height};
   $p{duration} = 14 * 24 * 3600 unless exists $p{duration};
   $p{border} = 0 unless exists $p{border};
+  $p{smooth} = 4 unless exists $p{smooth};
 
   my $self  = bless {}, $class;
 
-  foreach my $param (qw( width height border duration )) {
+  foreach my $param (qw( width height border duration smooth )) {
     $self->{$param} = $p{$param};
   }
 
@@ -139,7 +140,7 @@ sub img() {
 
   return $self->{graph} if defined $self->{graph};
 
-  my $w = $self->{width} + 2 * $self->{border};
+  my $w = $self->{width}*$self->{smooth} + 2 * $self->{border};
   my $h = $self->{height} + 2 * $self->{border};
   my $graph = new GD::Graph::area($w,$h) or die $!;
   $self->{graph} = $graph;
