@@ -204,6 +204,40 @@ sub total_graph {
     print $png $graph->img()->png();
     close($png);
   }
+
+  $sth = $store->ureq_latency_histogram_summary($begin, $end);
+  $graph = new ReportLatency::StackedGraph( width => $reqwidth,
+					    height => $reqheight,
+					    duration => $ReportLatency::utils::duration,
+					    border => 24 );
+  $count = 0;
+  while (my $row = $sth->fetchrow_hashref) {
+    $count += $graph->add_row($row);
+  }
+  if ($count>0) {
+    $graph->reorder('closed','long','10s','2s','1s','500ms','100ms');
+    $png = new ReportLatency::AtomicFile("tags/summary/ureq_latency.png");
+    print $png $graph->img()->png();
+    close($png);
+  }
+
+  $sth = $store->ureq_response_histogram_summary($begin, $end);
+  $graph = new ReportLatency::StackedGraph( width => $reqwidth,
+					      height => $reqheight,
+					      duration => $ReportLatency::utils::duration,
+					      border => 24 );
+  $count = 0;
+  while (my $row = $sth->fetchrow_hashref) {
+    $count += $graph->add_row($row);
+  }
+  if ($count>0) {
+    $graph->reorder('500','closed','400');
+
+    $png = new ReportLatency::AtomicFile("tags/summary/ureq_error.png");
+    print $png $graph->img()->png();
+    close($png);
+  }
+
 }
 
 sub total_report {
