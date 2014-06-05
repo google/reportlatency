@@ -87,7 +87,7 @@ sub reorder {
 
 sub add {
   my ($self,$timestamp,$measure,$amount) = @_;
-  if ($amount>0) {
+  if (defined $amount && $amount>0) {
     my $x = $self->_x($timestamp);
     if (defined $x) {
       if (! defined $self->{data}{$measure}) {

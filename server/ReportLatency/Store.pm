@@ -1135,11 +1135,7 @@ WHERE r.upload=u.id AND response500>0
 UNION
 SELECT utimestamp AS timestamp, '400' AS measure,response400 AS amount 
 FROM current AS u, navigation_request AS r
-WHERE r.upload=u.id AND response400>0
-UNION
-SELECT utimestamp AS timestamp, '300' AS measure,response300 AS amount 
-FROM current AS u, navigation_request AS r
-WHERE r.upload=u.id AND response300>0;
+WHERE r.upload=u.id AND response400>0;
 EOS
 
   $sth->execute();

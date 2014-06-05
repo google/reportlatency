@@ -179,8 +179,7 @@ sub total_graph {
 					    border => 24 );
   my $count = 0;
   while (my $row = $sth->fetchrow_hashref) {
-    $graph->add_row($row);
-    $count++;
+    $count += $graph->add_row($row);
   }
   if ($count>0) {
     $graph->reorder('closed','long','10s','2s','1s','500ms','100ms');
@@ -196,8 +195,7 @@ sub total_graph {
 					      border => 24 );
   $count = 0;
   while (my $row = $sth->fetchrow_hashref) {
-    $graph->add_row($row);
-    $count++;
+    $count += $graph->add_row($row);
   }
   if ($count>0) {
     $graph->reorder('300','400','500','closed');
