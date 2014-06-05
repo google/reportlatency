@@ -198,7 +198,7 @@ sub total_graph {
     $count += $graph->add_row($row);
   }
   if ($count>0) {
-    $graph->reorder('300','400','500','closed');
+    $graph->reorder('500','closed','400');
 
     $png = new ReportLatency::AtomicFile("tags/summary/nreq_error.png");
     print $png $graph->img()->png();
