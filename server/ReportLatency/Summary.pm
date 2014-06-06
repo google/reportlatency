@@ -175,7 +175,7 @@ sub summary_location {
 sub nav_latency_histogram {
   my ($self,$begin,$end) = @_;
 
-  $self->current_uploads($begin,$end);
+  $self->{store}->current_uploads($begin,$end);
 
   my $dbh = $self->{store}->{dbh};
   my $sth =

@@ -986,6 +986,7 @@ sub location_service_sth {
 
 sub current_uploads {
   my ($self,$begin,$end) = @_;
+
   if (!defined $self->{current_uploads}) {
     my $dbh = $self->{dbh};
     my $sth =
@@ -996,6 +997,7 @@ sub current_uploads {
 	or die "prepare failed";
     my $rc = $sth->execute($begin,$end);
     $self->{current_uploads} = $rc;
+    $sth->finish();
   }
 }
 

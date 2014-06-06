@@ -20,7 +20,7 @@ use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
 use HTML::Tidy;
-use Test::More tests => 160;
+use Test::More tests => 113;
 use Data::Dumper;
 
 BEGIN { use lib '..'; }

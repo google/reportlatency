@@ -19,7 +19,7 @@
 use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
-use Test::More tests => 57;
+use Test::More tests => 62;
 use Data::Dumper;
 
 BEGIN { use lib '..'; }
@@ -41,6 +41,13 @@ my $dbfile = "$dir/latency.sqlite3";
 }
 
 my $store = new ReportLatency::Store(dsn => "dbi:SQLite:dbname=$dbfile");
+
+my $b = time-300;
+my $e = time+300;
+my $begin = $store->db_timestamp($b);
+my $end = $store->db_timestamp($e);
+
+
 my $qobj = new ReportLatency::Summary($store);
 isa_ok($qobj, 'ReportLatency::Summary');
 
@@ -49,8 +56,8 @@ ok($dbh->do(q{
   INSERT INTO upload(location) VALUES("1.2.3.0");
 }), 'INSERT upload');
 ok($dbh->do(q{
-  INSERT INTO navigation(upload,name,service,count,total)
-    VALUES(1,'mail.google.com','mail.google.com',1,2038);
+  INSERT INTO navigation(upload,name,service,count,total,m10000,response200)
+    VALUES(1,'mail.google.com','mail.google.com',1,2038,1,1);
 }), 'INSERT mail.google.com navigation');
 ok($dbh->do(q{
   INSERT INTO navigation_request(upload,name,service,count,total,low,high)
@@ -72,7 +79,7 @@ ok($dbh->do(q{
 }), 'INSERT news.google.com update_request');
 
 my $sth = $qobj->nav_latencies();
-$sth->execute($store->db_timestamp(time-300), $store->db_timestamp(time+2));
+$sth->execute($begin, $end);
 my $row = $sth->fetchrow_hashref;
 is($row->{count}, 1, 'total nav latency count');
 is($row->{total}, 2038, 'total');
@@ -82,6 +89,15 @@ cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
 cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
 $row = $sth->fetchrow_hashref;
 is($row, undef, 'last total nav latency row');
+
+$sth = $qobj->nav_latency_histogram($begin,$end);
+$row = $sth->fetchrow_hashref;
+is($row->{amount}, 1, '1 navigation');
+is($row->{measure}, '10s', ' in 10s bin');
+cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
+cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
+$row = $sth->fetchrow_hashref;
+is($row, undef, 'last nav_latency_histogram row');
 
 $sth = $qobj->nreq_latencies();
 $sth->execute($store->db_timestamp(time-300), $store->db_timestamp(time));
