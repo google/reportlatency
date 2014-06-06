@@ -19,7 +19,8 @@
 use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
-use Test::More tests => 3;
+use Test::More tests => 57;
+use Data::Dumper;
 
 BEGIN { use lib '..'; }
 
@@ -110,7 +111,7 @@ is($row, undef, 'last total nreq latency row');
   is($total, 2220+3330, '5550 ms total ureq latency');
 }
 
-$sth = $qobj->extension_version();
+$sth = $qobj->extension_version_histogram();
 $sth->execute($store->db_timestamp(time-300), $store->db_timestamp(time));
 for (my $i=0; $i<3; $i++) {
   $row = $sth->fetchrow_hashref;
@@ -123,7 +124,7 @@ $row = $sth->fetchrow_hashref;
 is($row, undef, 'last extension_version row');
 
 
-$sth = $qobj->user_agent();
+$sth = $qobj->user_agent_histogram();
 $sth->execute($store->db_timestamp(time-300), $store->db_timestamp(time));
 for (my $i=0; $i<3; $i++) {
   $row = $sth->fetchrow_hashref;
