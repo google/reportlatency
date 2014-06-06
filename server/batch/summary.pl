@@ -170,7 +170,7 @@ sub total_graph {
   while (my $row = $sth->fetchrow_hashref) {
     $graph->add_row($row);
   }
-  $graph->reorder('500','400','closed','300');
+  $graph->reorder('closed','500','400','300');
   $png = new ReportLatency::AtomicFile("tags/summary/nav_error.png");
   print $png $graph->img()->png();
   close($png);
@@ -201,7 +201,7 @@ sub total_graph {
     $count += $graph->add_row($row);
   }
   if ($count>0) {
-    $graph->reorder('500','400','closed');
+    $graph->reorder('closed','500','400');
 
     $png = new ReportLatency::AtomicFile("tags/summary/nreq_error.png");
     print $png $graph->img()->png();
@@ -234,7 +234,7 @@ sub total_graph {
     $count += $graph->add_row($row);
   }
   if ($count>0) {
-    $graph->reorder('500','400','closed');
+    $graph->reorder('closed','500','400');
 
     $png = new ReportLatency::AtomicFile("tags/summary/ureq_error.png");
     print $png $graph->img()->png();
