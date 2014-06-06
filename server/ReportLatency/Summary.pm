@@ -23,7 +23,9 @@ $VERSION     = 0.1;
 
 sub new {
   my $class = shift;
+  my $store = shift;
   my $self  = bless {}, $class;
+  $self->{store} = $store;
   return $self;
 }
 
@@ -37,9 +39,9 @@ sub nav_latencies {
 
   my $sth = $self->{total_nav_latencies_sth};
   if (! defined $sth) {
-    my $dbh = $self->{dbh};
+    my $dbh = $self->{store}->{dbh};
     my $statement='SELECT ' .
-      $self->unix_timestamp('u.timestamp') . ' AS timestamp,' .
+      $self->{store}->unix_timestamp('u.timestamp') . ' AS timestamp,' .
       'n.count AS count,' .
       'n.high AS high,' .
       'n.low AS low,' .
@@ -47,7 +49,7 @@ sub nav_latencies {
       'FROM navigation n ' .
       'INNER JOIN upload u ON u.id=n.upload ' .
        "WHERE u.timestamp BETWEEN ? AND ? " .
-       " AND " . $self->is_positive('n.count') . ";";
+       " AND " . $self->{store}->is_positive('n.count') . ";";
     $sth = $dbh->prepare($statement) or die $!;
     $self->{total_nav_latencies_sth} = $sth;
   }
@@ -60,9 +62,9 @@ sub nreq_latencies {
 
   my $sth = $self->{total_nreq_latencies_sth};
   if (! defined $sth) {
-    my $dbh = $self->{dbh};
+    my $dbh = $self->{store}->{dbh};
     my $statement='SELECT ' .
-      $self->unix_timestamp('u.timestamp') . ' AS timestamp,' .
+      $self->{store}->unix_timestamp('u.timestamp') . ' AS timestamp,' .
       'nr.count AS count,' .
       'nr.high AS high,' .
       'nr.low AS low,' .
@@ -70,7 +72,7 @@ sub nreq_latencies {
       'FROM navigation_request nr ' .
       'INNER JOIN upload u ON u.id=nr.upload ' .
        "WHERE u.timestamp BETWEEN ? AND ?  AND " .
-       $self->is_positive('nr.count') . ";";
+       $self->{store}->is_positive('nr.count') . ";";
     $sth = $dbh->prepare($statement) or die $!;
     $self->{total_nreq_latencies_sth} = $sth;
   }
@@ -83,9 +85,9 @@ sub ureq_latencies {
 
   my $sth = $self->{total_ureq_latencies_sth};
   if (! defined $sth) {
-    my $dbh = $self->{dbh};
+    my $dbh = $self->{store}->{dbh};
     my $statement='SELECT ' .
-      $self->unix_timestamp('u.timestamp') . ' AS timestamp,' .
+      $self->{store}->unix_timestamp('u.timestamp') . ' AS timestamp,' .
       'ur.count AS count,' .
       'ur.high AS high,' .
       'ur.low AS low,' .
@@ -93,7 +95,7 @@ sub ureq_latencies {
       'FROM update_request ur ' .
       'INNER JOIN upload u ON u.id=ur.upload ' .
        "WHERE u.timestamp BETWEEN ? AND ? AND " .
-       $self->is_positive('ur.count') . ";";
+       $self->{store}->is_positive('ur.count') . ";";
     $sth = $dbh->prepare($statement) or die $!;
     $self->{total_ureq_latencies_sth} = $sth;
   }
@@ -105,7 +107,7 @@ sub ureq_latencies {
 
 sub summary_meta {
   my ($self) = @_;
-  my $dbh = $self->{dbh};
+  my $dbh = $self->{store}->{dbh};
   my $sth =
     $dbh->prepare("SELECT 'total' AS tag," .
 		  'min(timestamp) AS min_timestamp,' .
@@ -122,7 +124,7 @@ sub summary_meta {
 
 sub summary_tag {
   my ($self) = @_;
-  my $dbh = $self->{dbh};
+  my $dbh = $self->{store}->{dbh};
   my $sth =
     $dbh->prepare('SELECT t.tag as tag,' .
                   'count(distinct r.service) AS services,' .
@@ -139,7 +141,7 @@ sub summary_tag {
 
 sub summary_untagged {
   my ($self) = @_;
-  my $dbh = $self->{dbh};
+  my $dbh = $self->{store}->{dbh};
   my $sth =
     $dbh->prepare('SELECT ' .
                   'count(distinct r.service) AS services,' .
@@ -156,7 +158,7 @@ sub summary_untagged {
 
 sub summary_location {
   my ($self) = @_;
-  my $dbh = $self->{dbh};
+  my $dbh = $self->{store}->{dbh};
   my $sth =
     $dbh->prepare('SELECT location,' .
                   'count(distinct service) AS services,' .
@@ -175,7 +177,7 @@ sub nav_latency_histogram {
 
   $self->current_uploads($begin,$end);
 
-  my $dbh = $self->{dbh};
+  my $dbh = $self->{store}->{dbh};
   my $sth =
     $dbh->prepare( <<EOS ) or die "prepare failed";
 SELECT utimestamp AS timestamp,'closed' AS measure,tabclosed AS amount 
@@ -218,7 +220,7 @@ sub nav_response_histogram {
 
   $self->current_uploads($begin,$end);
 
-  my $dbh = $self->{dbh};
+  my $dbh = $self->{store}->{dbh};
   my $sth =
     $dbh->prepare( <<EOS ) or die "prepare failed";
 SELECT utimestamp AS timestamp,
@@ -249,7 +251,7 @@ sub nreq_latency_histogram {
 
   $self->current_uploads($begin,$end);
 
-  my $dbh = $self->{dbh};
+  my $dbh = $self->{store}->{dbh};
   my $sth =
     $dbh->prepare( <<EOS ) or die "prepare failed";
 SELECT utimestamp AS timestamp,'closed' AS measure,tabclosed AS amount 
@@ -292,7 +294,7 @@ sub nreq_response_histogram {
 
   $self->current_uploads($begin,$end);
 
-  my $dbh = $self->{dbh};
+  my $dbh = $self->{store}->{dbh};
   my $sth =
     $dbh->prepare( <<EOS ) or die "prepare failed";
 SELECT utimestamp AS timestamp,
@@ -318,7 +320,7 @@ sub ureq_latency_histogram {
 
   $self->current_uploads($begin,$end);
 
-  my $dbh = $self->{dbh};
+  my $dbh = $self->{store}->{dbh};
   my $sth =
     $dbh->prepare( <<EOS ) or die "prepare failed";
 SELECT utimestamp AS timestamp,'closed' AS measure,tabclosed AS amount 
@@ -361,7 +363,7 @@ sub ureq_response_histogram {
 
   $self->current_uploads($begin,$end);
 
-  my $dbh = $self->{dbh};
+  my $dbh = $self->{store}->{dbh};
   my $sth =
     $dbh->prepare( <<EOS ) or die "prepare failed";
 SELECT utimestamp AS timestamp,
@@ -385,7 +387,7 @@ EOS
 
 sub extension_version {
   my ($self) = @_;
-  my $dbh = $self->{dbh};
+  my $dbh = $self->{store}->{dbh};
   my $sth =
     $dbh->prepare('SELECT version AS name,count(*) AS value' .
                   ' FROM upload AS u ' .
@@ -398,10 +400,10 @@ sub extension_version {
 
 sub extension_version_histogram {
   my ($self) = @_;
-  my $dbh = $self->{dbh};
+  my $dbh = $self->{store}->{dbh};
   my $sth =
     $dbh->prepare('SELECT ' .
-		  $self->unix_timestamp('u.timestamp') . ' AS timestamp,' .
+		  $self->{store}->unix_timestamp('u.timestamp') . ' AS timestamp,' .
 		  'version AS measure,1 AS amount' .
                   ' FROM upload AS u ' .
                   "WHERE u.timestamp BETWEEN ? AND ? ;")
@@ -411,7 +413,7 @@ sub extension_version_histogram {
 
 sub user_agent {
   my ($self) = @_;
-  my $dbh = $self->{dbh};
+  my $dbh = $self->{store}->{dbh};
   my $sth =
     $dbh->prepare('SELECT user_agent AS name,count(*) AS value' .
                   ' FROM upload ' .
@@ -424,10 +426,10 @@ sub user_agent {
 
 sub user_agent_histogram {
   my ($self) = @_;
-  my $dbh = $self->{dbh};
+  my $dbh = $self->{store}->{dbh};
   my $sth =
     $dbh->prepare('SELECT ' .
-		  $self->unix_timestamp('u.timestamp') . ' AS timestamp,' .
+		  $self->{store}->unix_timestamp('u.timestamp') . ' AS timestamp,' .
 		  'user_agent AS measure,1 AS amount' .
                   ' FROM upload AS u ' .
                   "WHERE u.timestamp BETWEEN ? AND ?;")

@@ -181,18 +181,6 @@ cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
 $row = $sth->fetchrow_hashref;
 is($row, undef, 'last location 1.2.3.0 nav latency row');
 
-$sth = $store->total_nav_latencies_sth();
-$sth->execute($store->db_timestamp(time-300), $store->db_timestamp(time+2));
-$row = $sth->fetchrow_hashref;
-is($row->{count}, 1, 'total nav latency count');
-is($row->{total}, 2038, 'total');
-is($row->{low}, undef, 'low');
-is($row->{high}, undef, 'high');
-cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
-cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
-$row = $sth->fetchrow_hashref;
-is($row, undef, 'last total nav latency row');
-
 
 $sth = $store->untagged_nav_latencies_sth();
 $sth->execute("-300 seconds", '0 seconds');
@@ -213,18 +201,6 @@ $row = $sth->fetchrow_hashref;
 is($row, undef, 'last mail.google.com nreq latency row');
 
 
-$sth = $store->total_nreq_latencies_sth();
-$sth->execute($store->db_timestamp(time-300), $store->db_timestamp(time));
-$row = $sth->fetchrow_hashref;
-is($row->{count}, 3, 'total nreq count');
-is($row->{total}, 2100, 'total');
-is($row->{low}, 600, 'low');
-is($row->{high}, 800, 'high');
-cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
-cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
-$row = $sth->fetchrow_hashref;
-is($row, undef, 'last total nreq latency row');
-
 
 $sth = $store->service_ureq_latencies_sth();
 $sth->execute("-300 seconds", '0 seconds', 'mail.google.com');
@@ -238,21 +214,6 @@ cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
 $row = $sth->fetchrow_hashref;
 is($row, undef, 'last mail.google.com ureq latency row');
 
-{
-  $sth = $store->total_ureq_latencies_sth();
-  $sth->execute($store->db_timestamp(time-300), $store->db_timestamp(time));
-  my ($count,$total,$rows);
-  while (my $row = $sth->fetchrow_hashref) {
-    $count += $row->{count};
-    $total += $row->{total};
-    $rows++;
-    cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
-    cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
-  }
-  is($rows, 2, '2 total ureq latency rows');
-  is($count, 20, '20 total ureq count');
-  is($total, 2220+3330, '5550 ms total ureq latency');
-}
 
 $sth = $store->location_nreq_latencies_sth();
 $sth->execute("-300 seconds", '0 seconds', '3.2.1.0');
@@ -288,31 +249,6 @@ is($row, undef, 'last location nreq latency row');
   is($total, 2220+3330, '5550 ms total ureq latency');
 }
 
-
-$sth = $store->extension_version_sth();
-$sth->execute($store->db_timestamp(time-300), $store->db_timestamp(time));
-for (my $i=0; $i<3; $i++) {
-  $row = $sth->fetchrow_hashref;
-  is($row->{measure}, undef, 'undef extension_version');
-  is($row->{amount}, 1, '1 extension_version');
-  cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
-  cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
-}
-$row = $sth->fetchrow_hashref;
-is($row, undef, 'last extension_version row');
-
-
-$sth = $store->user_agent_sth();
-$sth->execute($store->db_timestamp(time-300), $store->db_timestamp(time));
-for (my $i=0; $i<3; $i++) {
-  $row = $sth->fetchrow_hashref;
-  is($row->{measure}, undef, 'undef user_agent');
-  is($row->{amount}, 1, '1 user_agent');
-  cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
-  cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
-}
-$row = $sth->fetchrow_hashref;
-is($row, undef, 'last user_agent row');
 
 
 $sth = $store->service_select_sth();

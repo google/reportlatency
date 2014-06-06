@@ -40,7 +40,98 @@ my $dbfile = "$dir/latency.sqlite3";
 }
 
 my $store = new ReportLatency::Store(dsn => "dbi:SQLite:dbname=$dbfile");
-
 my $qobj = new ReportLatency::Summary($store);
 isa_ok($qobj, 'ReportLatency::Summary');
+
+my $dbh = $store->{dbh};
+ok($dbh->do(q{
+  INSERT INTO upload(location) VALUES("1.2.3.0");
+}), 'INSERT upload');
+ok($dbh->do(q{
+  INSERT INTO navigation(upload,name,service,count,total)
+    VALUES(1,'mail.google.com','mail.google.com',1,2038);
+}), 'INSERT mail.google.com navigation');
+ok($dbh->do(q{
+  INSERT INTO navigation_request(upload,name,service,count,total,low,high)
+    VALUES(1,'mail.google.com','mail.google.com',3,2100,600,800);
+}), 'INSERT mail.google.com navigation_request');
+ok($dbh->do(q{
+  INSERT INTO upload(location) VALUES("1.2.3.0");
+}), 'INSERT upload');
+ok($dbh->do(q{
+  INSERT INTO update_request(upload,name,service,count,total,low,high)
+    VALUES(2,'mail.google.com','mail.google.com',10,2220,100,300);
+}), 'INSERT mail.google.com update_request');
+ok($dbh->do(q{
+  INSERT INTO upload(location) VALUES("1.2.3.0");
+}), 'INSERT upload');
+ok($dbh->do(q{
+  INSERT INTO update_request(upload,name,service,count,total)
+    VALUES(3,'news.google.com','news.google.com',10,3330);
+}), 'INSERT news.google.com update_request');
+
+my $sth = $qobj->nav_latencies();
+$sth->execute($store->db_timestamp(time-300), $store->db_timestamp(time+2));
+my $row = $sth->fetchrow_hashref;
+is($row->{count}, 1, 'total nav latency count');
+is($row->{total}, 2038, 'total');
+is($row->{low}, undef, 'low');
+is($row->{high}, undef, 'high');
+cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
+cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
+$row = $sth->fetchrow_hashref;
+is($row, undef, 'last total nav latency row');
+
+$sth = $qobj->nreq_latencies();
+$sth->execute($store->db_timestamp(time-300), $store->db_timestamp(time));
+$row = $sth->fetchrow_hashref;
+is($row->{count}, 3, 'total nreq count');
+is($row->{total}, 2100, 'total');
+is($row->{low}, 600, 'low');
+is($row->{high}, 800, 'high');
+cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
+cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
+$row = $sth->fetchrow_hashref;
+is($row, undef, 'last total nreq latency row');
+
+{
+  $sth = $qobj->ureq_latencies();
+  $sth->execute($store->db_timestamp(time-300), $store->db_timestamp(time));
+  my ($count,$total,$rows);
+  while (my $row = $sth->fetchrow_hashref) {
+    $count += $row->{count};
+    $total += $row->{total};
+    $rows++;
+    cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
+    cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
+  }
+  is($rows, 2, '2 total ureq latency rows');
+  is($count, 20, '20 total ureq count');
+  is($total, 2220+3330, '5550 ms total ureq latency');
+}
+
+$sth = $qobj->extension_version();
+$sth->execute($store->db_timestamp(time-300), $store->db_timestamp(time));
+for (my $i=0; $i<3; $i++) {
+  $row = $sth->fetchrow_hashref;
+  is($row->{measure}, undef, 'undef extension_version');
+  is($row->{amount}, 1, '1 extension_version');
+  cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
+  cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
+}
+$row = $sth->fetchrow_hashref;
+is($row, undef, 'last extension_version row');
+
+
+$sth = $qobj->user_agent();
+$sth->execute($store->db_timestamp(time-300), $store->db_timestamp(time));
+for (my $i=0; $i<3; $i++) {
+  $row = $sth->fetchrow_hashref;
+  is($row->{measure}, undef, 'undef user_agent');
+  is($row->{amount}, 1, '1 user_agent');
+  cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
+  cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
+}
+$row = $sth->fetchrow_hashref;
+is($row, undef, 'last user_agent row');
 
