@@ -250,7 +250,8 @@ sub total_report {
   my $t = time;
   my $begin = $store->db_timestamp($t-$ReportLatency::utils::duration);
   my $end = $store->db_timestamp($t);
-  print $html $view->summary_html($begin, $end);
+  my $qobj = new ReportLatency::Summary($store,$begin,$end);
+  print $html $view->report_html($qobj);
   close($html);
 }
 

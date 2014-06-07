@@ -17,6 +17,7 @@ package ReportLatency::Summary;
 use strict;
 use vars qw($VERSION %options);
 
+
 $VERSION     = 0.1;
 %options = ();
 
@@ -113,7 +114,7 @@ sub summary_meta {
 		  'min(timestamp) AS min_timestamp,' .
                   'max(timestamp) AS max_timestamp,' .
                   'count(distinct service) AS services,' .
-		  $self->common_aggregate_fields() .
+		  $self->{store}->common_aggregate_fields() .
                   ' FROM upload, report3 ' .
                   "WHERE timestamp BETWEEN ? AND ? " .
 		  "AND upload=id;" )

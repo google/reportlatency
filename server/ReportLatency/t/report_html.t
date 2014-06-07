@@ -29,6 +29,7 @@ BEGIN {
 
 use_ok( 'ReportLatency::Store' );
 use_ok( 'ReportLatency::StaticView' );
+use_ok( 'ReportLatency::Summary' );
 
 my $dir = tempdir(CLEANUP => 1);
 my $dbfile = "$dir/latency.sqlite3";
@@ -58,8 +59,10 @@ ok($dbh->do(q{
   INSERT INTO update_request(upload,name,service,count,total) VALUES(1,'google.com','google.com',2,1998);
 }), 'INSERT google.com report');
 
-my $summary_html = $view->summary_html($store->db_timestamp(time-300),
-				       $store->db_timestamp(time));
+my $qobj = new ReportLatency::Summary($view,$store->db_timestamp(time-300),
+				      $store->db_timestamp(time));
+
+my $summary_html = $view->report_html($qobj);
 
 my $tidy = new HTML::Tidy;
 is($tidy->parse('summary_html',$summary_html), undef, 'summary.html');

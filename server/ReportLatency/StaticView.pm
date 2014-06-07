@@ -300,16 +300,15 @@ EOF
 }
 
 
-sub summary_html {
-  my ($self,$begin,$end) = @_;
-  my $store = $self->{store};
+sub report_html {
+  my ($self,$qobj,$begin,$end) = @_;
 
-  my $meta_sth = $store->summary_meta_sth;
-  my $tag_sth = $store->summary_tag_sth;
-  my $other_sth = $store->summary_untagged_sth;
-  my $location_sth = $store->summary_location_sth;
-  my $extension_version_sth = $store->extension_version_summary_sth;
-  my $user_agent_sth = $store->user_agent_summary_sth;
+  my $meta_sth = $qobj->summary_meta;
+  my $tag_sth = $qobj->summary_tag_sth;
+  my $other_sth = $qobj->summary_untagged_sth;
+  my $location_sth = $qobj->summary_location_sth;
+  my $extension_version_sth = $qobj->extension_version;
+  my $user_agent_sth = $qobj->user_agent;
 
   my $image_prefix = $self->tag_img_prefix('summary');
 
