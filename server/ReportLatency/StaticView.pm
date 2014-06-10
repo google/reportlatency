@@ -304,9 +304,9 @@ sub report_html {
   my ($self,$qobj,$begin,$end) = @_;
 
   my $meta_sth = $qobj->summary_meta;
-  my $tag_sth = $qobj->summary_tag_sth;
-  my $other_sth = $qobj->summary_untagged_sth;
-  my $location_sth = $qobj->summary_location_sth;
+  my $tag_sth = $qobj->summary_tag;
+  my $other_sth = $qobj->summary_untagged;
+  my $location_sth = $qobj->summary_location;
   my $extension_version_sth = $qobj->extension_version;
   my $user_agent_sth = $qobj->user_agent;
 

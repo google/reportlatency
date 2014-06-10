@@ -127,11 +127,12 @@ sub summary_meta {
 
 sub summary_tag {
   my ($self) = @_;
-  my $dbh = $self->{store}->{dbh};
+  my $store = $self->{store};
+  my $dbh = $store->{dbh};
   my $sth =
     $dbh->prepare('SELECT t.tag as tag,' .
                   'count(distinct r.service) AS services,' .
-		  $self->common_aggregate_fields() .
+		  $store->common_aggregate_fields() .
                   ' FROM report r ' .
 		  'INNER JOIN tag t ' .
 		  'ON r.service = t.service ' .
@@ -144,11 +145,12 @@ sub summary_tag {
 
 sub summary_untagged {
   my ($self) = @_;
-  my $dbh = $self->{store}->{dbh};
+  my $store = $self->{store};
+  my $dbh = $store->{dbh};
   my $sth =
     $dbh->prepare('SELECT ' .
                   'count(distinct r.service) AS services,' .
-		  $self->common_aggregate_fields() .
+		  $store->common_aggregate_fields() .
                   ' FROM upload u ' .
 		  'INNER JOIN report3 r ON u.id=r.upload ' .
 		  'LEFT OUTER JOIN tag t ' .
@@ -161,11 +163,12 @@ sub summary_untagged {
 
 sub summary_location {
   my ($self) = @_;
-  my $dbh = $self->{store}->{dbh};
+  my $store = $self->{store};
+  my $dbh = $store->{dbh};
   my $sth =
     $dbh->prepare('SELECT location,' .
                   'count(distinct service) AS services,' .
-		  $self->common_aggregate_fields() .
+		  $store->common_aggregate_fields() .
                   ' FROM report ' .
                   'WHERE timestamp > ? AND timestamp <= ? ' .
                   'GROUP BY location ' .
