@@ -108,13 +108,15 @@ sub ureq_latencies {
 
 sub summary_meta {
   my ($self) = @_;
-  my $dbh = $self->{store}->{dbh};
+  my $store = $self->{store};
+  my $dbh = $store->{dbh};
+
   my $sth =
     $dbh->prepare("SELECT 'total' AS tag," .
 		  'min(timestamp) AS min_timestamp,' .
                   'max(timestamp) AS max_timestamp,' .
                   'count(distinct service) AS services,' .
-		  $self->{store}->common_aggregate_fields() .
+		  $store->common_aggregate_fields() .
                   ' FROM upload, report3 ' .
                   "WHERE timestamp BETWEEN ? AND ? " .
 		  "AND upload=id;" )

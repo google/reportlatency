@@ -59,7 +59,7 @@ ok($dbh->do(q{
   INSERT INTO update_request(upload,name,service,count,total) VALUES(1,'google.com','google.com',2,1998);
 }), 'INSERT google.com report');
 
-my $qobj = new ReportLatency::Summary($view,$store->db_timestamp(time-300),
+my $qobj = new ReportLatency::Summary($store,$store->db_timestamp(time-300),
 				      $store->db_timestamp(time));
 
 my $summary_html = $view->report_html($qobj);

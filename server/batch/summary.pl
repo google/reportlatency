@@ -96,11 +96,7 @@ sub extensions {
 }
 
 sub total_graph {
-  my ($store,$options) = @_;
-
-  my $t = time;
-  my $begin = $store->db_timestamp($t - $ReportLatency::utils::duration);
-  my $end = $store->db_timestamp($t);
+  my ($qobj) = @_;
 
   my $sth = $store->total_nav_latencies_sth();
   my $latency_rc = $sth->execute($begin, $end);
@@ -271,7 +267,12 @@ sub main() {
 
   my $view = new ReportLatency::StaticView($store);
 
-  total_graph($store,\%options);
+  my $t = time;
+  my $begin = $store->db_timestamp($t - $ReportLatency::utils::duration);
+  my $end = $store->db_timestamp($t);
+  my $summary = new ReportLatency::Summary($store, $begin, $end);
+
+  total_graph($summary);
   user_agents($store);
   extensions($store);
   total_report($view,\%options);
