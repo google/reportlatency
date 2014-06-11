@@ -22,6 +22,7 @@ use DBI;
 use File::Temp qw(tempfile tempdir);
 use Test::More tests => 9;
 use HTML::Tidy;
+use Data::Dumper;
 
 BEGIN {
   use lib '..';
@@ -58,6 +59,9 @@ ok($dbh->do(q{
 ok($dbh->do(q{
   INSERT INTO navigation(upload,name,service,count,total) VALUES(1,'google.com','google.com',2,1998);
 }), 'INSERT google.com report');
+
+print STDERR "upload = ";
+print STDERR Dumper($dbh->selectrow_hashref("SELECT * from upload;"));
 
 my $qobj = new ReportLatency::Summary($store,$store->db_timestamp(time-300),
 				      $store->db_timestamp(time));

@@ -24,9 +24,12 @@ $VERSION     = 0.1;
 
 sub new {
   my $class = shift;
-  my $store = shift;
   my $self  = bless {}, $class;
-  $self->{store} = $store;
+  $self->{store} = shift;
+  $self->{begin} = shift;
+  $self->{end} = shift;
+  $self->{store}->current_uploads($self->{begin},$self->{end});
+
   return $self;
 }
 
@@ -117,10 +120,10 @@ sub summary_meta {
                   'max(timestamp) AS max_timestamp,' .
                   'count(distinct service) AS services,' .
 		  $store->common_aggregate_fields() .
-                  ' FROM upload, report3 ' .
-                  "WHERE timestamp BETWEEN ? AND ? " .
-		  "AND upload=id;" )
+                  ' FROM current, report3 ' .
+		  "WHERE upload=id;" )
       or die "prepare failed";
+  $sth->execute();
   return $sth;
 }
 
@@ -181,8 +184,6 @@ sub summary_location {
 sub nav_latency_histogram {
   my ($self,$begin,$end) = @_;
 
-  $self->{store}->current_uploads($begin,$end);
-
   my $dbh = $self->{store}->{dbh};
   my $sth =
     $dbh->prepare( <<EOS ) or die "prepare failed";
@@ -224,8 +225,6 @@ EOS
 sub nav_response_histogram {
   my ($self,$begin,$end) = @_;
 
-  $self->current_uploads($begin,$end);
-
   my $dbh = $self->{store}->{dbh};
   my $sth =
     $dbh->prepare( <<EOS ) or die "prepare failed";
@@ -254,8 +253,6 @@ EOS
 
 sub nreq_latency_histogram {
   my ($self,$begin,$end) = @_;
-
-  $self->current_uploads($begin,$end);
 
   my $dbh = $self->{store}->{dbh};
   my $sth =
@@ -298,8 +295,6 @@ EOS
 sub nreq_response_histogram {
   my ($self,$begin,$end) = @_;
 
-  $self->current_uploads($begin,$end);
-
   my $dbh = $self->{store}->{dbh};
   my $sth =
     $dbh->prepare( <<EOS ) or die "prepare failed";
@@ -323,8 +318,6 @@ EOS
 
 sub ureq_latency_histogram {
   my ($self,$begin,$end) = @_;
-
-  $self->current_uploads($begin,$end);
 
   my $dbh = $self->{store}->{dbh};
   my $sth =
@@ -366,8 +359,6 @@ EOS
 
 sub ureq_response_histogram {
   my ($self,$begin,$end) = @_;
-
-  $self->current_uploads($begin,$end);
 
   my $dbh = $self->{store}->{dbh};
   my $sth =

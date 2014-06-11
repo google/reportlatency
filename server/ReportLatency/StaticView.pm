@@ -20,6 +20,7 @@ use vars qw($VERSION);
 use ReportLatency::utils;
 use IO::String;
 use URI::Escape;
+use Data::Dumper;
 
 $VERSION     = 0.2;
 
@@ -312,8 +313,9 @@ sub report_html {
 
   my $image_prefix = $self->tag_img_prefix('summary');
 
-  my $rc = $meta_sth->execute($begin, $end);
   my $meta = $meta_sth->fetchrow_hashref;
+  print STDERR "meta = ";
+  print STDERR Dumper($meta);
   $meta_sth->finish;
 
   my $io = new IO::String;
@@ -354,7 +356,7 @@ $image_banner
 $tag_header
 EOF
 
-  $rc = $tag_sth->execute($begin, $end);
+  my $rc = $tag_sth->execute($begin, $end);
 
   while (my $tag = $tag_sth->fetchrow_hashref) {
     my $name = $tag->{tag};
@@ -436,7 +438,7 @@ print $io <<EOF;
         <tr> <th>Extension Version</th> <th>Uploads</th> </tr>
 EOF
 
-  $rc = $extension_version_sth->execute($begin, $end);
+  my $rc = $extension_version_sth->execute($begin, $end);
 
   while (my $v = $extension_version_sth->fetchrow_hashref) {
     print $io $self->name_value_row($v);
