@@ -109,7 +109,7 @@ sub ureq_latencies {
 
 
 
-sub summary_meta {
+sub meta {
   my ($self) = @_;
   my $store = $self->{store};
   my $dbh = $store->{dbh};
@@ -182,7 +182,7 @@ sub summary_location {
 }
 
 sub nav_latency_histogram {
-  my ($self,$begin,$end) = @_;
+  my ($self) = @_;
 
   my $dbh = $self->{store}->{dbh};
   my $sth =

@@ -19,7 +19,7 @@
 use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
-use Test::More tests => 62;
+use Test::More tests => 63;
 use Data::Dumper;
 
 BEGIN { use lib '..'; }
@@ -46,9 +46,7 @@ my $b = time-300;
 my $e = time+300;
 my $begin = $store->db_timestamp($b);
 my $end = $store->db_timestamp($e);
-
-
-my $qobj = new ReportLatency::Summary($store);
+my $qobj = new ReportLatency::Summary($store,$begin,$end);
 isa_ok($qobj, 'ReportLatency::Summary');
 
 my $dbh = $store->{dbh};
@@ -90,8 +88,11 @@ cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
 $row = $sth->fetchrow_hashref;
 is($row, undef, 'last total nav latency row');
 
-$sth = $qobj->nav_latency_histogram($begin,$end);
+$sth = $qobj->nav_latency_histogram();
 $row = $sth->fetchrow_hashref;
+ok($row, "got a row from nav_latency_histogram");
+print STDERR "nav_latency_histogram = ";
+print STDERR Dumper($row);
 is($row->{amount}, 1, '1 navigation');
 is($row->{measure}, '10s', ' in 10s bin');
 cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');

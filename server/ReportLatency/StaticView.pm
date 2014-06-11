@@ -304,7 +304,7 @@ EOF
 sub report_html {
   my ($self,$qobj,$begin,$end) = @_;
 
-  my $meta_sth = $qobj->summary_meta;
+  my $meta_sth = $qobj->meta;
   my $tag_sth = $qobj->summary_tag;
   my $other_sth = $qobj->summary_untagged;
   my $location_sth = $qobj->summary_location;
