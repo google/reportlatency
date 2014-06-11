@@ -20,7 +20,7 @@ use strict;
 use CGI;
 use DBI;
 use File::Temp qw(tempfile tempdir);
-use Test::More tests => 7;
+use Test::More tests => 9;
 use HTML::Tidy;
 
 BEGIN {
@@ -56,7 +56,7 @@ ok($dbh->do(q{
 }), 'INSERT google.com upload');
 
 ok($dbh->do(q{
-  INSERT INTO update_request(upload,name,service,count,total) VALUES(1,'google.com','google.com',2,1998);
+  INSERT INTO navigation(upload,name,service,count,total) VALUES(1,'google.com','google.com',2,1998);
 }), 'INSERT google.com report');
 
 my $qobj = new ReportLatency::Summary($store,$store->db_timestamp(time-300),
@@ -71,4 +71,8 @@ for my $message ( $tidy->messages ) {
 }
 $tidy->clear_messages();
 
-like($summary_html, qr/999/, '999ms avg request latency found');
+my ($untagged) = ($summary_html =~ /^(.*untagged.*)$/m);
+like($untagged, qr/999/, '999ms avg untagged nav latency');
+
+my ($total) = ($summary_html =~ /^(.*total.*)$/m);
+like($total, qr/total.*999/, '999ms avg total nav latency');
