@@ -920,23 +920,6 @@ sub summary_tag_sth {
   return $sth;
 }
 
-sub summary_untagged_sth {
-  my ($self) = @_;
-  my $dbh = $self->{dbh};
-  my $sth =
-    $dbh->prepare('SELECT ' .
-                  'count(distinct r.service) AS services,' .
-		  $self->common_aggregate_fields() .
-                  ' FROM upload u ' .
-		  'INNER JOIN report3 r ON u.id=r.upload ' .
-		  'LEFT OUTER JOIN tag t ' .
-		  'ON r.service = t.service ' .
-                  'WHERE timestamp BETWEEN ? AND ? ' .
-		  'AND t.tag is null;')
-      or die "prepare failed";
-  return $sth;
-}
-
 sub summary_location_sth {
   my ($self) = @_;
   my $dbh = $self->{dbh};

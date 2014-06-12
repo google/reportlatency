@@ -313,8 +313,6 @@ sub report_html {
   my $image_prefix = $self->tag_img_prefix('summary');
 
   my $meta = $meta_sth->fetchrow_hashref;
-  print STDERR "meta = ";
-  print STDERR Dumper($meta);
   $meta_sth->finish;
 
   my $io = new IO::String;

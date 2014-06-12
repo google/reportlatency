@@ -143,7 +143,16 @@ $fields
 FROM current u, report3 r, tag t
 WHERE u.id=r.upload AND r.service = t.service
 GROUP BY t.tag
-ORDER BY t.tag;
+UNION
+SELECT 'untagged' AS tag,
+count(distinct r.service) AS services,
+$fields
+FROM current u
+INNER JOIN report3 r ON u.id=r.upload
+LEFT OUTER JOIN tag t ON r.service = t.service
+WHERE t.tag is null
+ORDER BY tag
+;
 EOS
   $sth->execute() or die $sth->errstr;
   return $sth;
