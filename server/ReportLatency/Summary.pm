@@ -39,7 +39,7 @@ sub DESTROY {
 
 
 sub nav_latencies {
-  my ($self) = @_;
+  my ($self, $begin, $end) = @_;
 
   my $sth = $self->{total_nav_latencies_sth};
   if (! defined $sth) {
@@ -58,11 +58,13 @@ sub nav_latencies {
     $self->{total_nav_latencies_sth} = $sth;
   }
 
+  $sth->execute($begin, $end) or die $sth->errstr;
+
   return $sth;
 }
 
 sub nreq_latencies {
-  my ($self) = @_;
+  my ($self, $begin, $end) = @_;
 
   my $sth = $self->{total_nreq_latencies_sth};
   if (! defined $sth) {
@@ -80,6 +82,8 @@ sub nreq_latencies {
     $sth = $dbh->prepare($statement) or die $!;
     $self->{total_nreq_latencies_sth} = $sth;
   }
+
+  $sth->execute($begin, $end) or die $sth->errstr;
 
   return $sth;
 }
@@ -257,6 +261,9 @@ EOS
 sub nreq_latency_histogram {
   my ($self,$begin,$end) = @_;
 
+
+  $self->{store}->create_current_temp_table($begin,$end);
+
   my $dbh = $self->{store}->{dbh};
   my $sth =
     $dbh->prepare( <<EOS ) or die "prepare failed";
@@ -298,6 +305,8 @@ EOS
 sub nreq_response_histogram {
   my ($self,$begin,$end) = @_;
 
+  $self->{store}->create_current_temp_table($begin,$end);
+
   my $dbh = $self->{store}->{dbh};
   my $sth =
     $dbh->prepare( <<EOS ) or die "prepare failed";
@@ -321,6 +330,9 @@ EOS
 
 sub ureq_latency_histogram {
   my ($self,$begin,$end) = @_;
+
+
+  $self->{store}->create_current_temp_table($begin,$end);
 
   my $dbh = $self->{store}->{dbh};
   my $sth =
@@ -362,6 +374,9 @@ EOS
 
 sub ureq_response_histogram {
   my ($self,$begin,$end) = @_;
+
+
+  $self->{store}->create_current_temp_table($begin,$end);
 
   my $dbh = $self->{store}->{dbh};
   my $sth =

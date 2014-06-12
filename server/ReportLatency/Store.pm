@@ -609,29 +609,6 @@ sub is_positive {
   return $expression;
 }
 
-sub total_nav_latencies_sth {
-  my ($self) = @_;
-
-  my $sth = $self->{total_nav_latencies_sth};
-  if (! defined $sth) {
-    my $dbh = $self->{dbh};
-    my $statement='SELECT ' .
-      $self->unix_timestamp('u.timestamp') . ' AS timestamp,' .
-      'n.count AS count,' .
-      'n.high AS high,' .
-      'n.low AS low,' .
-      'n.total AS total ' .
-      'FROM navigation n ' .
-      'INNER JOIN upload u ON u.id=n.upload ' .
-       "WHERE u.timestamp BETWEEN ? AND ? " .
-       " AND " . $self->is_positive('n.count') . ";";
-    $sth = $dbh->prepare($statement) or die $!;
-    $self->{total_nav_latencies_sth} = $sth;
-  }
-
-  return $sth;
-}
-
 sub total_nreq_latencies_sth {
   my ($self) = @_;
 
@@ -982,7 +959,7 @@ sub create_current_temp_table {
     $self->{current} = $sth;
   }
   if (!(defined $self->{begin} && defined $self->{end} &&
-	$self->{begin} ne $begin && $self->{end} ne $end)) {
+	$self->{begin} eq $begin && $self->{end} eq $end)) {
     my $sth = $self->{current};
     my $rc = $sth->execute($begin,$end) or die $sth->errstr;
     $self->{begin} = $begin;
@@ -1170,32 +1147,6 @@ count-m100-m500-m1000-m2000-m10000-tabclosed AS amount
 FROM current AS u, update_request AS r
 WHERE r.upload=u.id AND count>m100+m500+m1000+m2000+m10000+tabclosed
 ;
-EOS
-
-  $sth->execute();
-  return $sth;
-}
-
-sub ureq_response_histogram_summary {
-  my ($self,$begin,$end) = @_;
-
-  $self->create_current_temp_table($begin,$end);
-
-  my $dbh = $self->{dbh};
-  my $sth =
-    $dbh->prepare( <<EOS ) or die "prepare failed";
-SELECT utimestamp AS timestamp,
-'closed' AS measure,tabclosed AS amount 
-FROM current AS u, update_request AS r
-WHERE r.upload=u.id AND tabclosed>0
-UNION
-SELECT utimestamp AS timestamp, '500' AS measure,response500 AS amount 
-FROM current AS u, update_request AS r
-WHERE r.upload=u.id AND response500>0
-UNION
-SELECT utimestamp AS timestamp, '400' AS measure,response400 AS amount 
-FROM current AS u, update_request AS r
-WHERE r.upload=u.id AND response400>0;
 EOS
 
   $sth->execute();

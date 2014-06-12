@@ -21,6 +21,7 @@ use ReportLatency::Spectrum;
 use ReportLatency::StackedGraph;
 use ReportLatency::StaticView;
 use ReportLatency::Store;
+use ReportLatency::Summary;
 use DBI;
 use GD;
 use Getopt::Long;
@@ -96,10 +97,9 @@ sub extensions {
 }
 
 sub total_graph {
-  my ($qobj) = @_;
+  my ($qobj,$begin,$end) = @_;
 
-  my $sth = $store->total_nav_latencies_sth();
-  my $latency_rc = $sth->execute($begin, $end);
+  my $sth = $qobj->nav_latencies($begin, $end);
   my $spectrum = new ReportLatency::Spectrum( width => $navwidth,
 					      height => $navheight,
 					      duration => $ReportLatency::utils::duration,
@@ -113,8 +113,7 @@ sub total_graph {
   close($png);
 
 
-  $sth = $store->total_nreq_latencies_sth();
-  $latency_rc = $sth->execute($begin, $end);
+  $sth = $qobj->nreq_latencies($begin, $end);
   $spectrum = new ReportLatency::Spectrum( width => $reqwidth,
 					   height => $reqheight,
 					   duration => $ReportLatency::utils::duration,
@@ -129,8 +128,7 @@ sub total_graph {
   close($png);
 
 
-  $sth = $store->total_ureq_latencies_sth();
-  $latency_rc = $sth->execute($begin, $end);
+  $sth = $qobj->ureq_latencies($begin, $end);
   $spectrum = new ReportLatency::Spectrum( width => $reqwidth,
 					   height => $reqheight,
 					   duration => $ReportLatency::utils::duration,
@@ -145,7 +143,7 @@ sub total_graph {
   close($png);
 
 
-  $sth = $store->nav_latency_histogram_summary($begin, $end);
+  $sth = $qobj->nav_latency_histogram($begin, $end);
   my $graph = new ReportLatency::StackedGraph( width => $histwidth,
 					      height => $histheight,
 					      duration => $ReportLatency::utils::duration,
@@ -158,7 +156,7 @@ sub total_graph {
   print $png $graph->img()->png();
   close($png);
 
-  $sth = $store->nav_response_histogram_summary($begin, $end);
+  $sth = $qobj->nav_response_histogram($begin, $end);
   $graph = new ReportLatency::StackedGraph( width => $histwidth,
 					      height => $histheight,
 					      duration => $ReportLatency::utils::duration,
@@ -171,7 +169,7 @@ sub total_graph {
   print $png $graph->img()->png();
   close($png);
 
-  $sth = $store->nreq_latency_histogram_summary($begin, $end);
+  $sth = $qobj->nreq_latency_histogram($begin, $end);
   $graph = new ReportLatency::StackedGraph( width => $histwidth,
 					    height => $histheight,
 					    duration => $ReportLatency::utils::duration,
@@ -187,7 +185,7 @@ sub total_graph {
     close($png);
   }
 
-  $sth = $store->nreq_response_histogram_summary($begin, $end);
+  $sth = $qobj->nreq_response_histogram($begin, $end);
   $graph = new ReportLatency::StackedGraph( width => $histwidth,
 					      height => $histheight,
 					      duration => $ReportLatency::utils::duration,
@@ -204,7 +202,7 @@ sub total_graph {
     close($png);
   }
 
-  $sth = $store->ureq_latency_histogram_summary($begin, $end);
+  $sth = $qobj->ureq_latency_histogram($begin, $end);
   $graph = new ReportLatency::StackedGraph( width => $histwidth,
 					    height => $histheight,
 					    duration => $ReportLatency::utils::duration,
@@ -220,7 +218,7 @@ sub total_graph {
     close($png);
   }
 
-  $sth = $store->ureq_response_histogram_summary($begin, $end);
+  $sth = $qobj->ureq_response_histogram($begin, $end);
   $graph = new ReportLatency::StackedGraph( width => $histwidth,
 					      height => $histheight,
 					      duration => $ReportLatency::utils::duration,
@@ -272,7 +270,7 @@ sub main() {
   my $end = $store->db_timestamp($t);
   my $summary = new ReportLatency::Summary($store, $begin, $end);
 
-  total_graph($summary);
+  total_graph($summary, $begin, $end);
   user_agents($store);
   extensions($store);
   total_report($view,\%options);
