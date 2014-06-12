@@ -19,7 +19,7 @@
 use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
-use Test::More tests => 63;
+use Test::More tests => 57;
 use Data::Dumper;
 
 BEGIN { use lib '..'; }
@@ -36,6 +36,20 @@ my $dbfile = "$dir/latency.sqlite3";
   while (my $line = $sql->getline) {
     print $sqlite3 $line;
   }
+  print $sqlite3 <<EOD;
+INSERT INTO upload(location) VALUES("1.2.3.0");
+INSERT INTO navigation(upload,name,service,count,total,m10000,response200)
+  VALUES(1,'mail.google.com','mail.google.com',1,2038,1,1);
+INSERT INTO navigation_request(upload,name,service,count,total,low,high)
+  VALUES(1,'mail.google.com','mail.google.com',3,2100,600,800);
+INSERT INTO upload(location) VALUES("1.2.3.0");
+INSERT INTO update_request(upload,name,service,count,total,low,high)
+  VALUES(2,'mail.google.com','mail.google.com',10,2220,100,300);
+INSERT INTO upload(location) VALUES("1.2.3.0");
+INSERT INTO update_request(upload,name,service,count,total)
+  VALUES(3,'news.google.com','news.google.com',10,3330);
+EOD
+
   close($sql);
   ok(close($sqlite3),'latency schema');
 }
@@ -49,32 +63,6 @@ my $end = $store->db_timestamp($e);
 my $qobj = new ReportLatency::Summary($store,$begin,$end);
 isa_ok($qobj, 'ReportLatency::Summary');
 
-my $dbh = $store->{dbh};
-ok($dbh->do(q{
-  INSERT INTO upload(location) VALUES("1.2.3.0");
-}), 'INSERT upload');
-ok($dbh->do(q{
-  INSERT INTO navigation(upload,name,service,count,total,m10000,response200)
-    VALUES(1,'mail.google.com','mail.google.com',1,2038,1,1);
-}), 'INSERT mail.google.com navigation');
-ok($dbh->do(q{
-  INSERT INTO navigation_request(upload,name,service,count,total,low,high)
-    VALUES(1,'mail.google.com','mail.google.com',3,2100,600,800);
-}), 'INSERT mail.google.com navigation_request');
-ok($dbh->do(q{
-  INSERT INTO upload(location) VALUES("1.2.3.0");
-}), 'INSERT upload');
-ok($dbh->do(q{
-  INSERT INTO update_request(upload,name,service,count,total,low,high)
-    VALUES(2,'mail.google.com','mail.google.com',10,2220,100,300);
-}), 'INSERT mail.google.com update_request');
-ok($dbh->do(q{
-  INSERT INTO upload(location) VALUES("1.2.3.0");
-}), 'INSERT upload');
-ok($dbh->do(q{
-  INSERT INTO update_request(upload,name,service,count,total)
-    VALUES(3,'news.google.com','news.google.com',10,3330);
-}), 'INSERT news.google.com update_request');
 
 my $sth = $qobj->nav_latencies();
 $sth->execute($begin, $end);
@@ -89,10 +77,9 @@ $row = $sth->fetchrow_hashref;
 is($row, undef, 'last total nav latency row');
 
 $sth = $qobj->nav_latency_histogram();
+isa_ok($sth, 'DBI::st');
 $row = $sth->fetchrow_hashref;
 ok($row, "got a row from nav_latency_histogram");
-print STDERR "nav_latency_histogram = ";
-print STDERR Dumper($row);
 is($row->{amount}, 1, '1 navigation');
 is($row->{measure}, '10s', ' in 10s bin');
 cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');

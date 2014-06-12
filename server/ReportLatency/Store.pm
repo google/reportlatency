@@ -20,6 +20,7 @@ use ReportLatency::utils;
 use IO::String;
 use URI::Escape;
 use JSON;
+use Data::Dumper;
 
 $VERSION     = 0.1;
 %options = ();
@@ -995,7 +996,7 @@ sub current_uploads {
 		    $self->unix_timestamp('timestamp') . ' AS utimestamp ' .
 		    'FROM upload WHERE timestamp BETWEEN ? AND ?; ')
 	or die "prepare failed";
-    my $rc = $sth->execute($begin,$end);
+    my $rc = $sth->execute($begin,$end) or die $sth->errstr;
     $self->{current_uploads} = $rc;
     $sth->finish();
   }

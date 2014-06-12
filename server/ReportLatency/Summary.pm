@@ -218,7 +218,8 @@ WHERE n.upload=u.id AND count>m100+m500+m1000+m2000+m10000+tabclosed
 ;
 EOS
 
-  $sth->execute();
+  my $rc = $sth->execute() or die $sth->errstr;
+
   return $sth;
 }
 
