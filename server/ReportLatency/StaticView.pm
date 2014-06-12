@@ -304,10 +304,9 @@ EOF
 sub report_html {
   my ($self,$qobj,$begin,$end) = @_;
 
-  my $meta_sth = $qobj->meta;
-  my $tag_sth = $qobj->summary_tag;
-  my $other_sth = $qobj->summary_untagged;
-  my $location_sth = $qobj->summary_location;
+  my $meta_sth = $qobj->meta($begin, $end);
+  my $tag_sth = $qobj->tag($begin, $end);
+  my $location_sth = $qobj->location($begin, $end);
   my $extension_version_sth = $qobj->extension_version;
   my $user_agent_sth = $qobj->user_agent;
 
@@ -356,8 +355,6 @@ $image_banner
 $tag_header
 EOF
 
-  my $rc = $tag_sth->execute($begin, $end);
-
   while (my $tag = $tag_sth->fetchrow_hashref) {
     my $name = $tag->{tag};
     my $url = $self->tag_url($name);
@@ -365,13 +362,6 @@ EOF
     print $io $self->latency_summary_row($name,$url,$count,$tag);
   }
   $tag_sth->finish;
-
-  $rc = $other_sth->execute($begin, $end);
-  my $other = $other_sth->fetchrow_hashref;
-  my $url = $self->untagged_url();
-  print $io $self->latency_summary_row('untagged',$url,
-				       $other->{'services'},$other);
-  $other_sth->finish;
 
   print $io $tag_header;
 
@@ -400,7 +390,6 @@ EOF
 <table class="alternate" summary="Latency report for all services by location">
 $location_header
 EOF
-  $rc = $location_sth->execute($begin, $end);
 
   while (my $location = $location_sth->fetchrow_hashref) {
     my $name = $location->{location};
@@ -422,7 +411,7 @@ EOF
         <tr> <th>User Agent</th> <th>Uploads</th> </tr>
 EOF
 
-  $rc = $user_agent_sth->execute($begin, $end);
+  $user_agent_sth->execute($begin, $end) or die $user_agent_sth->errstr;
 
   while (my $ua = $user_agent_sth->fetchrow_hashref) {
     print $io $self->name_value_row($ua);

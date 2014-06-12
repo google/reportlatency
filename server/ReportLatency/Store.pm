@@ -998,8 +998,8 @@ sub create_current_temp_table {
 	or die "prepare failed";
     $self->{current} = $sth;
   }
-  if ($self->{begin} ne $begin ||
-      $self->{end} ne $end) {
+  if (!(defined $self->{begin} && defined $self->{end} &&
+	$self->{begin} ne $begin && $self->{end} ne $end)) {
     my $sth = $self->{current};
     my $rc = $sth->execute($begin,$end) or die $sth->errstr;
     $self->{begin} = $begin;

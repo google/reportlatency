@@ -128,56 +128,47 @@ sub meta {
 }
 
 
-sub summary_tag {
-  my ($self) = @_;
+sub tag {
+  my ($self,$begin,$end) = @_;
+
+  $self->{store}->create_current_temp_table($begin,$end);
+
   my $store = $self->{store};
   my $dbh = $store->{dbh};
-  my $sth =
-    $dbh->prepare('SELECT t.tag as tag,' .
-                  'count(distinct r.service) AS services,' .
-		  $store->common_aggregate_fields() .
-                  ' FROM report r ' .
-		  'INNER JOIN tag t ' .
-		  'ON r.service = t.service ' .
-                  'WHERE timestamp BETWEEN ? AND ? ' .
-                  'GROUP BY t.tag ' .
-		  'ORDER BY t.tag;')
-      or die "prepare failed";
+  my $fields = $store->common_aggregate_fields();
+  my $sth = $dbh->prepare( <<EOS ) or die "prepare failed";
+SELECT t.tag as tag,
+count(distinct r.service) AS services,
+$fields
+FROM current u, report3 r, tag t
+WHERE u.id=r.upload AND r.service = t.service
+GROUP BY t.tag
+ORDER BY t.tag;
+EOS
+  $sth->execute() or die $sth->errstr;
   return $sth;
 }
 
-sub summary_untagged {
-  my ($self) = @_;
+
+sub location {
+  my ($self,$begin,$end) = @_;
+
+  $self->{store}->create_current_temp_table($begin,$end);
+
   my $store = $self->{store};
   my $dbh = $store->{dbh};
+  my $fields = $store->common_aggregate_fields();
   my $sth =
-    $dbh->prepare('SELECT ' .
-                  'count(distinct r.service) AS services,' .
-		  $store->common_aggregate_fields() .
-                  ' FROM upload u ' .
-		  'INNER JOIN report3 r ON u.id=r.upload ' .
-		  'LEFT OUTER JOIN tag t ' .
-		  'ON r.service = t.service ' .
-                  'WHERE timestamp BETWEEN ? AND ? ' .
-		  'AND t.tag is null;')
-      or die "prepare failed";
-  return $sth;
-}
-
-sub summary_location {
-  my ($self) = @_;
-  my $store = $self->{store};
-  my $dbh = $store->{dbh};
-  my $sth =
-    $dbh->prepare('SELECT location,' .
-                  'count(distinct service) AS services,' .
-		  $store->common_aggregate_fields() .
-                  ' FROM report ' .
-                  'WHERE timestamp > ? AND timestamp <= ? ' .
-                  'GROUP BY location ' .
-		  'ORDER BY location;')
-      or die "prepare failed";
-
+    $dbh->prepare( <<EOS ) or die "prepare failed";
+SELECT location,
+count(distinct service) AS services,
+$fields
+FROM current u, report3 r
+WHERE u.id=r.upload
+GROUP BY location
+ORDER BY location;
+EOS
+  $sth->execute();
   return $sth;
 }
 
