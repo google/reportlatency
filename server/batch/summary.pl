@@ -99,7 +99,7 @@ sub extensions {
 sub total_graph {
   my ($qobj,$begin,$end) = @_;
 
-  my $sth = $qobj->nav_latencies($begin, $end);
+  my $sth = $qobj->nav_latencies();
   my $spectrum = new ReportLatency::Spectrum( width => $navwidth,
 					      height => $navheight,
 					      duration => $ReportLatency::utils::duration,
@@ -113,7 +113,7 @@ sub total_graph {
   close($png);
 
 
-  $sth = $qobj->nreq_latencies($begin, $end);
+  $sth = $qobj->nreq_latencies();
   $spectrum = new ReportLatency::Spectrum( width => $reqwidth,
 					   height => $reqheight,
 					   duration => $ReportLatency::utils::duration,
@@ -128,7 +128,7 @@ sub total_graph {
   close($png);
 
 
-  $sth = $qobj->ureq_latencies($begin, $end);
+  $sth = $qobj->ureq_latencies();
   $spectrum = new ReportLatency::Spectrum( width => $reqwidth,
 					   height => $reqheight,
 					   duration => $ReportLatency::utils::duration,
@@ -143,7 +143,7 @@ sub total_graph {
   close($png);
 
 
-  $sth = $qobj->nav_latency_histogram($begin, $end);
+  $sth = $qobj->nav_latency_histogram();
   my $graph = new ReportLatency::StackedGraph( width => $histwidth,
 					      height => $histheight,
 					      duration => $ReportLatency::utils::duration,
@@ -156,7 +156,7 @@ sub total_graph {
   print $png $graph->img()->png();
   close($png);
 
-  $sth = $qobj->nav_response_histogram($begin, $end);
+  $sth = $qobj->nav_response_histogram();
   $graph = new ReportLatency::StackedGraph( width => $histwidth,
 					      height => $histheight,
 					      duration => $ReportLatency::utils::duration,
@@ -169,7 +169,7 @@ sub total_graph {
   print $png $graph->img()->png();
   close($png);
 
-  $sth = $qobj->nreq_latency_histogram($begin, $end);
+  $sth = $qobj->nreq_latency_histogram();
   $graph = new ReportLatency::StackedGraph( width => $histwidth,
 					    height => $histheight,
 					    duration => $ReportLatency::utils::duration,
@@ -185,7 +185,7 @@ sub total_graph {
     close($png);
   }
 
-  $sth = $qobj->nreq_response_histogram($begin, $end);
+  $sth = $qobj->nreq_response_histogram();
   $graph = new ReportLatency::StackedGraph( width => $histwidth,
 					      height => $histheight,
 					      duration => $ReportLatency::utils::duration,
@@ -202,7 +202,7 @@ sub total_graph {
     close($png);
   }
 
-  $sth = $qobj->ureq_latency_histogram($begin, $end);
+  $sth = $qobj->ureq_latency_histogram();
   $graph = new ReportLatency::StackedGraph( width => $histwidth,
 					    height => $histheight,
 					    duration => $ReportLatency::utils::duration,
@@ -218,7 +218,7 @@ sub total_graph {
     close($png);
   }
 
-  $sth = $qobj->ureq_response_histogram($begin, $end);
+  $sth = $qobj->ureq_response_histogram();
   $graph = new ReportLatency::StackedGraph( width => $histwidth,
 					      height => $histheight,
 					      duration => $ReportLatency::utils::duration,

@@ -902,10 +902,9 @@ sub location_service_sth {
 sub create_current_temp_table {
   my ($self,$begin,$end) = @_;
 
-  print STDERR "create_current_temp_table($begin,$end)\n";
+  my $dbh = $self->{dbh};
 
   if (!defined $self->{current}) {
-    my $dbh = $self->{dbh};
     my $sth =
       $dbh->prepare('CREATE TEMP TABLE current AS ' .
 		    'SELECT *,' .
@@ -917,7 +916,12 @@ sub create_current_temp_table {
   if (!(defined $self->{begin} && defined $self->{end} &&
 	$self->{begin} eq $begin && $self->{end} eq $end)) {
     my $sth = $self->{current};
-    my $rc = $sth->execute($begin,$end) or die $sth->errstr;
+    if (defined $self->{current_rows}) {
+      print STDERR "Dropping current\n";
+      $dbh->do("DROP TABLE current;")
+	or die "unable to drop current temp table";
+    }
+    $self->{current_rows} = $sth->execute($begin,$end) or die $sth->errstr;
     $self->{begin} = $begin;
     $self->{end} = $end;
   }
