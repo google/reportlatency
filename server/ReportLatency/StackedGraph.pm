@@ -101,7 +101,7 @@ sub add {
       return $self->{data}{$measure}[$x];
     }
   }
-  undef;
+  0;
 }
 
 sub add_row {

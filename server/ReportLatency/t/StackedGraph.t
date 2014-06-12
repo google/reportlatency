@@ -43,8 +43,8 @@ is($graph->_x(time+10),$graph->width()-1,"_x(time+10) =~ width");
 
 my $now = time;
 
-is($graph->add(0,'measure',0), undef, "add(outside duration) == undef");
-is($graph->add($now,'measure',-1), undef, "add(outside measurement) == undef");
+is($graph->add(0,'measure',0), 0, "add(outside duration) == undef");
+is($graph->add($now,'measure',-1), 0, "add(outside measurement) == undef");
 is($graph->add($now,'good',1), 1, "add(valid point) == 1");
 is($graph->add($now,'good', 2), 3, "add(valid point) == 3");
 
