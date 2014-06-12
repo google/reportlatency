@@ -39,7 +39,7 @@ sub DESTROY {
 
 
 sub nav_latencies {
-  my ($self, $begin, $end) = @_;
+  my ($self) = @_;
 
   my $sth = $self->{total_nav_latencies_sth};
   if (! defined $sth) {
@@ -58,13 +58,13 @@ sub nav_latencies {
     $self->{total_nav_latencies_sth} = $sth;
   }
 
-  $sth->execute($begin, $end) or die $sth->errstr;
+  $sth->execute($self->{begin}, $self->{end}) or die $sth->errstr;
 
   return $sth;
 }
 
 sub nreq_latencies {
-  my ($self, $begin, $end) = @_;
+  my ($self) = @_;
 
   my $sth = $self->{total_nreq_latencies_sth};
   if (! defined $sth) {
@@ -83,7 +83,7 @@ sub nreq_latencies {
     $self->{total_nreq_latencies_sth} = $sth;
   }
 
-  $sth->execute($begin, $end) or die $sth->errstr;
+  $sth->execute($self->{begin}, $self->{end}) or die $sth->errstr;
 
   return $sth;
 }
@@ -108,6 +108,8 @@ sub ureq_latencies {
     $self->{total_ureq_latencies_sth} = $sth;
   }
 
+  $sth->execute($self->{begin}, $self->{end}) or die $sth->errstr;
+
   return $sth;
 }
 
@@ -115,6 +117,7 @@ sub ureq_latencies {
 
 sub meta {
   my ($self) = @_;
+
   my $store = $self->{store};
   my $dbh = $store->{dbh};
 
@@ -127,15 +130,13 @@ sub meta {
                   ' FROM current, report3 ' .
 		  "WHERE upload=id;" )
       or die "prepare failed";
-  $sth->execute();
+  $sth->execute() or die $sth->errstr;
   return $sth;
 }
 
 
 sub tag {
-  my ($self,$begin,$end) = @_;
-
-  $self->{store}->create_current_temp_table($begin,$end);
+  my ($self) = @_;
 
   my $store = $self->{store};
   my $dbh = $store->{dbh};
@@ -164,9 +165,7 @@ EOS
 
 
 sub location {
-  my ($self,$begin,$end) = @_;
-
-  $self->{store}->create_current_temp_table($begin,$end);
+  my ($self) = @_;
 
   my $store = $self->{store};
   my $dbh = $store->{dbh};
@@ -228,9 +227,7 @@ EOS
 }
 
 sub nav_response_histogram {
-  my ($self,$begin,$end) = @_;
-
-  $self->{store}->create_current_temp_table($begin,$end);
+  my ($self) = @_;
 
   my $dbh = $self->{store}->{dbh};
   my $sth =
@@ -259,10 +256,7 @@ EOS
 
 
 sub nreq_latency_histogram {
-  my ($self,$begin,$end) = @_;
-
-
-  $self->{store}->create_current_temp_table($begin,$end);
+  my ($self) = @_;
 
   my $dbh = $self->{store}->{dbh};
   my $sth =
@@ -298,14 +292,12 @@ WHERE r.upload=u.id AND count>m100+m500+m1000+m2000+m10000+tabclosed
 ;
 EOS
 
-  $sth->execute();
+  $sth->execute() or die $sth->errstr;
   return $sth;
 }
 
 sub nreq_response_histogram {
-  my ($self,$begin,$end) = @_;
-
-  $self->{store}->create_current_temp_table($begin,$end);
+  my ($self) = @_;
 
   my $dbh = $self->{store}->{dbh};
   my $sth =
@@ -324,15 +316,12 @@ FROM current AS u, navigation_request AS r
 WHERE r.upload=u.id AND response400>0;
 EOS
 
-  $sth->execute();
+  $sth->execute() or die $sth->errstr;
   return $sth;
 }
 
 sub ureq_latency_histogram {
-  my ($self,$begin,$end) = @_;
-
-
-  $self->{store}->create_current_temp_table($begin,$end);
+  my ($self) = @_;
 
   my $dbh = $self->{store}->{dbh};
   my $sth =
@@ -368,15 +357,12 @@ WHERE r.upload=u.id AND count>m100+m500+m1000+m2000+m10000+tabclosed
 ;
 EOS
 
-  $sth->execute();
+  $sth->execute() or die $sth->errstr;
   return $sth;
 }
 
 sub ureq_response_histogram {
-  my ($self,$begin,$end) = @_;
-
-
-  $self->{store}->create_current_temp_table($begin,$end);
+  my ($self) = @_;
 
   my $dbh = $self->{store}->{dbh};
   my $sth =
@@ -395,7 +381,7 @@ FROM current AS u, update_request AS r
 WHERE r.upload=u.id AND response400>0;
 EOS
 
-  $sth->execute();
+  $sth->execute() or die $sth->errstr;
   return $sth;
 }
 

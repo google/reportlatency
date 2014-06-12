@@ -192,7 +192,9 @@ sub common_html_fields {
 
 sub name_value_row {
   my ($self,$row) = @_;
-  my $html = "  <tr> <td align=left>$row->{name}</td> <td align=right>$row->{value}</td> </tr>\n";
+  my $name = $row->{name};
+  my $value = $row->{value};
+  my $html = "  <tr> <td align=left>$name</td> <td align=right>$value</td> </tr>\n";
   return $html;
 }
 
@@ -302,11 +304,11 @@ EOF
 
 
 sub report_html {
-  my ($self,$qobj,$begin,$end) = @_;
+  my ($self,$qobj) = @_;
 
-  my $meta_sth = $qobj->meta($begin, $end);
-  my $tag_sth = $qobj->tag($begin, $end);
-  my $location_sth = $qobj->location($begin, $end);
+  my $meta_sth = $qobj->meta();
+  my $tag_sth = $qobj->tag();
+  my $location_sth = $qobj->location();
   my $extension_version_sth = $qobj->extension_version;
   my $user_agent_sth = $qobj->user_agent;
 
@@ -314,6 +316,9 @@ sub report_html {
 
   my $meta = $meta_sth->fetchrow_hashref;
   $meta_sth->finish;
+
+  my $begin = $meta->{'min_timestamp'};
+  my $end = $meta->{'max_timestamp'};
 
   my $io = new IO::String;
 
