@@ -26,9 +26,9 @@ sub new {
   my $class = shift;
   my $self  = bless {}, $class;
   $self->{store} = shift;
-  $self->{begin} = shift;
-  $self->{end} = shift;
-  $self->{store}->current_uploads($self->{begin},$self->{end});
+  my $begin = $self->{begin} = shift;
+  my $end = $self->{end} = shift;
+  $self->{store}->create_current_temp_table($begin,$end);
 
   return $self;
 }
@@ -225,6 +225,8 @@ EOS
 
 sub nav_response_histogram {
   my ($self,$begin,$end) = @_;
+
+  $self->{store}->create_current_temp_table($begin,$end);
 
   my $dbh = $self->{store}->{dbh};
   my $sth =

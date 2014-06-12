@@ -985,10 +985,10 @@ sub location_service_sth {
   return $sth;
 }
 
-sub current_uploads {
+sub create_current_temp_table {
   my ($self,$begin,$end) = @_;
 
-  if (!defined $self->{current_uploads}) {
+  if (!defined $self->{current}) {
     my $dbh = $self->{dbh};
     my $sth =
       $dbh->prepare('CREATE TEMP TABLE current AS ' .
@@ -996,16 +996,21 @@ sub current_uploads {
 		    $self->unix_timestamp('timestamp') . ' AS utimestamp ' .
 		    'FROM upload WHERE timestamp BETWEEN ? AND ?; ')
 	or die "prepare failed";
+    $self->{current} = $sth;
+  }
+  if ($self->{begin} ne $begin ||
+      $self->{end} ne $end) {
+    my $sth = $self->{current};
     my $rc = $sth->execute($begin,$end) or die $sth->errstr;
-    $self->{current_uploads} = $rc;
-    $sth->finish();
+    $self->{begin} = $begin;
+    $self->{end} = $end;
   }
 }
 
 sub nav_latency_histogram_summary {
   my ($self,$begin,$end) = @_;
 
-  $self->current_uploads($begin,$end);
+  $self->create_current_temp_table($begin,$end);
 
   my $dbh = $self->{dbh};
   my $sth =
@@ -1048,7 +1053,7 @@ EOS
 sub nav_response_histogram_summary {
   my ($self,$begin,$end) = @_;
 
-  $self->current_uploads($begin,$end);
+  $self->create_current_temp_table($begin,$end);
 
   my $dbh = $self->{dbh};
   my $sth =
@@ -1079,7 +1084,7 @@ EOS
 sub nreq_latency_histogram_summary {
   my ($self,$begin,$end) = @_;
 
-  $self->current_uploads($begin,$end);
+  $self->create_current_temp_table($begin,$end);
 
   my $dbh = $self->{dbh};
   my $sth =
@@ -1122,7 +1127,7 @@ EOS
 sub nreq_response_histogram_summary {
   my ($self,$begin,$end) = @_;
 
-  $self->current_uploads($begin,$end);
+  $self->create_current_temp_table($begin,$end);
 
   my $dbh = $self->{dbh};
   my $sth =
@@ -1148,7 +1153,7 @@ EOS
 sub ureq_latency_histogram_summary {
   my ($self,$begin,$end) = @_;
 
-  $self->current_uploads($begin,$end);
+  $self->create_current_temp_table($begin,$end);
 
   my $dbh = $self->{dbh};
   my $sth =
@@ -1191,7 +1196,7 @@ EOS
 sub ureq_response_histogram_summary {
   my ($self,$begin,$end) = @_;
 
-  $self->current_uploads($begin,$end);
+  $self->create_current_temp_table($begin,$end);
 
   my $dbh = $self->{dbh};
   my $sth =
