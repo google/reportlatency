@@ -130,7 +130,9 @@ sub _label_days {
     my $label = sprintf("%02d-%02d",$month,$day);
     if ($begin_day >= $self->duration_begin) {
       my $x = $self->_x($begin_day);
-      $self->{xlabel}[$x] = $label;
+      if (defined $x) {
+	$self->{xlabel}[$x] = $label;
+      }
     }
   }
 }
