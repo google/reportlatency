@@ -118,20 +118,24 @@ sub ureq_latencies {
 sub meta {
   my ($self) = @_;
 
-  my $store = $self->{store};
-  my $dbh = $store->{dbh};
+  if (!defined $self->{meta}) {
+    my $store = $self->{store};
+    my $dbh = $store->{dbh};
+    my $fields = $store->common_aggregate_fields();
 
-  my $sth =
-    $dbh->prepare("SELECT 'total' AS tag," .
-		  'min(timestamp) AS min_timestamp,' .
-                  'max(timestamp) AS max_timestamp,' .
-                  'count(distinct service) AS services,' .
-		  $store->common_aggregate_fields() .
-                  ' FROM current, report3 ' .
-		  "WHERE upload=id;" )
-      or die "prepare failed";
-  $sth->execute() or die $sth->errstr;
-  return $sth;
+    my $rowref = $dbh->selectrow_hashref( <<EOS ) or die "Unable to prepare meta";
+SELECT 'total' AS tag,
+min(timestamp) AS min_timestamp,
+max(timestamp) AS max_timestamp,
+count(distinct service) AS services,
+$fields
+FROM current, report3
+WHERE upload=id;
+EOS
+    $self->{meta} = $rowref;
+  }
+
+  return $self->{meta};
 }
 
 

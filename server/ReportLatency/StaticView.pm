@@ -306,16 +306,13 @@ EOF
 sub report_html {
   my ($self,$qobj) = @_;
 
-  my $meta_sth = $qobj->meta();
+  my $meta = $qobj->meta();
   my $tag_sth = $qobj->tag();
   my $location_sth = $qobj->location();
   my $extension_version_sth = $qobj->extension_version;
   my $user_agent_sth = $qobj->user_agent;
 
   my $image_prefix = $self->tag_img_prefix('summary');
-
-  my $meta = $meta_sth->fetchrow_hashref;
-  $meta_sth->finish;
 
   my $begin = $meta->{'min_timestamp'};
   my $end = $meta->{'max_timestamp'};
