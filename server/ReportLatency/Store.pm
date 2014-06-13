@@ -929,6 +929,52 @@ sub create_current_temp_table {
   }
 }
 
+sub create_service_report_temp_table {
+  my ($self) = @_;
+  my $dbh = $self->{dbh};
+
+  if (!defined $self->{service_report}) {
+    my $sth =
+      $dbh->prepare( <<EOS ) or die "prepare failed";
+CREATE TEMP TABLE service_report AS
+SELECT service AS service,
+       sum(count) AS nav_count,
+       sum(total) AS nav_total,
+       sum(high) AS nav_high,
+       sum(low) AS nav_low,
+       sum(tabclosed) AS nav_tabclosed,
+       sum(response200) AS nav_200,
+       sum(response300) AS nav_300,
+       sum(response400) AS nav_400,
+       sum(response500) AS nav_500,
+       NULL AS nreq_count,
+       NULL AS nreq_total,
+       NULL AS nreq_high,
+       NULL AS nreq_low,
+       NULL AS nreq_tabclosed,
+       NULL AS nreq_200,
+       NULL AS nreq_300,
+       NULL AS nreq_400,
+       NULL AS nreq_500,
+       NULL AS ureq_count,
+       NULL AS ureq_total,
+       NULL AS ureq_high,
+       NULL AS ureq_low,
+       NULL AS ureq_200,
+       NULL AS ureq_300,
+       NULL AS ureq_400,
+       NULL AS ureq_500
+FROM navigation, current
+WHERE navigation.upload=current.id
+GROUP BY service
+;
+EOS
+    $self->{service_report} = $sth->execute() or die $sth->errstr;
+    benchmark_point("CREATE TEMP TABLE service_report");
+  }
+}
+
+
 sub nav_latency_histogram_summary {
   my ($self,$begin,$end) = @_;
 

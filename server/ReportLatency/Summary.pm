@@ -143,21 +143,23 @@ sub tag {
   my ($self) = @_;
 
   my $store = $self->{store};
+
+  $store->create_service_report_temp_table();
+
   my $dbh = $store->{dbh};
   my $fields = $store->common_aggregate_fields();
   my $sth = $dbh->prepare( <<EOS ) or die "prepare failed";
 SELECT t.tag as tag,
 count(distinct r.service) AS services,
 $fields
-FROM current u, report3 r, tag t
-WHERE u.id=r.upload AND r.service = t.service
+FROM service_report r, tag t
+WHERE r.service = t.service
 GROUP BY t.tag
 UNION
 SELECT 'untagged' AS tag,
 count(distinct r.service) AS services,
 $fields
-FROM current u
-INNER JOIN report3 r ON u.id=r.upload
+FROM service_report r
 LEFT OUTER JOIN tag t ON r.service = t.service
 WHERE t.tag is null
 ORDER BY tag
