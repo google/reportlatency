@@ -97,7 +97,10 @@ sub extensions {
 }
 
 sub total_graph {
-  my ($qobj,$begin,$end) = @_;
+  my ($qobj) = @_;
+
+  my $begin = $qobj->{begin};
+  my $end = $qobj->{end};
 
   my $sth = $qobj->nav_latencies();
   my $spectrum = new ReportLatency::Spectrum( width => $navwidth,
@@ -238,13 +241,8 @@ sub total_graph {
 }
 
 sub total_report {
-  my ($view,$options) = @_;
+  my ($view,$qobj,$options) = @_;
   my $html = new ReportLatency::AtomicFile("tags/summary/index.html");
-  my $store = $view->{store};
-  my $t = time;
-  my $begin = $store->db_timestamp($t-$ReportLatency::utils::duration);
-  my $end = $store->db_timestamp($t);
-  my $qobj = new ReportLatency::Summary($store,$begin,$end);
   print $html $view->report_html($qobj);
   close($html);
 }
@@ -270,10 +268,10 @@ sub main() {
   my $end = $store->db_timestamp($t);
   my $summary = new ReportLatency::Summary($store, $begin, $end);
 
-  total_graph($summary, $begin, $end);
+  total_graph($summary);
+  total_report($view,$summary,\%options);
   user_agents($store);
   extensions($store);
-  total_report($view,\%options);
 
   $dbh->rollback() ||
     die "Unable to rollback, but there should be no changes anyway";
