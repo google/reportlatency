@@ -24,6 +24,7 @@ use File::Spec;
 use base 'Exporter';
 our @EXPORT    = qw(sanitize sanitize_service sanitize_location service_path
 		    mynum myround average
+		    benchmark_start benchmark_point benchmark_end
 		    latency_dsn latency_dialect net_class_c
 		    reverse_dns aggregate_user_agent);
 
@@ -225,6 +226,26 @@ sub path_depth($) {
     }
   }
   return $count;
+}
+
+
+my ($start_time,$last_time);
+
+sub benchmark_start {
+  $start_time = $last_time = time;
+}
+
+sub benchmark_point {
+  my ($name) = @_;
+  my $new_time = time;
+  print STDERR "$name took " . ($new_time - $last_time) . "\n";
+  $last_time = $new_time;
+}
+
+sub benchmark_end {
+  my $final_time = time;
+  print STDERR "total benchmarked timespan: " . ($final_time - $start_time) .
+    "\n";
 }
 
 

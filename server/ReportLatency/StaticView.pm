@@ -306,11 +306,17 @@ EOF
 sub report_html {
   my ($self,$qobj) = @_;
 
+  benchmark_point("start report_html()");
   my $meta = $qobj->meta();
+  benchmark_point("meta()");
   my $tag_sth = $qobj->tag();
+  benchmark_point("tag_sth opened()");
   my $location_sth = $qobj->location();
+  benchmark_point("location_sth opened()");
   my $extension_version_sth = $qobj->extension_version;
+  benchmark_point("extension_version_sth opened()");
   my $user_agent_sth = $qobj->user_agent;
+  benchmark_point("user_agent_sth opened()");
 
   my $image_prefix = $self->tag_img_prefix('summary');
 
@@ -355,6 +361,7 @@ $image_banner
 $tag_header
 EOF
 
+  benchmark_point("start tag_sth");
   while (my $tag = $tag_sth->fetchrow_hashref) {
     my $name = $tag->{tag};
     my $url = $self->tag_url($name);
@@ -362,6 +369,7 @@ EOF
     print $io $self->latency_summary_row($name,$url,$count,$tag);
   }
   $tag_sth->finish;
+  benchmark_point("end tag_sth");
 
   print $io $tag_header;
 
@@ -391,6 +399,7 @@ EOF
 $location_header
 EOF
 
+  benchmark_point("start location_sth");
   while (my $location = $location_sth->fetchrow_hashref) {
     my $name = $location->{location};
     my $url = $self->location_url_from_tag(uri_escape($name));
@@ -399,6 +408,7 @@ EOF
 					 $count,$location);
   }
   $location_sth->finish;
+  benchmark_point("end location_sth");
 
   print $io <<EOF;
 </table>
@@ -411,12 +421,15 @@ EOF
         <tr> <th>User Agent</th> <th>Uploads</th> </tr>
 EOF
 
+  benchmark_point("start user_agent_sth");
   $user_agent_sth->execute($begin, $end) or die $user_agent_sth->errstr;
 
   while (my $ua = $user_agent_sth->fetchrow_hashref) {
     print $io $self->name_value_row($ua);
   }
   $user_agent_sth->finish;
+
+  benchmark_point("end user_agent_sth");
 
 print $io <<EOF;
       </table>
@@ -427,12 +440,15 @@ print $io <<EOF;
         <tr> <th>Extension Version</th> <th>Uploads</th> </tr>
 EOF
 
+  benchmark_point("start extension_version_sth");
   my $rc = $extension_version_sth->execute($begin, $end);
 
   while (my $v = $extension_version_sth->fetchrow_hashref) {
     print $io $self->name_value_row($v);
   }
   $extension_version_sth->finish;
+
+  benchmark_point("end extension_version_sth");
 
 print $io <<EOF;
       </table>
@@ -445,6 +461,8 @@ EOF
 </body>
 </html>
 EOF
+
+  benchmark_point("end report_html()");
 
   $io->setpos(0);
   return ${$io->string_ref};

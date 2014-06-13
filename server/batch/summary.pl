@@ -71,6 +71,8 @@ sub user_agents {
   my $png = new ReportLatency::AtomicFile("tags/summary/useragents.png");
   print $png $graph->img()->png();
   close($png);
+
+  benchmark_point("useragents.png");
 }
 
 sub extensions {
@@ -94,11 +96,13 @@ sub extensions {
   my $png = new ReportLatency::AtomicFile("tags/summary/extensions.png");
   print $png $graph->img()->png();
   close($png);
+  benchmark_point("extensions.png");
 }
 
 sub total_graph {
   my ($qobj) = @_;
 
+  benchmark_point("start total_graph()");
   my $begin = $qobj->{begin};
   my $end = $qobj->{end};
 
@@ -115,6 +119,7 @@ sub total_graph {
   print $png $spectrum->png();
   close($png);
 
+  benchmark_point("nav_spectrum.png");
 
   $sth = $qobj->nreq_latencies();
   $spectrum = new ReportLatency::Spectrum( width => $reqwidth,
@@ -130,6 +135,7 @@ sub total_graph {
   print $png $spectrum->png();
   close($png);
 
+  benchmark_point("nreq_spectrum.png");
 
   $sth = $qobj->ureq_latencies();
   $spectrum = new ReportLatency::Spectrum( width => $reqwidth,
@@ -145,6 +151,7 @@ sub total_graph {
   print $png $spectrum->png();
   close($png);
 
+  benchmark_point("ureq_spectrum.png");
 
   $sth = $qobj->nav_latency_histogram();
   my $graph = new ReportLatency::StackedGraph( width => $histwidth,
@@ -159,6 +166,8 @@ sub total_graph {
   print $png $graph->img()->png();
   close($png);
 
+  benchmark_point("nav_latency.png");
+
   $sth = $qobj->nav_response_histogram();
   $graph = new ReportLatency::StackedGraph( width => $histwidth,
 					      height => $histheight,
@@ -171,6 +180,8 @@ sub total_graph {
   $png = new ReportLatency::AtomicFile("tags/summary/nav_error.png");
   print $png $graph->img()->png();
   close($png);
+
+  benchmark_point("nav_error.png");
 
   $sth = $qobj->nreq_latency_histogram();
   $graph = new ReportLatency::StackedGraph( width => $histwidth,
@@ -187,6 +198,8 @@ sub total_graph {
     print $png $graph->img()->png();
     close($png);
   }
+
+  benchmark_point("nreq_latency.png");
 
   $sth = $qobj->nreq_response_histogram();
   $graph = new ReportLatency::StackedGraph( width => $histwidth,
@@ -205,6 +218,8 @@ sub total_graph {
     close($png);
   }
 
+  benchmark_point("nreq_error.png");
+
   $sth = $qobj->ureq_latency_histogram();
   $graph = new ReportLatency::StackedGraph( width => $histwidth,
 					    height => $histheight,
@@ -220,6 +235,8 @@ sub total_graph {
     print $png $graph->img()->png();
     close($png);
   }
+
+  benchmark_point("ureq_latency.png");
 
   $sth = $qobj->ureq_response_histogram();
   $graph = new ReportLatency::StackedGraph( width => $histwidth,
@@ -238,6 +255,7 @@ sub total_graph {
     close($png);
   }
 
+  benchmark_point("ureq_error.png");
 }
 
 sub total_report {
@@ -250,6 +268,9 @@ sub total_report {
 
 
 sub main() {
+
+  benchmark_start();
+
   my %options;
   my $r = GetOptions(\%options,
 		     'help|?',
@@ -275,6 +296,8 @@ sub main() {
 
   $dbh->rollback() ||
     die "Unable to rollback, but there should be no changes anyway";
+
+  benchmark_end();
 }
 
 main() unless caller();

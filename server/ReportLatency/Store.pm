@@ -905,6 +905,7 @@ sub create_current_temp_table {
   my $dbh = $self->{dbh};
 
   if (!defined $self->{current}) {
+    benchmark_start();
     my $sth =
       $dbh->prepare('CREATE TEMP TABLE current AS ' .
 		    'SELECT *,' .
@@ -912,6 +913,7 @@ sub create_current_temp_table {
 		    'FROM upload WHERE timestamp BETWEEN ? AND ?; ')
 	or die "prepare failed";
     $self->{current} = $sth;
+    benchmark_point("CREATE TEMP TABLE current");
   }
   if (!(defined $self->{begin} && defined $self->{end} &&
 	$self->{begin} eq $begin && $self->{end} eq $end)) {
