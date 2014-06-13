@@ -183,8 +183,7 @@ sub location {
 SELECT location,
 count(distinct service) AS services,
 $fields
-FROM current u, report3 r
-WHERE u.id=r.upload
+FROM service_report r
 GROUP BY location
 ORDER BY location;
 EOS

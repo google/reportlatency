@@ -938,6 +938,7 @@ sub create_service_report_temp_table {
       $dbh->prepare( <<EOS ) or die "prepare failed";
 CREATE TEMP TABLE service_report AS
 SELECT service AS service,
+       location AS location,
        min(timestamp) AS min_timestamp,
        max(timestamp) AS max_timestamp,
        sum(count) AS nav_count,
@@ -962,9 +963,10 @@ SELECT service AS service,
        NULL AS ureq_500
 FROM navigation, current
 WHERE navigation.upload=current.id
-GROUP BY service
+GROUP BY service,location
 UNION
 SELECT service AS service,
+       location AS location,
        min(timestamp) AS min_timestamp,
        max(timestamp) AS max_timestamp,
        NULL AS nav_count,
@@ -989,9 +991,10 @@ SELECT service AS service,
        NULL AS ureq_500
 FROM navigation_request, current
 WHERE navigation_request.upload=current.id
-GROUP BY service
+GROUP BY service,location
 UNION
 SELECT service AS service,
+       location AS location,
         min(timestamp) AS min_timestamp,
         max(timestamp) AS max_timestamp,
 	NULL AS nav_count,
@@ -1016,7 +1019,7 @@ SELECT service AS service,
 	sum(response500) AS ureq_500
 FROM update_request, current
 WHERE update_request.upload=current.id
-GROUP BY service
+GROUP BY service,location
 ;
 EOS
     $self->{service_report} = $sth->execute() or die $sth->errstr;
