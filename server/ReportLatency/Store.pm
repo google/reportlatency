@@ -954,8 +954,6 @@ SELECT service AS service,
        NULL AS nreq_500,
        NULL AS ureq_count,
        NULL AS ureq_total,
-       NULL AS ureq_high,
-       NULL AS ureq_low,
        NULL AS ureq_200,
        NULL AS ureq_300,
        NULL AS ureq_400,
@@ -981,14 +979,37 @@ SELECT service AS service,
        sum(response500) AS nreq_500,
        NULL AS ureq_count,
        NULL AS ureq_total,
-       NULL AS ureq_high,
-       NULL AS ureq_low,
        NULL AS ureq_200,
        NULL AS ureq_300,
        NULL AS ureq_400,
        NULL AS ureq_500
 FROM navigation_request, current
 WHERE navigation_request.upload=current.id
+GROUP BY service
+UNION
+SELECT service AS service,
+	NULL AS nav_count,
+        NULL AS nav_total,
+	NULL AS nav_tabclosed,
+	NULL AS nav_200,
+	NULL AS nav_300,
+	NULL AS nav_400,
+	NULL AS nav_500,
+	NULL AS nreq_count,
+	NULL AS nreq_total,
+	NULL AS nreq_tabclosed,
+	NULL AS nreq_200,
+	NULL AS nreq_300,
+	NULL AS nreq_400,
+	NULL AS nreq_500,
+	sum(count) AS ureq_count,
+	sum(total) AS ureq_total,
+	sum(response200) AS ureq_200,
+	sum(response300) AS ureq_300,
+	sum(response400) AS ureq_400,
+	sum(response500) AS ureq_500
+FROM update_request, current
+WHERE update_request.upload=current.id
 GROUP BY service
 ;
 EOS
