@@ -48,6 +48,7 @@ test('Stat.add', function() {
   s.add(300);
   s.add(330);
   s.add(360);
+  s.add(3000);
   s.add(5000);
   s.add(6000);
   s.add(59000);
@@ -56,6 +57,7 @@ test('Stat.add', function() {
   equal(s.m500, 3, '3 500ms bin');
   equal(s.m1000, 1, '1 1s bin');
   equal(s.m2000, 1, '1 2s bin');
+  equal(s.m4000, 1, '1 4s bin');
   equal(s.m10000, 2, '2 10s bin');
 });
 

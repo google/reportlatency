@@ -77,6 +77,8 @@ Stat.prototype.add = function(delta) {
   } else {
     if (delta <= 2000) {
       this.increment('m2000');
+    } else if (delta <= 4000) {
+      this.increment('m4000');
     } else if (delta <= 10000) {
       this.increment('m10000');
     }
