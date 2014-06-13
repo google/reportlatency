@@ -269,15 +269,18 @@ sub total_report {
 
 sub main() {
 
-  benchmark_start();
-
   my %options;
   my $r = GetOptions(\%options,
 		     'help|?',
-		     'man')
+		     'man',
+		     'verbose')
     or pod2usage(2);
   pod2usage(-verbose => 2) if $options{'man'};
   pod2usage(1) if $options{'help'};
+
+  if ($options{'verbose'}) {
+    benchmark_start();
+  }
 
   my $store = new ReportLatency::Store( dsn => latency_dsn('backup') );
   my $dbh = $store->{dbh};
@@ -297,7 +300,9 @@ sub main() {
   $dbh->rollback() ||
     die "Unable to rollback, but there should be no changes anyway";
 
-  benchmark_end();
+  if ($options{'verbose'}) {
+    benchmark_end();
+  }
 }
 
 main() unless caller();
@@ -321,6 +326,7 @@ summary.pl
  Options:
    -help      brief help message
    -man       full documentation
+   -verbose   steps and timings
 
 =head1 OPTIONS
 
@@ -333,6 +339,10 @@ Print a brief help message and exits.
 =item B<-man>
 
 Prints the manual page and exits.
+
+=item B<-verbose>
+
+Time taken for each step of the batch job
 
 =back
 

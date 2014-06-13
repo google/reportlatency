@@ -238,7 +238,9 @@ sub benchmark_start {
 sub benchmark_point {
   my ($name) = @_;
   my $new_time = time;
-  print STDERR "$name took " . ($new_time - $last_time) . "\n";
+  if ($start_time) {
+    print STDERR "$name took " . ($new_time - $last_time) . "\n";
+  }
   $last_time = $new_time;
 }
 
