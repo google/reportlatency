@@ -940,8 +940,6 @@ CREATE TEMP TABLE service_report AS
 SELECT service AS service,
        sum(count) AS nav_count,
        sum(total) AS nav_total,
-       sum(high) AS nav_high,
-       sum(low) AS nav_low,
        sum(tabclosed) AS nav_tabclosed,
        sum(response200) AS nav_200,
        sum(response300) AS nav_300,
@@ -949,8 +947,6 @@ SELECT service AS service,
        sum(response500) AS nav_500,
        NULL AS nreq_count,
        NULL AS nreq_total,
-       NULL AS nreq_high,
-       NULL AS nreq_low,
        NULL AS nreq_tabclosed,
        NULL AS nreq_200,
        NULL AS nreq_300,
@@ -966,6 +962,33 @@ SELECT service AS service,
        NULL AS ureq_500
 FROM navigation, current
 WHERE navigation.upload=current.id
+GROUP BY service
+UNION
+SELECT service AS service,
+       NULL AS nav_count,
+       NULL AS nav_total,
+       NULL AS nav_tabclosed,
+       NULL AS nav_200,
+       NULL AS nav_300,
+       NULL AS nav_400,
+       NULL AS nav_500,
+       sum(count) AS nreq_count,
+       sum(total) AS nreq_total,
+       sum(tabclosed) AS nreq_tabclosed,
+       sum(response200) AS nreq_200,
+       sum(response300) AS nreq_300,
+       sum(response400) AS nreq_400,
+       sum(response500) AS nreq_500,
+       NULL AS ureq_count,
+       NULL AS ureq_total,
+       NULL AS ureq_high,
+       NULL AS ureq_low,
+       NULL AS ureq_200,
+       NULL AS ureq_300,
+       NULL AS ureq_400,
+       NULL AS ureq_500
+FROM navigation_request, current
+WHERE navigation_request.upload=current.id
 GROUP BY service
 ;
 EOS
