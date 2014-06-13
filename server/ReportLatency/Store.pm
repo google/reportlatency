@@ -188,6 +188,7 @@ sub insert_stats {
 		   $stats->{'m500'},
 		   $stats->{'m1000'},
 		   $stats->{'m2000'},
+		   $stats->{'m4000'},
 		   $stats->{'m10000'} );
 }
 
@@ -199,8 +200,8 @@ sub add_navigation_request_stats {
 			  "(upload, service, name, count, total, high, low, " .
 			  "tabclosed, response200, response300, " .
 			  "response400, response500, " .
-			  "m100, m500, m1000, m2000, m10000) " .
-			  "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);")
+			  "m100, m500, m1000, m2000, m4000, m10000) " .
+			  "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);")
       unless defined $self->{insert_navigation_requests};
 
   $self->insert_stats($self->{insert_navigation_requests},
@@ -215,8 +216,8 @@ sub add_update_request_stats {
 			  "(upload, service, name, count, total, high, low, " .
 			  "tabclosed, response200, response300, " .
 			  "response400, response500, " .
-			  "m100, m500, m1000, m2000, m10000) " .
-			  "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);")
+			  "m100, m500, m1000, m2000, m4000, m10000) " .
+			  "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);")
       unless defined $self->{insert_update_requests};
 
   $self->insert_stats($self->{insert_update_requests},
@@ -231,8 +232,8 @@ sub add_navigation_stats {
 			  "(upload, service, name, count, total, high, low, " .
 			  "tabclosed, response200, response300, " .
 			 "response400, response500, " .
-			  "m100, m500, m1000, m2000, m10000) " .
-			  "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);")
+			  "m100, m500, m1000, m2000, m4000, m10000) " .
+			  "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);")
       unless defined $self->{insert_navigations};
 
   $self->insert_stats($self->{insert_navigations},
@@ -1054,16 +1055,19 @@ WHERE n.upload=u.id AND m1000>0
 UNION
 SELECT utimestamp AS timestamp,'2s' AS measure,m2000 AS amount 
 FROM current AS u, navigation AS n
-WHERE n.upload=u.id AND m500>0
+WHERE n.upload=u.id AND m2000>0
+SELECT utimestamp AS timestamp,'4s' AS measure,m4000 AS amount 
+FROM current AS u, navigation AS n
+WHERE n.upload=u.id AND m4000>0
 UNION
 SELECT utimestamp AS timestamp, '10s' AS measure,m10000 AS amount 
 FROM current AS u, navigation AS n
 WHERE n.upload=u.id AND m10000>0
 UNION
 SELECT utimestamp AS timestamp,'long' AS measure,
-count-m100-m500-m1000-m2000-m10000-tabclosed AS amount 
+count-m100-m500-m1000-m2000-m4000-m10000-tabclosed AS amount 
 FROM current AS u, navigation AS n
-WHERE n.upload=u.id AND count>m100+m500+m1000+m2000+m10000+tabclosed
+WHERE n.upload=u.id AND count>m100+m500+m1000+m2000+m4000+m10000+tabclosed
 ;
 EOS
 
@@ -1128,16 +1132,20 @@ WHERE r.upload=u.id AND m1000>0
 UNION
 SELECT utimestamp AS timestamp,'2s' AS measure,m2000 AS amount 
 FROM current AS u, navigation_request AS r
-WHERE r.upload=u.id AND m500>0
+WHERE r.upload=u.id AND m2000>0
+UNION
+SELECT utimestamp AS timestamp,'4s' AS measure,m4000 AS amount 
+FROM current AS u, navigation_request AS r
+WHERE r.upload=u.id AND m4000>0
 UNION
 SELECT utimestamp AS timestamp, '10s' AS measure,m10000 AS amount 
 FROM current AS u, navigation_request AS r
 WHERE r.upload=u.id AND m10000>0
 UNION
 SELECT utimestamp AS timestamp,'long' AS measure,
-count-m100-m500-m1000-m2000-m10000-tabclosed AS amount 
+count-m100-m500-m1000-m2000-m4000-m10000-tabclosed AS amount 
 FROM current AS u, navigation_request AS r
-WHERE r.upload=u.id AND count>m100+m500+m1000+m2000+m10000+tabclosed
+WHERE r.upload=u.id AND count>m100+m500+m1000+m2000+m4000+m10000+tabclosed
 ;
 EOS
 
@@ -1199,14 +1207,18 @@ SELECT utimestamp AS timestamp,'2s' AS measure,m2000 AS amount
 FROM current AS u, update_request AS r
 WHERE r.upload=u.id AND m500>0
 UNION
+SELECT utimestamp AS timestamp,'4s' AS measure,m4000 AS amount 
+FROM current AS u, update_request AS r
+WHERE r.upload=u.id AND m4000>0
+UNION
 SELECT utimestamp AS timestamp, '10s' AS measure,m10000 AS amount 
 FROM current AS u, update_request AS r
 WHERE r.upload=u.id AND m10000>0
 UNION
 SELECT utimestamp AS timestamp,'long' AS measure,
-count-m100-m500-m1000-m2000-m10000-tabclosed AS amount 
+count-m100-m500-m1000-m2000-m4000-m10000-tabclosed AS amount 
 FROM current AS u, update_request AS r
-WHERE r.upload=u.id AND count>m100+m500+m1000+m2000+m10000+tabclosed
+WHERE r.upload=u.id AND count>m100+m500+m1000+m2000+m4000+m10000+tabclosed
 ;
 EOS
 

@@ -1,5 +1,5 @@
 -- upgrade the previous schema to the current schema
--- 1.5.10->1.5.11 in this version
+-- 1.6.0->1.6.1 in this version
 --
 -- Copyright 2013,2014 Google Inc. All Rights Reserved.
 --
@@ -16,19 +16,7 @@
 -- limitations under the License.
 
 BEGIN;
-ALTER TABLE navigation_request ADD COLUMN m100 INTEGER;
-ALTER TABLE navigation_request ADD COLUMN m500 INTEGER;
-ALTER TABLE navigation_request ADD COLUMN m1000 INTEGER;
-ALTER TABLE navigation_request ADD COLUMN m2000 INTEGER;
-ALTER TABLE navigation_request ADD COLUMN m10000 INTEGER;
-ALTER TABLE update_request ADD COLUMN m100 INTEGER;
-ALTER TABLE update_request ADD COLUMN m500 INTEGER;
-ALTER TABLE update_request ADD COLUMN m1000 INTEGER;
-ALTER TABLE update_request ADD COLUMN m2000 INTEGER;
-ALTER TABLE update_request ADD COLUMN m10000 INTEGER;
-ALTER TABLE navigation ADD COLUMN m100 INTEGER;
-ALTER TABLE navigation ADD COLUMN m500 INTEGER;
-ALTER TABLE navigation ADD COLUMN m1000 INTEGER;
-ALTER TABLE navigation ADD COLUMN m2000 INTEGER;
-ALTER TABLE navigation ADD COLUMN m10000 INTEGER;
+ALTER TABLE navigation_request ADD COLUMN m4000 INTEGER;
+ALTER TABLE update_request ADD COLUMN m4000 INTEGER;
+ALTER TABLE navigation ADD COLUMN m4000 INTEGER;
 END;
