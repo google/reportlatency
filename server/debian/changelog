@@ -1,3 +1,10 @@
+reportlatency (1.6.1) precise; urgency=low
+
+  * Much faster summary report, all others broken
+  * Added 4s latency bin
+
+ -- Drake Diedrich <dld@google.com>  Fri, 13 Jun 2014 16:33:42 -0700
+
 reportlatency (1.6.0) precise; urgency=low
 
   * schema and POST change to support timed bins at 100ms, 500ms, 1s,
