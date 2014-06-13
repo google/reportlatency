@@ -120,17 +120,19 @@ sub meta {
 
   if (!defined $self->{meta}) {
     my $store = $self->{store};
+
+    $store->create_service_report_temp_table();
+
     my $dbh = $store->{dbh};
     my $fields = $store->common_aggregate_fields();
 
     my $rowref = $dbh->selectrow_hashref( <<EOS ) or die "Unable to prepare meta";
 SELECT 'total' AS tag,
-min(timestamp) AS min_timestamp,
-max(timestamp) AS max_timestamp,
+min(min_timestamp) AS min_timestamp,
+max(max_timestamp) AS max_timestamp,
 count(distinct service) AS services,
 $fields
-FROM current, report3
-WHERE upload=id;
+FROM service_report
 EOS
     $self->{meta} = $rowref;
   }

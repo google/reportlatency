@@ -938,6 +938,8 @@ sub create_service_report_temp_table {
       $dbh->prepare( <<EOS ) or die "prepare failed";
 CREATE TEMP TABLE service_report AS
 SELECT service AS service,
+       min(timestamp) AS min_timestamp,
+       max(timestamp) AS max_timestamp,
        sum(count) AS nav_count,
        sum(total) AS nav_total,
        sum(tabclosed) AS nav_tabclosed,
@@ -963,6 +965,8 @@ WHERE navigation.upload=current.id
 GROUP BY service
 UNION
 SELECT service AS service,
+       min(timestamp) AS min_timestamp,
+       max(timestamp) AS max_timestamp,
        NULL AS nav_count,
        NULL AS nav_total,
        NULL AS nav_tabclosed,
@@ -988,6 +992,8 @@ WHERE navigation_request.upload=current.id
 GROUP BY service
 UNION
 SELECT service AS service,
+        min(timestamp) AS min_timestamp,
+        max(timestamp) AS max_timestamp,
 	NULL AS nav_count,
         NULL AS nav_total,
 	NULL AS nav_tabclosed,
