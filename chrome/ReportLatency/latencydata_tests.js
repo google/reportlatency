@@ -37,7 +37,7 @@ test('LatencyData.*Request', function() {
   ld.endRequest(data);
 
   var ts = ld.tab[1].stat;
-  equal(ts.count('nreq'), 1, '1 request for tab 1');
+  equal(ts.count('nreq'), 2, '2 request for tab 1');
 });
 
 test('LatencyData.*Navigation', function() {
@@ -53,7 +53,7 @@ test('LatencyData.*Navigation', function() {
 
   ld.tabRemoved(30, {});
 
-  equal(ts.count('nav'), 1, '1 navigation for tab 30');
+  equal(ts.count('nav'), 2, '2 navigation for tab 30');
   equal(ts.countable('nav','tabclosed'), 0,
 		     '0 tabclosed events for tab 30');
   equal(ld.countable('nav','tabclosed'), 0,
@@ -91,7 +91,7 @@ test('LatencyData.Navigation_Request', function() {
   ld.endNavigation(navdata);
 
   var ts = ld.tab[30].stat;
-  equal(ts.count('nreq'), 1, '1 navigation request for tab 30');
+  equal(ts.count('nreq'), 2, '2 navigation request for tab 30');
   equal(ts.count('ureq'), 0, '0 update request for tab 30');
 });
 
@@ -154,9 +154,9 @@ test('LatencyData.mainFrameRequestFirst', function() {
   equal(firstService.stat['second.com'], undefined,'no second.com in first.com stats');
   equal(secondService.stat['first.com'], undefined,'no first.com in second.com stats');
 
-  equal(firstService.count('nav'), 2, '2 first.com navigation countables');
+  equal(firstService.count('nav'), 3, '3 first.com navigation countables');
   // equal(firstService.count('nreq'), 2, '2 first.com nreq countables');
-  equal(secondService.count('nav'), 2, '2 second.com navigation countables');
+  equal(secondService.count('nav'), 3, '3 second.com navigation countables');
   //  equal(secondService.count('nreq'), 2, '2 second.com nreq countables');
 
   if (old_default) {

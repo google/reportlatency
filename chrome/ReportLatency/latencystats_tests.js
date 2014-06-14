@@ -24,7 +24,7 @@ test('LatencyStats.add', function() {
   s.add('navigation', 5);
   equal(s.stat['navigation'].count, 1, 'single count');
   equal(s.stat['navigation'].total, 5, 'single total');
-  equal(s.count('navigation'), 1, 'single count()');
+  equal(s.count('navigation'), 2, 'single count()');
   equal(s.total('navigation'), 5, 'single total()');
 
   s.add('navigation', 9);
@@ -67,8 +67,8 @@ test('LatencyStats.count', function() {
   s.add('navigation', 5);
   s.add('navigation', 10);
   s.add('request', 2);
-  equal(s.count('navigation'), 2, '2 navigations added');
-  equal(s.count('request'), 1, '1 request added');
+  equal(s.count('navigation'), 4, '4 navigations added');
+  equal(s.count('request'), 2, '2 request added');
   equal(s.count('tabupdates'), 0, '0 tabupdates');
 });
 

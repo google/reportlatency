@@ -71,7 +71,7 @@ test('NameStats.count', function() {
   s.add('server', 'navigation', 5);
   s.add('server', 'navigation', 9);
   s.add('redirector', 'navigation', 9);
-  equal(s.count('navigation'), 3, '3 navigations added');
+  equal(s.count('navigation'), 6, '6 navigations added');
   equal(s.total('navigation'), 5+9+9, 'total()');
 });
 

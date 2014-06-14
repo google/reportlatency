@@ -39,7 +39,7 @@ test('TabData.endRequest', function() {
 		  url: 'http://host.example.com/' };
   t.endRequest(dataEnd);
 
-  equal(t.stat.count('nreq'), 1, 'endRequest left 1 recorded requests');
+  equal(t.stat.count('nreq'), 2, 'endRequest left 2 request countables');
   equal(t.stat.total('nreq'), 10, 'endRequest left 10 ms of requests');
 
   var dataStart2 = { requestId:2, timeStamp:1020,
@@ -49,8 +49,8 @@ test('TabData.endRequest', function() {
 		  url: 'http://host.example.com/image.png' };
   t.endRequest(dataEnd2);
 
-  equal(t.stat.count('nreq'), 1,
-	'cached endRequest left 1 recorded requests');
+  equal(t.stat.count('nreq'), 2,
+	'cached endRequest left 2 request countables');
   equal(t.stat.total('nreq'), 10,
 	'cached endRequest left 10 ms of requests');
 
@@ -65,8 +65,8 @@ test('TabData.endRequest', function() {
 		     url: 'http://host.example.com/v2' };
   t.startRequest(dataStart4);
 
-  equal(t.stat.count('nreq'), 1,
-	'2 new started, still 1 recorded requests');
+  equal(t.stat.count('nreq'), 2,
+	'2 new started, still 2 request countables');
   equal(t.stat.total('nreq'), 10,
 	'2 new started, still 10 ms of requests');
 
@@ -75,8 +75,8 @@ test('TabData.endRequest', function() {
 		   url: 'http://host.example.com/v1' };
   t.endRequest(dataEnd3);
 
-  equal(t.stat.count('nreq'), 3,
-	'1 interleaved finished, 3 request countables');
+  equal(t.stat.count('nreq'), 5,
+	'1 interleaved finished, 5 request countables');
   equal(t.stat.total('nreq'), 19,
 	'1 interleaved finished, 19 ms of requests');
 
@@ -86,8 +86,8 @@ test('TabData.endRequest', function() {
 		   url: 'http://host.example.com/v2' };
   t.endRequest(dataEnd4);
 
-  equal(t.stat.count('nreq'), 5,
-	'redirected endRequest 5 request countables');
+  equal(t.stat.count('nreq'), 8,
+	'redirected endRequest 8 request countables');
 
   // Want 33, but accepting 34 for now as well.
   equal(t.stat.total('nreq'), 33, '33 ms of total requests');
@@ -118,7 +118,7 @@ test('TabData.endNavigation', function() {
 	       timeStamp:1020, url:'http://host.example.com/' };
   t.endNavigation(dataEnd);
 
-  equal(t.stat.count('nav'), 1, 'endNavigation left 1 count');
+  equal(t.stat.count('nav'), 2, 'endNavigation left 2 countables');
   equal(t.stat.total('nav'), 20, 'endNavigation 20 ms total');
   equal(t.service, '.', "TabData.service == '.'");
 });
