@@ -41,24 +41,19 @@ sub DESTROY {
 sub nav_latencies {
   my ($self) = @_;
 
-  my $sth = $self->{total_nav_latencies_sth};
-  if (! defined $sth) {
-    my $dbh = $self->{store}->{dbh};
-    my $statement='SELECT ' .
-      $self->{store}->unix_timestamp('u.timestamp') . ' AS timestamp,' .
-      'n.count AS count,' .
-      'n.high AS high,' .
-      'n.low AS low,' .
-      'n.total AS total ' .
-      'FROM navigation n ' .
-      'INNER JOIN upload u ON u.id=n.upload ' .
-       "WHERE u.timestamp BETWEEN ? AND ? " .
-       " AND " . $self->{store}->is_positive('n.count') . ";";
-    $sth = $dbh->prepare($statement) or die $!;
-    $self->{total_nav_latencies_sth} = $sth;
-  }
-
-  $sth->execute($self->{begin}, $self->{end}) or die $sth->errstr;
+  my $dbh = $self->{store}->{dbh};
+  my $statement='SELECT ' .
+    $self->{store}->unix_timestamp('u.timestamp') . ' AS timestamp,' .
+    'n.count AS count,' .
+    'n.high AS high,' .
+    'n.low AS low,' .
+    'n.total AS total ' .
+    'FROM navigation n ' .
+    'INNER JOIN current u ON u.id=n.upload ' .
+    "WHERE " .
+     $self->{store}->is_positive('n.count') . ";";
+  my $sth = $dbh->prepare($statement) or die $!;
+  $sth->execute() or die $sth->errstr;
 
   return $sth;
 }
@@ -66,49 +61,39 @@ sub nav_latencies {
 sub nreq_latencies {
   my ($self) = @_;
 
-  my $sth = $self->{total_nreq_latencies_sth};
-  if (! defined $sth) {
-    my $dbh = $self->{store}->{dbh};
-    my $statement='SELECT ' .
-      $self->{store}->unix_timestamp('u.timestamp') . ' AS timestamp,' .
-      'nr.count AS count,' .
-      'nr.high AS high,' .
-      'nr.low AS low,' .
-      'nr.total AS total ' .
-      'FROM navigation_request nr ' .
-      'INNER JOIN upload u ON u.id=nr.upload ' .
-       "WHERE u.timestamp BETWEEN ? AND ?  AND " .
+  my $dbh = $self->{store}->{dbh};
+  my $statement = 'SELECT ' .
+    $self->{store}->unix_timestamp('u.timestamp') . ' AS timestamp,' .
+    'nr.count AS count,' .
+    'nr.high AS high,' .
+    'nr.low AS low,' .
+    'nr.total AS total ' .
+    'FROM navigation_request nr ' .
+    'INNER JOIN current u ON u.id=nr.upload ' .
+    "WHERE " .
        $self->{store}->is_positive('nr.count') . ";";
-    $sth = $dbh->prepare($statement) or die $!;
-    $self->{total_nreq_latencies_sth} = $sth;
-  }
-
-  $sth->execute($self->{begin}, $self->{end}) or die $sth->errstr;
-
+  my $sth = $dbh->prepare($statement) or die $!;
+  $sth->execute() or die $sth->errstr;
   return $sth;
 }
 
 sub ureq_latencies {
   my ($self) = @_;
 
-  my $sth = $self->{total_ureq_latencies_sth};
-  if (! defined $sth) {
-    my $dbh = $self->{store}->{dbh};
-    my $statement='SELECT ' .
-      $self->{store}->unix_timestamp('u.timestamp') . ' AS timestamp,' .
-      'ur.count AS count,' .
-      'ur.high AS high,' .
-      'ur.low AS low,' .
-      'ur.total AS total ' .
-      'FROM update_request ur ' .
-      'INNER JOIN upload u ON u.id=ur.upload ' .
-       "WHERE u.timestamp BETWEEN ? AND ? AND " .
-       $self->{store}->is_positive('ur.count') . ";";
-    $sth = $dbh->prepare($statement) or die $!;
-    $self->{total_ureq_latencies_sth} = $sth;
-  }
+  my $dbh = $self->{store}->{dbh};
+  my $statement = 'SELECT ' .
+    $self->{store}->unix_timestamp('u.timestamp') . ' AS timestamp,' .
+    'ur.count AS count,' .
+    'ur.high AS high,' .
+    'ur.low AS low,' .
+    'ur.total AS total ' .
+    'FROM update_request ur ' .
+    'INNER JOIN current u ON u.id=ur.upload ' .
+    "WHERE " .
+    $self->{store}->is_positive('ur.count') . ";";
+  my $sth = $dbh->prepare($statement) or die $!;
 
-  $sth->execute($self->{begin}, $self->{end}) or die $sth->errstr;
+  $sth->execute() or die $sth->errstr;
 
   return $sth;
 }

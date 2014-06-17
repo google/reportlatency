@@ -65,7 +65,6 @@ isa_ok($qobj, 'ReportLatency::Summary');
 
 
 my $sth = $qobj->nav_latencies();
-$sth->execute($begin, $end);
 my $row = $sth->fetchrow_hashref;
 is($row->{count}, 1, 'total nav latency count');
 is($row->{total}, 2038, 'total');
@@ -88,7 +87,6 @@ $row = $sth->fetchrow_hashref;
 is($row, undef, 'last nav_latency_histogram row');
 
 $sth = $qobj->nreq_latencies();
-$sth->execute($store->db_timestamp(time-300), $store->db_timestamp(time));
 $row = $sth->fetchrow_hashref;
 is($row->{count}, 3, 'total nreq count');
 is($row->{total}, 2100, 'total');
@@ -101,7 +99,6 @@ is($row, undef, 'last total nreq latency row');
 
 {
   $sth = $qobj->ureq_latencies();
-  $sth->execute($store->db_timestamp(time-300), $store->db_timestamp(time));
   my ($count,$total,$rows);
   while (my $row = $sth->fetchrow_hashref) {
     $count += $row->{count};
