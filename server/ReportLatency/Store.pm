@@ -835,39 +835,6 @@ sub summary_meta_sth {
 }
 
 
-sub summary_tag_sth {
-  my ($self) = @_;
-  my $dbh = $self->{dbh};
-  my $sth =
-    $dbh->prepare('SELECT t.tag as tag,' .
-                  'count(distinct r.service) AS services,' .
-		  $self->common_aggregate_fields() .
-                  ' FROM report r ' .
-		  'INNER JOIN tag t ' .
-		  'ON r.service = t.service ' .
-                  'WHERE timestamp BETWEEN ? AND ? ' .
-                  'GROUP BY t.tag ' .
-		  'ORDER BY t.tag;')
-      or die "prepare failed";
-  return $sth;
-}
-
-sub summary_location_sth {
-  my ($self) = @_;
-  my $dbh = $self->{dbh};
-  my $sth =
-    $dbh->prepare('SELECT location,' .
-                  'count(distinct service) AS services,' .
-		  $self->common_aggregate_fields() .
-                  ' FROM report ' .
-                  'WHERE timestamp > ? AND timestamp <= ? ' .
-                  'GROUP BY location ' .
-		  'ORDER BY location;')
-      or die "prepare failed";
-
-  return $sth;
-}
-
 sub location_meta_sth {
   my ($self) = @_;
   my $dbh = $self->{dbh};
@@ -1026,34 +993,6 @@ EOS
     $self->{service_report} = $sth->execute() or die $sth->errstr;
     benchmark_point("CREATE TEMP TABLE service_report");
   }
-}
-
-
-
-sub extension_version_sth {
-  my ($self) = @_;
-  my $dbh = $self->{dbh};
-  my $sth =
-    $dbh->prepare('SELECT ' .
-		  $self->unix_timestamp('u.timestamp') . ' AS timestamp,' .
-		  'version AS measure,1 AS amount' .
-                  ' FROM upload AS u ' .
-                  "WHERE u.timestamp BETWEEN ? AND ? ;")
-      or die "prepare failed";
-  return $sth;
-}
-
-sub user_agent_sth {
-  my ($self) = @_;
-  my $dbh = $self->{dbh};
-  my $sth =
-    $dbh->prepare('SELECT ' .
-		  $self->unix_timestamp('u.timestamp') . ' AS timestamp,' .
-		  'user_agent AS measure,1 AS amount' .
-                  ' FROM upload AS u ' .
-                  "WHERE u.timestamp BETWEEN ? AND ?;")
-      or die "prepare failed";
-  return $sth;
 }
 
 1;
