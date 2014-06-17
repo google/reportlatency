@@ -1029,52 +1029,6 @@ EOS
 }
 
 
-sub nav_latency_histogram_summary {
-  my ($self,$begin,$end) = @_;
-
-  $self->create_current_temp_table($begin,$end);
-
-  my $dbh = $self->{dbh};
-  my $sth =
-    $dbh->prepare( <<EOS ) or die "prepare failed";
-SELECT utimestamp AS timestamp,'closed' AS measure,tabclosed AS amount 
-FROM current AS u, navigation AS n
-WHERE n.upload=u.id AND tabclosed>0
-UNION
-SELECT utimestamp AS timestamp,'100ms' AS measure,m100 AS amount 
-FROM current AS u, navigation AS n
-WHERE n.upload=u.id AND m100>0
-UNION
-SELECT utimestamp AS timestamp,'500ms' AS measure,m500 AS amount 
-FROM current AS u, navigation AS n
-WHERE n.upload=u.id AND m500>0
-UNION
-SELECT utimestamp AS timestamp,'1s' AS measure,m1000 AS amount 
-FROM current AS u, navigation AS n
-WHERE n.upload=u.id AND m1000>0
-UNION
-SELECT utimestamp AS timestamp,'2s' AS measure,m2000 AS amount 
-FROM current AS u, navigation AS n
-WHERE n.upload=u.id AND m2000>0
-SELECT utimestamp AS timestamp,'4s' AS measure,m4000 AS amount 
-FROM current AS u, navigation AS n
-WHERE n.upload=u.id AND m4000>0
-UNION
-SELECT utimestamp AS timestamp, '10s' AS measure,m10000 AS amount 
-FROM current AS u, navigation AS n
-WHERE n.upload=u.id AND m10000>0
-UNION
-SELECT utimestamp AS timestamp,'long' AS measure,
-count-m100-m500-m1000-m2000-m4000-m10000-tabclosed AS amount 
-FROM current AS u, navigation AS n
-WHERE n.upload=u.id AND count>m100+m500+m1000+m2000+m4000+m10000+tabclosed
-;
-EOS
-
-  $sth->execute();
-  return $sth;
-}
-
 sub nav_response_histogram_summary {
   my ($self,$begin,$end) = @_;
 
