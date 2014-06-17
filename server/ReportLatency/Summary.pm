@@ -191,30 +191,27 @@ EOS
   return $sth;
 }
 
-sub nav_latency_histogram {
-  my ($self) = @_;
-
-  my $dbh = $self->{store}->{dbh};
-  my $sth =
-    $dbh->prepare( <<EOS ) or die "prepare failed";
+sub latency_histogram {
+  my ($self,$latency) = @_;
+  return <<EOS;
 SELECT utimestamp AS timestamp,'closed' AS measure,tabclosed AS amount 
-FROM current AS u, navigation AS n
+FROM current AS u, $latency AS n
 WHERE n.upload=u.id AND tabclosed>0
 UNION
 SELECT utimestamp AS timestamp,'100ms' AS measure,m100 AS amount 
-FROM current AS u, navigation AS n
+FROM current AS u, $latency AS n
 WHERE n.upload=u.id AND m100>0
 UNION
 SELECT utimestamp AS timestamp,'500ms' AS measure,m500 AS amount 
-FROM current AS u, navigation AS n
+FROM current AS u, $latency AS n
 WHERE n.upload=u.id AND m500>0
 UNION
 SELECT utimestamp AS timestamp,'1s' AS measure,m1000 AS amount 
-FROM current AS u, navigation AS n
+FROM current AS u, $latency AS n
 WHERE n.upload=u.id AND m1000>0
 UNION
 SELECT utimestamp AS timestamp,'2s' AS measure,m2000 AS amount 
-FROM current AS u, navigation AS n
+FROM current AS u, $latency AS n
 WHERE n.upload=u.id AND m2000>0
 UNION
 SELECT utimestamp AS timestamp,'4s' AS measure,m4000 AS amount 
@@ -222,16 +219,22 @@ FROM current AS u, navigation AS n
 WHERE n.upload=u.id AND m4000>0
 UNION
 SELECT utimestamp AS timestamp, '10s' AS measure,m10000 AS amount 
-FROM current AS u, navigation AS n
+FROM current AS u, $latency AS n
 WHERE n.upload=u.id AND m10000>0
 UNION
 SELECT utimestamp AS timestamp,'long' AS measure,
 count-m100-m500-m1000-m2000-m4000-m10000-tabclosed AS amount 
-FROM current AS u, navigation AS n
-WHERE n.upload=u.id AND count>m100+m500+m1000+m2000+m4000+m10000+tabclosed
-;
+FROM current AS u, $latency AS n
+WHERE n.upload=u.id AND count>m100+m500+m1000+m2000+m4000+m10000+tabclosed;
 EOS
+}
 
+sub nav_latency_histogram {
+  my ($self) = @_;
+
+  my $dbh = $self->{store}->{dbh};
+  my $sth = $dbh->prepare( $self->latency_histogram('navigation'))
+   or die "prepare failed";
   my $rc = $sth->execute() or die $sth->errstr;
 
   return $sth;
@@ -270,43 +273,8 @@ sub nreq_latency_histogram {
   my ($self) = @_;
 
   my $dbh = $self->{store}->{dbh};
-  my $sth =
-    $dbh->prepare( <<EOS ) or die "prepare failed";
-SELECT utimestamp AS timestamp,'closed' AS measure,tabclosed AS amount 
-FROM current AS u, navigation_request AS r
-WHERE r.upload=u.id AND tabclosed>0
-UNION
-SELECT utimestamp AS timestamp,'100ms' AS measure,m100 AS amount 
-FROM current AS u, navigation_request AS r
-WHERE r.upload=u.id AND m100>0
-UNION
-SELECT utimestamp AS timestamp,'500ms' AS measure,m500 AS amount 
-FROM current AS u, navigation_request AS r
-WHERE r.upload=u.id AND m500>0
-UNION
-SELECT utimestamp AS timestamp,'1s' AS measure,m1000 AS amount 
-FROM current AS u, navigation_request AS r
-WHERE r.upload=u.id AND m1000>0
-UNION
-SELECT utimestamp AS timestamp,'2s' AS measure,m2000 AS amount 
-FROM current AS u, navigation_request AS r
-WHERE r.upload=u.id AND m2000>0
-UNION
-SELECT utimestamp AS timestamp,'4s' AS measure,m4000 AS amount 
-FROM current AS u, navigation_request AS r
-WHERE r.upload=u.id AND m4000>0
-UNION
-SELECT utimestamp AS timestamp, '10s' AS measure,m10000 AS amount 
-FROM current AS u, navigation_request AS r
-WHERE r.upload=u.id AND m10000>0
-UNION
-SELECT utimestamp AS timestamp,'long' AS measure,
-count-m100-m500-m1000-m2000-m4000-m10000-tabclosed AS amount 
-FROM current AS u, navigation_request AS r
-WHERE r.upload=u.id AND count>m100+m500+m1000+m2000+m4000+m10000+tabclosed
-;
-EOS
-
+  my $sth = $dbh->prepare( $self->latency_histogram('navigation_request') )
+    or die "prepare failed";
   $sth->execute() or die $sth->errstr;
   return $sth;
 }
@@ -339,43 +307,8 @@ sub ureq_latency_histogram {
   my ($self) = @_;
 
   my $dbh = $self->{store}->{dbh};
-  my $sth =
-    $dbh->prepare( <<EOS ) or die "prepare failed";
-SELECT utimestamp AS timestamp,'closed' AS measure,tabclosed AS amount 
-FROM current AS u, update_request AS r
-WHERE r.upload=u.id AND tabclosed>0
-UNION
-SELECT utimestamp AS timestamp,'100ms' AS measure,m100 AS amount 
-FROM current AS u, update_request AS r
-WHERE r.upload=u.id AND m100>0
-UNION
-SELECT utimestamp AS timestamp,'500ms' AS measure,m500 AS amount 
-FROM current AS u, update_request AS r
-WHERE r.upload=u.id AND m500>0
-UNION
-SELECT utimestamp AS timestamp,'1s' AS measure,m1000 AS amount 
-FROM current AS u, update_request AS r
-WHERE r.upload=u.id AND m1000>0
-UNION
-SELECT utimestamp AS timestamp,'2s' AS measure,m2000 AS amount 
-FROM current AS u, update_request AS r
-WHERE r.upload=u.id AND m2000>0
-UNION
-SELECT utimestamp AS timestamp,'4s' AS measure,m4000 AS amount 
-FROM current AS u, update_request AS r
-WHERE r.upload=u.id AND m4000>0
-UNION
-SELECT utimestamp AS timestamp, '10s' AS measure,m10000 AS amount 
-FROM current AS u, update_request AS r
-WHERE r.upload=u.id AND m10000>0
-UNION
-SELECT utimestamp AS timestamp,'long' AS measure,
-count-m100-m500-m1000-m2000-m4000-m10000-tabclosed AS amount 
-FROM current AS u, update_request AS r
-WHERE r.upload=u.id AND count>m100+m500+m1000+m2000+m4000+m10000+tabclosed
-;
-EOS
-
+  my $sth = $dbh->prepare( $self->latency_histogram('update_request') )
+    or die "prepare failed";
   $sth->execute() or die $sth->errstr;
   return $sth;
 }
