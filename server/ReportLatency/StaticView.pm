@@ -313,10 +313,6 @@ sub report_html {
   benchmark_point("tag_sth opened()");
   my $location_sth = $qobj->location();
   benchmark_point("location_sth opened()");
-  my $extension_version_sth = $qobj->extension_version;
-  benchmark_point("extension_version_sth opened()");
-  my $user_agent_sth = $qobj->user_agent;
-  benchmark_point("user_agent_sth opened()");
 
   my $image_prefix = $self->tag_img_prefix('summary');
 
@@ -422,8 +418,7 @@ EOF
 EOF
 
   benchmark_point("start user_agent_sth");
-  $user_agent_sth->execute($begin, $end) or die $user_agent_sth->errstr;
-
+  my $user_agent_sth = $qobj->user_agent;
   while (my $ua = $user_agent_sth->fetchrow_hashref) {
     print $io $self->name_value_row($ua);
   }
@@ -441,8 +436,7 @@ print $io <<EOF;
 EOF
 
   benchmark_point("start extension_version_sth");
-  my $rc = $extension_version_sth->execute($begin, $end);
-
+  my $extension_version_sth = $qobj->extension_version;
   while (my $v = $extension_version_sth->fetchrow_hashref) {
     print $io $self->name_value_row($v);
   }

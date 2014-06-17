@@ -343,11 +343,11 @@ sub extension_version {
   my $dbh = $self->{store}->{dbh};
   my $sth =
     $dbh->prepare('SELECT version AS name,count(*) AS value' .
-                  ' FROM upload AS u ' .
-                  'WHERE timestamp BETWEEN ? AND ? ' .
+                  ' FROM current AS u ' .
                   'GROUP BY version ' .
 		  'ORDER BY version;')
       or die "prepare failed";
+  $sth->execute() or die $sth->errstr;
   return $sth;
 }
 
@@ -358,9 +358,8 @@ sub extension_version_histogram {
     $dbh->prepare('SELECT ' .
 		  $self->{store}->unix_timestamp('u.timestamp') . ' AS timestamp,' .
 		  'version AS measure,1 AS amount' .
-                  ' FROM upload AS u ' .
-                  "WHERE u.timestamp BETWEEN ? AND ? ;")
-      or die "prepare failed";
+                  ' FROM current AS u;') or die "prepare failed";
+  $sth->execute() or die $sth->errstr;
   return $sth;
 }
 
@@ -369,11 +368,11 @@ sub user_agent {
   my $dbh = $self->{store}->{dbh};
   my $sth =
     $dbh->prepare('SELECT user_agent AS name,count(*) AS value' .
-                  ' FROM upload ' .
-                  'WHERE timestamp BETWEEN ? AND ? ' .
+                  ' FROM current ' .
                   'GROUP BY user_agent ' .
 		  'ORDER BY user_agent;')
       or die "prepare failed";
+  $sth->execute() or die $sth->errstr;
   return $sth;
 }
 
@@ -384,9 +383,8 @@ sub user_agent_histogram {
     $dbh->prepare('SELECT ' .
 		  $self->{store}->unix_timestamp('u.timestamp') . ' AS timestamp,' .
 		  'user_agent AS measure,1 AS amount' .
-                  ' FROM upload AS u ' .
-                  "WHERE u.timestamp BETWEEN ? AND ?;")
-      or die "prepare failed";
+                  ' FROM current AS u;') or die "prepare failed";
+  $sth->execute() or die $sth->errstr;
   return $sth;
 }
 

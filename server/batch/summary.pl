@@ -51,13 +51,8 @@ my $ureq_ceiling = 500000; # 300s max for update request images
 my $req_floor = 10; # 30ms min for request images
 
 sub user_agents {
-  my ($store,$options) = @_;
-  my $sth = $store->user_agent_sth();
-
-  my $t = time;
-  my $begin = $store->db_timestamp($t - $ReportLatency::utils::duration);
-  my $end = $store->db_timestamp($t);
-  my $rc = $sth->execute($begin, $end);
+  my ($qobj) = @_;
+  my $sth = $qobj->extension_version_histogram();
 
   my $graph = new ReportLatency::StackedGraph( width => $histwidth,
 					      height => $histheight,
@@ -76,13 +71,8 @@ sub user_agents {
 }
 
 sub extensions {
-  my ($store,$options) = @_;
-  my $sth = $store->extension_version_sth();
-
-  my $t = time;
-  my $begin = $store->db_timestamp($t - $ReportLatency::utils::duration);
-  my $end = $store->db_timestamp($t);
-  my $rc = $sth->execute($begin, $end);
+  my ($qobj) = @_;
+  my $sth = $qobj->extension_version_histogram();
 
   my $graph = new ReportLatency::StackedGraph( width => $histwidth,
 					      height => $histheight,
@@ -294,8 +284,8 @@ sub main() {
 
   total_graph($summary);
   total_report($view,$summary,\%options);
-  user_agents($store);
-  extensions($store);
+  user_agents($summary);
+  extensions($summary);
 
   $dbh->rollback() ||
     die "Unable to rollback, but there should be no changes anyway";
