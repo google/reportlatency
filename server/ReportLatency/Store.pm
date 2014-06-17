@@ -1043,19 +1043,6 @@ sub extension_version_sth {
   return $sth;
 }
 
-sub user_agent_summary_sth {
-  my ($self) = @_;
-  my $dbh = $self->{dbh};
-  my $sth =
-    $dbh->prepare('SELECT user_agent AS name,count(*) AS value' .
-                  ' FROM upload ' .
-                  'WHERE timestamp BETWEEN ? AND ? ' .
-                  'GROUP BY user_agent ' .
-		  'ORDER BY user_agent;')
-      or die "prepare failed";
-  return $sth;
-}
-
 sub user_agent_sth {
   my ($self) = @_;
   my $dbh = $self->{dbh};
