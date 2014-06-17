@@ -343,7 +343,7 @@ sub extension_version {
   my $dbh = $self->{store}->{dbh};
   my $sth =
     $dbh->prepare('SELECT version AS name,count(*) AS value' .
-                  ' FROM current AS u ' .
+                  ' FROM current ' .
                   'GROUP BY version ' .
 		  'ORDER BY version;')
       or die "prepare failed";
@@ -356,9 +356,10 @@ sub extension_version_histogram {
   my $dbh = $self->{store}->{dbh};
   my $sth =
     $dbh->prepare('SELECT ' .
-		  $self->{store}->unix_timestamp('u.timestamp') . ' AS timestamp,' .
+		  $self->{store}->unix_timestamp('timestamp') .
+		  ' AS timestamp,' .
 		  'version AS measure,1 AS amount' .
-                  ' FROM current AS u;') or die "prepare failed";
+                  ' FROM current;') or die "prepare failed";
   $sth->execute() or die $sth->errstr;
   return $sth;
 }
@@ -381,9 +382,10 @@ sub user_agent_histogram {
   my $dbh = $self->{store}->{dbh};
   my $sth =
     $dbh->prepare('SELECT ' .
-		  $self->{store}->unix_timestamp('u.timestamp') . ' AS timestamp,' .
+		  $self->{store}->unix_timestamp('timestamp') .
+		  ' AS timestamp,' .
 		  'user_agent AS measure,1 AS amount' .
-                  ' FROM current AS u;') or die "prepare failed";
+                  ' FROM current;') or die "prepare failed";
   $sth->execute() or die $sth->errstr;
   return $sth;
 }
