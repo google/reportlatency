@@ -1,3 +1,9 @@
+reportlatency (1.6.3) precise; urgency=low
+
+  * Correct calculation of long histogram bins
+
+ -- Drake Diedrich <dld@google.com>  Wed, 18 Jun 2014 10:32:37 -0700
+
 reportlatency (1.6.2) precise; urgency=low
 
   * Render 4s latency bin too

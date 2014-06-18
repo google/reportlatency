@@ -136,13 +136,14 @@ sub availability {
   my ($self,$type,$row) = @_;
 
   my $count = ($row->{$type . "_count"} || 0);
+  my $r200 = ($row->{$type . "_200"} || 0);
   my $r300 = ($row->{$type . "_300"} || 0);
   my $r400 = ($row->{$type . "_400"} || 0);
   my $r500 = ($row->{$type . "_500"} || 0);
   my $closed = ($row->{$type . "_tabclosed"} || 0);
-  my $denom = $count - $r300;
+  my $denom = $r200 + $r400 + $r500 + $closed;
   if ($denom > 0) {
-    return ($count - $r500 - $r400 - $r300 - $closed) / $denom;
+    return $r200 / $denom;
   } else {
     return undef;
   }
