@@ -208,9 +208,9 @@ FROM current AS u, $latency AS n
 WHERE n.upload=u.id AND m10000>0
 UNION
 SELECT utimestamp AS timestamp,'long' AS measure,
-count-m100-m500-m1000-m2000-m4000-m10000-tabclosed AS amount 
+COALESCE(count,0)-COALESCE(m100,0)-COALESCE(m500,0)-COALESCE(m1000,0)-COALESCE(m2000,0)-COALESCE(m4000,0)-COALESCE(m10000,0)-COALESCE(tabclosed,0) AS amount 
 FROM current AS u, $latency AS n
-WHERE n.upload=u.id AND count>m100+m500+m1000+m2000+m4000+m10000+tabclosed;
+WHERE n.upload=u.id AND amount>0;
 EOS
 }
 

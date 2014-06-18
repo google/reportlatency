@@ -19,7 +19,7 @@
 use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
-use Test::More tests => 57;
+use Test::More tests => 59;
 use Data::Dumper;
 
 BEGIN { use lib '..'; }
@@ -83,6 +83,9 @@ is($row->{amount}, 1, '1 navigation');
 is($row->{measure}, '10s', ' in 10s bin');
 cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
 cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
+$row = $sth->fetchrow_hashref;
+is($row->{amount}, 1, '1 navigation');
+is($row->{measure}, 'long', ' in long bin');
 $row = $sth->fetchrow_hashref;
 is($row, undef, 'last nav_latency_histogram row');
 
