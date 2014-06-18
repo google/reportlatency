@@ -38,8 +38,8 @@ my $dbfile = "$dir/latency.sqlite3";
   }
   print $sqlite3 <<EOD;
 INSERT INTO upload(location) VALUES("1.2.3.0");
-INSERT INTO navigation(upload,name,service,count,total,m10000,response200)
-  VALUES(1,'mail.google.com','mail.google.com',1,2038,1,1);
+INSERT INTO navigation(upload,name,service,count,total,low,high,m10000,response200)
+  VALUES(1,'mail.google.com','mail.google.com',2,22038,4038,18000,1,2);
 INSERT INTO navigation_request(upload,name,service,count,total,low,high)
   VALUES(1,'mail.google.com','mail.google.com',3,2100,600,800);
 INSERT INTO upload(location) VALUES("1.2.3.0");
@@ -66,10 +66,10 @@ isa_ok($qobj, 'ReportLatency::Summary');
 
 my $sth = $qobj->nav_latencies();
 my $row = $sth->fetchrow_hashref;
-is($row->{count}, 1, 'total nav latency count');
-is($row->{total}, 2038, 'total');
-is($row->{low}, undef, 'low');
-is($row->{high}, undef, 'high');
+is($row->{count}, 2, 'total nav latency count');
+is($row->{total}, 22038, 'total');
+is($row->{low}, 4038, 'low');
+is($row->{high}, 18000, 'high');
 cmp_ok($row->{timestamp}, '<=', time, 'timestamp <= now');
 cmp_ok($row->{timestamp}, '>', time-300, 'timestamp > now-300');
 $row = $sth->fetchrow_hashref;
