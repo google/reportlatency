@@ -81,16 +81,10 @@ sub ureq_latencies {
 }
 
 
-sub meta {
+sub meta_select {
   my ($self) = @_;
-
-  if (!defined $self->{meta}) {
-    my $store = $self->{store};
-    $store->create_service_report_temp_table();
-    my $fields = $store->common_aggregate_fields();
-    my $dbh = $store->{dbh};
-
-    my $rowref = $dbh->selectrow_hashref( <<EOS ) or die $!;
+  my $fields = $store->common_aggregate_fields();
+  return <<EOS;
 SELECT 'total' AS tag,
 min(min_timestamp) AS min_timestamp,
 max(max_timestamp) AS max_timestamp,
@@ -98,6 +92,17 @@ count(distinct service) AS services,
 $fields
 FROM service_report
 EOS
+}
+
+sub meta {
+  my ($self) = @_;
+
+  if (!defined $self->{meta}) {
+    my $store = $self->{store};
+    $store->create_service_report_temp_table();
+    my $dbh = $store->{dbh};
+
+    my $rowref = $dbh->selectrow_hashref($self->meta_select) or die $!;
     $self->{meta} = $rowref;
   }
 
@@ -297,59 +302,6 @@ FROM current AS u, update_request AS r
 WHERE r.upload=u.id AND response400>0;
 EOS
 
-  $sth->execute() or die $sth->errstr;
-  return $sth;
-}
-
-
-sub extension_version {
-  my ($self) = @_;
-  my $dbh = $self->{store}->{dbh};
-  my $sth =
-    $dbh->prepare('SELECT version AS name,count(*) AS value' .
-                  ' FROM current ' .
-                  'GROUP BY version ' .
-		  'ORDER BY version;')
-      or die "prepare failed";
-  $sth->execute() or die $sth->errstr;
-  return $sth;
-}
-
-sub extension_version_histogram {
-  my ($self) = @_;
-  my $dbh = $self->{store}->{dbh};
-  my $sth =
-    $dbh->prepare('SELECT ' .
-		  $self->{store}->unix_timestamp('timestamp') .
-		  ' AS timestamp,' .
-		  'version AS measure,1 AS amount' .
-                  ' FROM current;') or die "prepare failed";
-  $sth->execute() or die $sth->errstr;
-  return $sth;
-}
-
-sub user_agent {
-  my ($self) = @_;
-  my $dbh = $self->{store}->{dbh};
-  my $sth =
-    $dbh->prepare('SELECT user_agent AS name,count(*) AS value' .
-                  ' FROM current ' .
-                  'GROUP BY user_agent ' .
-		  'ORDER BY user_agent;')
-      or die "prepare failed";
-  $sth->execute() or die $sth->errstr;
-  return $sth;
-}
-
-sub user_agent_histogram {
-  my ($self) = @_;
-  my $dbh = $self->{store}->{dbh};
-  my $sth =
-    $dbh->prepare('SELECT ' .
-		  $self->{store}->unix_timestamp('timestamp') .
-		  ' AS timestamp,' .
-		  'user_agent AS measure,1 AS amount' .
-                  ' FROM current;') or die "prepare failed";
   $sth->execute() or die $sth->errstr;
   return $sth;
 }
