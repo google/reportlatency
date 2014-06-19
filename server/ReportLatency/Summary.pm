@@ -13,29 +13,15 @@
 # limitations under the License.
 
 package ReportLatency::Summary;
+use ReportLatency::Base;
+@ISA = ("ReportLatency::Base");
 
 use strict;
 use vars qw($VERSION %options);
 
-
 $VERSION     = 0.1;
 %options = ();
 
-
-sub new {
-  my $class = shift;
-  my $self  = bless {}, $class;
-  $self->{store} = shift;
-  my $begin = $self->{begin} = shift;
-  my $end = $self->{end} = shift;
-  $self->{store}->create_current_temp_table($begin,$end);
-
-  return $self;
-}
-
-sub DESTROY {
-  my $self = shift;
-}
 
 
 sub nav_latencies {
