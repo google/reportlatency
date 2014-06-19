@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 #
-# Test ReportLatency::Summary.pm
+# Test ReportLatency::Base.pm
 #
 # Copyright 2014 Google Inc. All Rights Reserved.
 #
@@ -19,7 +19,7 @@
 use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
-use Test::More tests => 9;
+use Test::More tests => 19;
 use Data::Dumper;
 
 BEGIN { use lib '..'; }
@@ -53,7 +53,7 @@ isa_ok($qobj, 'ReportLatency::Base');
 my $sth = $qobj->nav_latencies();
 isa_ok($sth, 'DBI::st');
 my $row = $sth->fetchrow_hashref;
-is($row, undef, 'last total nav latency row');
+is($row, undef, 'last nav latency row');
 
 $sth = $qobj->nav_latency_histogram();
 isa_ok($sth, 'DBI::st');
@@ -62,8 +62,43 @@ is($row, undef, 'last nav_latency_histogram row');
 
 $sth = $qobj->nreq_latencies();
 $row = $sth->fetchrow_hashref;
-is($row, undef, 'last total nreq latency row');
+is($row, undef, 'last nreq latency row');
 
 $sth = $qobj->ureq_latencies();
 $row = $sth->fetchrow_hashref;
-is($row, undef, 'last total nreq latency row');
+is($row, undef, 'last nreq row');
+
+my $meta = $qobj->meta();
+ok($meta, '%meta');
+
+$sth = $qobj->tag();
+$row = $sth->fetchrow_hashref;
+is($row->{tag}, 'untagged', 'tag untagged');
+is($row->{services}, 0, '0 services');
+$row = $sth->fetchrow_hashref;
+is($row, undef, 'last tag row');
+
+$sth = $qobj->location();
+$row = $sth->fetchrow_hashref;
+is($row, undef, 'last location row');
+
+$sth = $qobj->nav_response_histogram();
+$row = $sth->fetchrow_hashref;
+is($row, undef, 'last nav_response_histogram row');
+
+$sth = $qobj->nreq_response_histogram();
+$row = $sth->fetchrow_hashref;
+is($row, undef, 'last nreq_response_histogram row');
+
+$sth = $qobj->ureq_response_histogram();
+$row = $sth->fetchrow_hashref;
+is($row, undef, 'last ureq_response_histogram row');
+
+$sth = $qobj->nreq_latency_histogram();
+$row = $sth->fetchrow_hashref;
+is($row, undef, 'last nreq_latency_histogram row');
+
+$sth = $qobj->ureq_latency_histogram();
+$row = $sth->fetchrow_hashref;
+is($row, undef, 'last ureq_latency_histogram row');
+
