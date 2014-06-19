@@ -83,6 +83,7 @@ sub ureq_latencies {
 
 sub meta_select {
   my ($self) = @_;
+  my $store = $self->{store};
   my $fields = $store->common_aggregate_fields();
   return <<EOS;
 SELECT 'total' AS tag,
@@ -110,16 +111,12 @@ sub meta {
 }
 
 
-sub tag {
+sub tag_select {
   my ($self) = @_;
 
   my $store = $self->{store};
-
-  $store->create_service_report_temp_table();
-
-  my $dbh = $store->{dbh};
   my $fields = $store->common_aggregate_fields();
-  my $sth = $dbh->prepare( <<EOS ) or die "prepare failed";
+  return <<EOS;
 SELECT t.tag as tag,
 count(distinct r.service) AS services,
 $fields
@@ -136,19 +133,29 @@ WHERE t.tag is null
 ORDER BY tag
 ;
 EOS
+}
+
+sub tag {
+  my ($self) = @_;
+
+  my $store = $self->{store};
+
+  $store->create_service_report_temp_table();
+
+  my $dbh = $store->{dbh};
+  my $fields = $store->common_aggregate_fields();
+  my $sth = $dbh->prepare($self->tag_select ) or die $!;
   $sth->execute() or die $sth->errstr;
   return $sth;
 }
 
 
-sub location {
+sub location_select {
   my ($self) = @_;
 
   my $store = $self->{store};
-  my $dbh = $store->{dbh};
   my $fields = $store->common_aggregate_fields();
-  my $sth =
-    $dbh->prepare( <<EOS ) or die "prepare failed";
+  return <<EOS;
 SELECT location,
 count(distinct service) AS services,
 $fields
@@ -156,6 +163,14 @@ FROM service_report r
 GROUP BY location
 ORDER BY location;
 EOS
+}
+
+sub location {
+  my ($self) = @_;
+
+  my $store = $self->{store};
+  my $dbh = $store->{dbh};
+  my $sth = $dbh->prepare( $self->location_select ) or die $!;
   $sth->execute();
   return $sth;
 }
@@ -203,18 +218,14 @@ sub nav_latency_histogram {
 
   my $dbh = $self->{store}->{dbh};
   my $sth = $dbh->prepare( $self->latency_histogram('navigation'))
-   or die "prepare failed";
+   or die $!;
   my $rc = $sth->execute() or die $sth->errstr;
 
   return $sth;
 }
 
-sub nav_response_histogram {
-  my ($self) = @_;
-
-  my $dbh = $self->{store}->{dbh};
-  my $sth =
-    $dbh->prepare( <<EOS ) or die "prepare failed";
+sub nav_response {
+  return <<EOS;
 SELECT utimestamp AS timestamp,
 'closed' AS measure,tabclosed AS amount 
 FROM current AS u, navigation AS n
@@ -232,7 +243,13 @@ SELECT utimestamp AS timestamp, '300' AS measure,response300 AS amount
 FROM current AS u, navigation AS n
 WHERE n.upload=u.id AND response300>0;
 EOS
+}
 
+sub nav_response_histogram {
+  my ($self) = @_;
+  my $dbh = $self->{store}->{dbh};
+  my $sth =
+    $dbh->prepare( $self->nav_response ) or die $!;
   $sth->execute();
   return $sth;
 }
@@ -243,9 +260,27 @@ sub nreq_latency_histogram {
 
   my $dbh = $self->{store}->{dbh};
   my $sth = $dbh->prepare( $self->latency_histogram('navigation_request') )
-    or die "prepare failed";
+    or die $!;
   $sth->execute() or die $sth->errstr;
   return $sth;
+}
+
+sub response_histogram {
+  my ($self,$reqtype) = @_;
+  return <<EOS;
+SELECT utimestamp AS timestamp,
+'closed' AS measure,tabclosed AS amount 
+FROM current AS u, $reqtype AS r
+WHERE r.upload=u.id AND tabclosed>0
+UNION
+SELECT utimestamp AS timestamp, '500' AS measure,response500 AS amount 
+FROM current AS u, $reqtype AS r
+WHERE r.upload=u.id AND response500>0
+UNION
+SELECT utimestamp AS timestamp, '400' AS measure,response400 AS amount 
+FROM current AS u, $reqtype AS r
+WHERE r.upload=u.id AND response400>0;
+EOS
 }
 
 sub nreq_response_histogram {
@@ -253,20 +288,8 @@ sub nreq_response_histogram {
 
   my $dbh = $self->{store}->{dbh};
   my $sth =
-    $dbh->prepare( <<EOS ) or die "prepare failed";
-SELECT utimestamp AS timestamp,
-'closed' AS measure,tabclosed AS amount 
-FROM current AS u, navigation_request AS r
-WHERE r.upload=u.id AND tabclosed>0
-UNION
-SELECT utimestamp AS timestamp, '500' AS measure,response500 AS amount 
-FROM current AS u, navigation_request AS r
-WHERE r.upload=u.id AND response500>0
-UNION
-SELECT utimestamp AS timestamp, '400' AS measure,response400 AS amount 
-FROM current AS u, navigation_request AS r
-WHERE r.upload=u.id AND response400>0;
-EOS
+    $dbh->prepare($self->response_histogram("navigation_request") )
+      or die $!;
 
   $sth->execute() or die $sth->errstr;
   return $sth;
@@ -277,7 +300,7 @@ sub ureq_latency_histogram {
 
   my $dbh = $self->{store}->{dbh};
   my $sth = $dbh->prepare( $self->latency_histogram('update_request') )
-    or die "prepare failed";
+    or die $!;
   $sth->execute() or die $sth->errstr;
   return $sth;
 }
@@ -287,21 +310,8 @@ sub ureq_response_histogram {
 
   my $dbh = $self->{store}->{dbh};
   my $sth =
-    $dbh->prepare( <<EOS ) or die "prepare failed";
-SELECT utimestamp AS timestamp,
-'closed' AS measure,tabclosed AS amount 
-FROM current AS u, update_request AS r
-WHERE r.upload=u.id AND tabclosed>0
-UNION
-SELECT utimestamp AS timestamp, '500' AS measure,response500 AS amount 
-FROM current AS u, update_request AS r
-WHERE r.upload=u.id AND response500>0
-UNION
-SELECT utimestamp AS timestamp, '400' AS measure,response400 AS amount 
-FROM current AS u, update_request AS r
-WHERE r.upload=u.id AND response400>0;
-EOS
-
+    $dbh->prepare($self->response_histogram("update_request"))
+      or die $!;
   $sth->execute() or die $sth->errstr;
   return $sth;
 }
