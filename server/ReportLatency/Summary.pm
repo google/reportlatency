@@ -79,44 +79,6 @@ sub ureq_latencies {
 }
 
 
-sub latency_histogram {
-  my ($self,$latency) = @_;
-  return <<EOS;
-SELECT utimestamp AS timestamp,'closed' AS measure,tabclosed AS amount 
-FROM current AS u, $latency AS n
-WHERE n.upload=u.id AND tabclosed>0
-UNION
-SELECT utimestamp AS timestamp,'100ms' AS measure,m100 AS amount 
-FROM current AS u, $latency AS n
-WHERE n.upload=u.id AND m100>0
-UNION
-SELECT utimestamp AS timestamp,'500ms' AS measure,m500 AS amount 
-FROM current AS u, $latency AS n
-WHERE n.upload=u.id AND m500>0
-UNION
-SELECT utimestamp AS timestamp,'1s' AS measure,m1000 AS amount 
-FROM current AS u, $latency AS n
-WHERE n.upload=u.id AND m1000>0
-UNION
-SELECT utimestamp AS timestamp,'2s' AS measure,m2000 AS amount 
-FROM current AS u, $latency AS n
-WHERE n.upload=u.id AND m2000>0
-UNION
-SELECT utimestamp AS timestamp,'4s' AS measure,m4000 AS amount 
-FROM current AS u, navigation AS n
-WHERE n.upload=u.id AND m4000>0
-UNION
-SELECT utimestamp AS timestamp, '10s' AS measure,m10000 AS amount 
-FROM current AS u, $latency AS n
-WHERE n.upload=u.id AND m10000>0
-UNION
-SELECT utimestamp AS timestamp,'long' AS measure,
-COALESCE(count,0)-COALESCE(m100,0)-COALESCE(m500,0)-COALESCE(m1000,0)-COALESCE(m2000,0)-COALESCE(m4000,0)-COALESCE(m10000,0)-COALESCE(tabclosed,0) AS amount 
-FROM current AS u, $latency AS n
-WHERE n.upload=u.id AND amount>0;
-EOS
-}
-
 
 sub extension_version {
   my ($self) = @_;
