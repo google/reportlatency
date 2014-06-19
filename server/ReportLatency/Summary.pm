@@ -17,18 +17,16 @@ use ReportLatency::Base;
 @ISA = ("ReportLatency::Base");
 
 use strict;
-use vars qw($VERSION %options);
+use vars qw($VERSION);
 
 $VERSION     = 0.1;
-%options = ();
 
 
 
-sub nav_latencies {
+sub nav_latency_select {
   my ($self) = @_;
-
-  my $dbh = $self->{store}->{dbh};
-  my $statement='SELECT ' .
+  my $store = $self->{store};
+  return 'SELECT ' .
     $self->{store}->unix_timestamp('u.timestamp') . ' AS timestamp,' .
     'n.count AS count,' .
     'n.high AS high,' .
@@ -38,10 +36,6 @@ sub nav_latencies {
     'INNER JOIN current u ON u.id=n.upload ' .
     "WHERE " .
      $self->{store}->is_positive('n.count') . ";";
-  my $sth = $dbh->prepare($statement) or die $!;
-  $sth->execute() or die $sth->errstr;
-
-  return $sth;
 }
 
 sub nreq_latencies {

@@ -17,7 +17,6 @@ package ReportLatency::Base;
 use strict;
 use vars qw($VERSION);
 
-
 $VERSION     = 0.1;
 
 sub new {
