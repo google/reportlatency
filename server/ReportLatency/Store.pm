@@ -65,6 +65,20 @@ sub unix_timestamp {
   }
 }
 
+sub db_to_unix {
+  my ($self,$dbtime) = @_;
+  my $sth = $self->{db_to_unix};
+  if (! defined $sth) {
+    $sth = $self->{dbh}->prepare("SELECT " .
+				 $self->unix_timestamp('?') . ";");
+    $self->{db_to_unix} = $sth;
+  }
+  $sth->execute($dbtime);
+  my ($t) = $sth->fetchrow_array;
+  $sth->finish;
+  return $t;
+}
+
 sub db_timestamp {
   my ($self,$unix_time) = @_;
   my $dbh = $self->{dbh};
@@ -94,6 +108,7 @@ sub db_timestamp {
     die $self->{dialect} . ' support unimplemented';
   }
 }
+
 
 sub register_option {
   my ($opt,$mask) = @_;

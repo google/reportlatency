@@ -30,20 +30,8 @@ use strict;
 
 my $days=14;
 my $hours=0.5;
-my $width=$days*24/$hours * 3 / 4;
-my $height=int($width/2);
-
-my $navwidth = $width;
-my $navheight = $height;
-
-my $reqwidth = $width;
-my $reqheight = $height;
-
-my $histwidth = $width/4;
-my $histheight = $height;
 
 my $interval = $hours * 3600;
-my $border=24;
 
 my $nav_ceiling = 30000; # 30s max for navigation images
 my $nreq_ceiling = 30000; # 30s max for navigation request images
@@ -54,8 +42,8 @@ sub user_agents {
   my ($qobj) = @_;
   my $sth = $qobj->extension_version_histogram();
 
-  my $graph = new ReportLatency::StackedGraph( width => $histwidth,
-					      height => $histheight,
+  my $graph = new ReportLatency::StackedGraph( width => 400,
+					      height => 200,
 					      duration => $ReportLatency::utils::duration,
 					      border => 24 );
   
@@ -74,8 +62,8 @@ sub extensions {
   my ($qobj) = @_;
   my $sth = $qobj->extension_version_histogram();
 
-  my $graph = new ReportLatency::StackedGraph( width => $histwidth,
-					      height => $histheight,
+  my $graph = new ReportLatency::StackedGraph( width => 400,
+					      height => 200,
 					      duration => $ReportLatency::utils::duration,
 					      border => 24 );
   
@@ -89,164 +77,6 @@ sub extensions {
   benchmark_point("extensions.png");
 }
 
-sub total_graph {
-  my ($qobj) = @_;
-
-  benchmark_point("start total_graph()");
-  my $begin = $qobj->{begin};
-  my $end = $qobj->{end};
-
-  my $sth = $qobj->nav_latencies();
-  my $spectrum = new ReportLatency::Spectrum( width => $navwidth,
-					      height => $navheight,
-					      duration => $ReportLatency::utils::duration,
-					      ceiling => $nav_ceiling,
-					      border => 24 );  
-  while (my $row = $sth->fetchrow_hashref) {
-    $spectrum->add_row($row);
-  }
-  my $png = new ReportLatency::AtomicFile("tags/summary/nav_spectrum.png");
-  print $png $spectrum->png();
-  close($png);
-
-  benchmark_point("nav_spectrum.png");
-
-  $sth = $qobj->nreq_latencies();
-  $spectrum = new ReportLatency::Spectrum( width => $reqwidth,
-					   height => $reqheight,
-					   duration => $ReportLatency::utils::duration,
-					   ceiling => $nreq_ceiling,
-					   floor   => $req_floor,
-					   border => 24 );
-  while (my $row = $sth->fetchrow_hashref) {
-    $spectrum->add_row($row);
-  }
-  $png = new ReportLatency::AtomicFile("tags/summary/nreq_spectrum.png");
-  print $png $spectrum->png();
-  close($png);
-
-  benchmark_point("nreq_spectrum.png");
-
-  $sth = $qobj->ureq_latencies();
-  $spectrum = new ReportLatency::Spectrum( width => $reqwidth,
-					   height => $reqheight,
-					   duration => $ReportLatency::utils::duration,
-					   ceiling => $ureq_ceiling,
-					   floor   => $req_floor,
-					   border => 24 );
-  while (my $row = $sth->fetchrow_hashref) {
-    $spectrum->add_row($row);
-  }
-  $png = new ReportLatency::AtomicFile("tags/summary/ureq_spectrum.png");
-  print $png $spectrum->png();
-  close($png);
-
-  benchmark_point("ureq_spectrum.png");
-
-  $sth = $qobj->nav_latency_histogram();
-  my $graph = new ReportLatency::StackedGraph( width => $histwidth,
-					      height => $histheight,
-					      duration => $ReportLatency::utils::duration,
-					      border => 24 );
-  while (my $row = $sth->fetchrow_hashref) {
-    $graph->add_row($row);
-  }
-  $graph->reorder('closed','long','10s','4s', '2s','1s','500ms','100ms');
-  $png = new ReportLatency::AtomicFile("tags/summary/nav_latency.png");
-  print $png $graph->img()->png();
-  close($png);
-
-  benchmark_point("nav_latency.png");
-
-  $sth = $qobj->nav_response_histogram();
-  $graph = new ReportLatency::StackedGraph( width => $histwidth,
-					      height => $histheight,
-					      duration => $ReportLatency::utils::duration,
-					      border => 24 );
-  while (my $row = $sth->fetchrow_hashref) {
-    $graph->add_row($row);
-  }
-  $graph->reorder('closed','500','400','300');
-  $png = new ReportLatency::AtomicFile("tags/summary/nav_error.png");
-  print $png $graph->img()->png();
-  close($png);
-
-  benchmark_point("nav_error.png");
-
-  $sth = $qobj->nreq_latency_histogram();
-  $graph = new ReportLatency::StackedGraph( width => $histwidth,
-					    height => $histheight,
-					    duration => $ReportLatency::utils::duration,
-					    border => 24 );
-  my $count = 0;
-  while (my $row = $sth->fetchrow_hashref) {
-    $count += $graph->add_row($row);
-  }
-  if ($count>0) {
-    $graph->reorder('closed','long','10s','4s', '2s','1s','500ms','100ms');
-    $png = new ReportLatency::AtomicFile("tags/summary/nreq_latency.png");
-    print $png $graph->img()->png();
-    close($png);
-  }
-
-  benchmark_point("nreq_latency.png");
-
-  $sth = $qobj->nreq_response_histogram();
-  $graph = new ReportLatency::StackedGraph( width => $histwidth,
-					      height => $histheight,
-					      duration => $ReportLatency::utils::duration,
-					      border => 24 );
-  $count = 0;
-  while (my $row = $sth->fetchrow_hashref) {
-    $count += $graph->add_row($row);
-  }
-  if ($count>0) {
-    $graph->reorder('closed','500','400');
-
-    $png = new ReportLatency::AtomicFile("tags/summary/nreq_error.png");
-    print $png $graph->img()->png();
-    close($png);
-  }
-
-  benchmark_point("nreq_error.png");
-
-  $sth = $qobj->ureq_latency_histogram();
-  $graph = new ReportLatency::StackedGraph( width => $histwidth,
-					    height => $histheight,
-					    duration => $ReportLatency::utils::duration,
-					    border => 24 );
-  $count = 0;
-  while (my $row = $sth->fetchrow_hashref) {
-    $count += $graph->add_row($row);
-  }
-  if ($count>0) {
-    $graph->reorder('closed','long','10s','4s','2s','1s','500ms','100ms');
-    $png = new ReportLatency::AtomicFile("tags/summary/ureq_latency.png");
-    print $png $graph->img()->png();
-    close($png);
-  }
-
-  benchmark_point("ureq_latency.png");
-
-  $sth = $qobj->ureq_response_histogram();
-  $graph = new ReportLatency::StackedGraph( width => $histwidth,
-					      height => $histheight,
-					      duration => $ReportLatency::utils::duration,
-					      border => 24 );
-  $count = 0;
-  while (my $row = $sth->fetchrow_hashref) {
-    $count += $graph->add_row($row);
-  }
-  if ($count>0) {
-    $graph->reorder('closed','500','400');
-
-    $png = new ReportLatency::AtomicFile("tags/summary/ureq_error.png");
-    print $png $graph->img()->png();
-    close($png);
-  }
-
-  benchmark_point("ureq_error.png");
-}
 
 
 sub main() {
@@ -275,7 +105,6 @@ sub main() {
   my $summary = new ReportLatency::Summary($store, $begin, $end);
 
   $view->realize($summary,"tags/summary");
-  total_graph($summary);
   user_agents($summary);
   extensions($summary);
 

@@ -34,6 +34,12 @@ sub DESTROY {
   my $self = shift;
 }
 
+sub duration {
+  my $self = shift;
+  my $store = $self->{store};
+  return $store->db_to_unix($self->{end}) - $store->db_to_unix($self->{begin});
+}
+
 sub nav_latency_select {
   return 'SELECT NULL AS timestamp, NULL AS count, NULL AS high, ' .
     'NULL AS low, NULL AS total ' .
