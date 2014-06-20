@@ -248,14 +248,6 @@ sub total_graph {
   benchmark_point("ureq_error.png");
 }
 
-sub total_report {
-  my ($view,$qobj,$options) = @_;
-  my $html = new ReportLatency::AtomicFile("tags/summary/index.html");
-  print $html $view->report_html($qobj);
-  close($html);
-}
-
-
 
 sub main() {
 
@@ -282,8 +274,8 @@ sub main() {
   my $end = $store->db_timestamp($t);
   my $summary = new ReportLatency::Summary($store, $begin, $end);
 
+  $view->realize($summary,"tags/summary");
   total_graph($summary);
-  total_report($view,$summary,\%options);
   user_agents($summary);
   extensions($summary);
 

@@ -78,6 +78,11 @@ sub location_img_url {
   my ($self,$name) = @_;
   return "../../reportlatency/locations/$name/navigation.png";
 }
+
+
+sub realize {
+}
+
 1;
 
 

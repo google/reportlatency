@@ -250,5 +250,4 @@ sub benchmark_end {
     "\n";
 }
 
-
 1;

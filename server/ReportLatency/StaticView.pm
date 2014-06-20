@@ -941,6 +941,13 @@ EOF
   return ${$io->string_ref};
 }
 
+sub realize {
+  my ($self,$qobj,$dir) = @_;
+  my $html = new ReportLatency::AtomicFile("$dir/index.html");
+  print $html $self->report_html($qobj);
+  close($html);
+}
+
 1;
 
 
