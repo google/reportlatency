@@ -29,14 +29,14 @@ my $graph = new ReportLatency::StackedGraph( );
 isa_ok($graph, 'ReportLatency::StackedGraph');
 can_ok($graph, qw( add add_row img ));
 
-is($graph->width(),1000,"default width()");
+is($graph->width(),500/4,"default data width()");
 is($graph->height(),250,"default height()");
 is($graph->duration(),14*24*3600,"default duration()");
 
 is($graph->_x(0),undef,"_x(unix epoch) == undef");
 is($graph->_x(time-10),$graph->width()-1,"_x(time-10) =~ width");
 is($graph->_x(time - $graph->duration()/2),
-   int(($graph->width()-1)/2),
+   int(($graph->width()-1)/2)-1,
    "_x(duration/2) =~ width/2");
 is($graph->_x(time),$graph->width()-1,"_x(time) =~ width");
 is($graph->_x(time+10),$graph->width()-1,"_x(time+10) =~ width");

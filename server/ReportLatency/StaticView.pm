@@ -957,9 +957,7 @@ sub realize {
   my $end = $qobj->{end};
 
   my $sth = $qobj->nav_latencies();
-  my $spectrum = new ReportLatency::Spectrum( width => $self->width,
-					      height => $self->height,
-					      duration => $qobj->duration,
+  my $spectrum = new ReportLatency::Spectrum( duration => $qobj->duration,
 					      ceiling => $self->nav_ceiling,
 					      border => 24 );  
   while (my $row = $sth->fetchrow_hashref) {
@@ -972,9 +970,7 @@ sub realize {
   benchmark_point("nav_spectrum.png");
 
   $sth = $qobj->nreq_latencies();
-  $spectrum = new ReportLatency::Spectrum( width => $self->width,
-					   height => $self->height,
-					   duration => $qobj->duration,
+  $spectrum = new ReportLatency::Spectrum( duration => $qobj->duration,
 					   ceiling => $self->nreq_ceiling,
 					   floor   => $self->req_floor,
 					   border => 24 );
@@ -988,9 +984,7 @@ sub realize {
   benchmark_point("nreq_spectrum.png");
 
   $sth = $qobj->ureq_latencies();
-  $spectrum = new ReportLatency::Spectrum( width => $self->width,
-					   height => $self->height,
-					   duration => $qobj->duration,
+  $spectrum = new ReportLatency::Spectrum( duration => $qobj->duration,
 					   ceiling => $self->ureq_ceiling,
 					   floor   => $self->req_floor,
 					   border => 24 );
@@ -1004,9 +998,7 @@ sub realize {
   benchmark_point("ureq_spectrum.png");
 
   $sth = $qobj->nav_latency_histogram();
-  my $graph = new ReportLatency::StackedGraph( width => $self->width,
-					      height => $self->height,
-					      duration => $ReportLatency::utils::duration,
+  my $graph = new ReportLatency::StackedGraph( duration => $qobj->duration,
 					      border => 24 );
   while (my $row = $sth->fetchrow_hashref) {
     $graph->add_row($row);
@@ -1019,9 +1011,7 @@ sub realize {
   benchmark_point("nav_latency.png");
 
   $sth = $qobj->nav_response_histogram();
-  $graph = new ReportLatency::StackedGraph( width => $self->width,
-					    height => $self->height,
-					    duration => $qobj->duration,
+  $graph = new ReportLatency::StackedGraph( duration => $qobj->duration,
 					    border => 24 );
   while (my $row = $sth->fetchrow_hashref) {
     $graph->add_row($row);
@@ -1034,9 +1024,7 @@ sub realize {
   benchmark_point("nav_error.png");
 
   $sth = $qobj->nreq_latency_histogram();
-  $graph = new ReportLatency::StackedGraph( width => $self->width,
-					    height => $self->height,
-					    duration => $qobj->duration,
+  $graph = new ReportLatency::StackedGraph( duration => $qobj->duration,
 					    border => 24 );
   my $count = 0;
   while (my $row = $sth->fetchrow_hashref) {
@@ -1052,10 +1040,8 @@ sub realize {
   benchmark_point("nreq_latency.png");
 
   $sth = $qobj->nreq_response_histogram();
-  $graph = new ReportLatency::StackedGraph( width => $self->width,
-					      height => $self->height,
-					      duration => $qobj->duration,
-					      border => 24 );
+  $graph = new ReportLatency::StackedGraph( duration => $qobj->duration,
+					    border => 24 );
   $count = 0;
   while (my $row = $sth->fetchrow_hashref) {
     $count += $graph->add_row($row);
@@ -1071,9 +1057,7 @@ sub realize {
   benchmark_point("nreq_error.png");
 
   $sth = $qobj->ureq_latency_histogram();
-  $graph = new ReportLatency::StackedGraph( width => $self->width,
-					    height => $self->height,
-					    duration => $qobj->duration,
+  $graph = new ReportLatency::StackedGraph( duration => $qobj->duration,
 					    border => 24 );
   $count = 0;
   while (my $row = $sth->fetchrow_hashref) {
@@ -1089,9 +1073,7 @@ sub realize {
   benchmark_point("ureq_latency.png");
 
   $sth = $qobj->ureq_response_histogram();
-  $graph = new ReportLatency::StackedGraph( width => $self->width,
-					    height => $self->height,
-					    duration => $qobj->duration,
+  $graph = new ReportLatency::StackedGraph( duration => $qobj->duration,
 					    border => 24 );
   $count = 0;
   while (my $row = $sth->fetchrow_hashref) {

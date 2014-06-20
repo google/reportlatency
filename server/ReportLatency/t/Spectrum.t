@@ -29,7 +29,7 @@ my $spectrum = new ReportLatency::Spectrum( logarithmic => 0 );
 isa_ok($spectrum, 'ReportLatency::Spectrum');
 can_ok($spectrum, qw( add png ));
 
-is($spectrum->width(),1000,"default width()");
+is($spectrum->width(),500,"default width()");
 is($spectrum->height(),250,"default height()");
 is($spectrum->duration(),14*24*3600,"default duration()");
 is($spectrum->ceiling(),30000,"default ceiling()");

@@ -26,7 +26,7 @@ sub new {
   my $class = shift;
   my %p = @_;
 
-  $p{width} = 1000 unless exists $p{width};
+  $p{width} = 500 unless exists $p{width};
   $p{height} = 250 unless exists $p{height};
   $p{duration} = 14 * 24 * 3600 unless exists $p{duration};
   $p{border} = 0 unless exists $p{border};
@@ -45,12 +45,12 @@ sub new {
 
 sub width {
   my ($self) = @_;
-  return $self->{width};
+  return int(($self->{width} - 2 * $self->{border}) / $self->{smooth});
 }
 
 sub height {
   my ($self) = @_;
-  return $self->{height};
+  return $self->{height} - 2 * $self->{border};
 }
 
 sub duration {
@@ -69,9 +69,9 @@ sub duration_begin {
 
 sub _x {
   my ($self,$timestamp) = @_;
-  my $x = $self->{width} -1
+  my $x = $self->width -1
     - round(($self->duration_end - $timestamp) *
-	    $self->{width} / $self->duration);
+	    $self->width / $self->duration);
   return undef if ($x<0);
   return $x;
 }
@@ -142,8 +142,8 @@ sub img() {
 
   return $self->{graph} if defined $self->{graph};
 
-  my $w = $self->{width}*$self->{smooth} + 2 * $self->{border};
-  my $h = $self->{height} + 2 * $self->{border};
+  my $w = $self->{width};
+  my $h = $self->{height};
   my $graph = new GD::Graph::area($w,$h) or die $!;
   $self->{graph} = $graph;
 

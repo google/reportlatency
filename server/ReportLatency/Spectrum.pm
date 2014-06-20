@@ -26,7 +26,7 @@ sub new {
   my $class = shift;
   my %p = @_;
 
-  $p{width} = 1000 unless exists $p{width};
+  $p{width} = 500 unless exists $p{width};
   $p{height} = 250 unless exists $p{height};
   $p{duration} = 14 * 24 * 3600 unless exists $p{duration};
   $p{ceiling} = 30000 unless exists $p{ceiling};
