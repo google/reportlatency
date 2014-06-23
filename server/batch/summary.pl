@@ -29,53 +29,6 @@ use Pod::Usage;
 use strict;
 
 my $days=14;
-my $hours=0.5;
-
-my $interval = $hours * 3600;
-
-my $nav_ceiling = 30000; # 30s max for navigation images
-my $nreq_ceiling = 30000; # 30s max for navigation request images
-my $ureq_ceiling = 500000; # 300s max for update request images
-my $req_floor = 10; # 30ms min for request images
-
-sub user_agents {
-  my ($qobj) = @_;
-  my $sth = $qobj->extension_version_histogram();
-
-  my $graph = new ReportLatency::StackedGraph( width => 400,
-					      height => 200,
-					      duration => $ReportLatency::utils::duration,
-					      border => 24 );
-  
-  while (my $row = $sth->fetchrow_hashref) {
-    $graph->add_row($row);
-  }
-
-  my $png = new ReportLatency::AtomicFile("tags/summary/useragents.png");
-  print $png $graph->img()->png();
-  close($png);
-
-  benchmark_point("useragents.png");
-}
-
-sub extensions {
-  my ($qobj) = @_;
-  my $sth = $qobj->extension_version_histogram();
-
-  my $graph = new ReportLatency::StackedGraph( width => 400,
-					      height => 200,
-					      duration => $ReportLatency::utils::duration,
-					      border => 24 );
-  
-  while (my $row = $sth->fetchrow_hashref) {
-    $graph->add_row($row);
-  }
-
-  my $png = new ReportLatency::AtomicFile("tags/summary/extensions.png");
-  print $png $graph->img()->png();
-  close($png);
-  benchmark_point("extensions.png");
-}
 
 
 
@@ -100,13 +53,11 @@ sub main() {
   my $view = new ReportLatency::StaticView($store);
 
   my $t = time;
-  my $begin = $store->db_timestamp($t - $ReportLatency::utils::duration);
+  my $begin = $store->db_timestamp($t - $days * 24 * 3600);
   my $end = $store->db_timestamp($t);
   my $summary = new ReportLatency::Summary($store, $begin, $end);
 
   $view->realize($summary,"tags/summary");
-  user_agents($summary);
-  extensions($summary);
 
   $dbh->rollback() ||
     die "Unable to rollback, but there should be no changes anyway";

@@ -49,17 +49,13 @@ sub extension_version {
   return $sth;
 }
 
-sub extension_version_histogram {
+sub extension_version_histogram_select {
   my ($self) = @_;
   my $dbh = $self->{store}->{dbh};
-  my $sth =
-    $dbh->prepare('SELECT ' .
-		  $self->{store}->unix_timestamp('timestamp') .
-		  ' AS timestamp,' .
-		  'version AS measure,1 AS amount' .
-                  ' FROM current;') or die "prepare failed";
-  $sth->execute() or die $sth->errstr;
-  return $sth;
+  my $ts = $self->{store}->unix_timestamp('timestamp');
+  return <<EOS;
+SELECT $ts AS timestamp,version AS measure,1 AS amount FROM current;
+EOS
 }
 
 sub user_agent {
@@ -75,17 +71,13 @@ sub user_agent {
   return $sth;
 }
 
-sub user_agent_histogram {
+sub useragent_histogram_select {
   my ($self) = @_;
   my $dbh = $self->{store}->{dbh};
-  my $sth =
-    $dbh->prepare('SELECT ' .
-		  $self->{store}->unix_timestamp('timestamp') .
-		  ' AS timestamp,' .
-		  'user_agent AS measure,1 AS amount' .
-                  ' FROM current;') or die "prepare failed";
-  $sth->execute() or die $sth->errstr;
-  return $sth;
+  my $ts = $self->{store}->unix_timestamp('timestamp');
+  return <<EOS;
+SELECT $ts AS timestamp,user_agent AS measure,1 AS amount FROM current;
+EOS
 }
 
 1;

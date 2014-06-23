@@ -127,7 +127,7 @@ $row = $sth->fetchrow_hashref;
 is($row, undef, 'last extension_version row');
 
 
-$sth = $qobj->user_agent_histogram();
+$sth = $qobj->useragent_histogram();
 for (my $i=0; $i<3; $i++) {
   $row = $sth->fetchrow_hashref;
   is($row->{measure}, undef, 'undef user_agent');

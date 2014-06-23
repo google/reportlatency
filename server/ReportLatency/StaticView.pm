@@ -1088,6 +1088,41 @@ sub realize {
   }
   benchmark_point("ureq_error.png");
 
+
+  $sth = $qobj->useragent_histogram();
+  $graph = new ReportLatency::StackedGraph( width => 400,
+					      height => 200,
+					      duration => $qobj->duration,
+					      border => 24 );
+  $count = 0;
+  while (my $row = $sth->fetchrow_hashref) {
+    $count += $graph->add_row($row);
+  }
+  if ($count > 0) {
+    $png = new ReportLatency::AtomicFile("$dir/useragents.png");
+    print $png $graph->img()->png();
+    close($png);
+  }
+  benchmark_point("useragents.png");
+
+
+  $sth = $qobj->extension_version_histogram();
+  $graph = new ReportLatency::StackedGraph( width => 400,
+					      height => 200,
+					      duration => $qobj->duration,
+					      border => 24 );
+  $count = 0;
+  while (my $row = $sth->fetchrow_hashref) {
+    $count += $graph->add_row($row);
+  }
+  if ($count > 0) {
+    $png = new ReportLatency::AtomicFile("$dir/extensions.png");
+    print $png $graph->img()->png();
+    close($png);
+  }
+  benchmark_point("extensions.png");
+
+
   my $html = new ReportLatency::AtomicFile("$dir/index.html");
   print $html $self->report_html($qobj);
   close($html);

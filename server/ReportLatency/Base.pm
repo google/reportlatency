@@ -320,4 +320,37 @@ sub ureq_response_histogram {
   return $sth;
 }
 
+sub null_query {
+  return 'SELECT NULL AS timestamp WHERE NULL!=NULL;';
+}
+
+sub extension_version_histogram_select {
+  my ($self) = @_;
+  return $self->null_query;
+}
+
+sub extension_version_histogram {
+  my ($self) = @_;
+
+  my $dbh = $self->{store}->{dbh};
+  my $sth =
+    $dbh->prepare($self->extension_version_histogram_select)
+      or die $!;
+  $sth->execute() or die $sth->errstr;
+  return $sth;
+}
+
+sub useragent_histogram_select {
+  my ($self) = @_;
+  return $self->null_query;
+}
+
+sub useragent_histogram {
+  my ($self) = @_;
+  my $dbh = $self->{store}->{dbh};
+  my $sth = $dbh->prepare($self->useragent_histogram_select) or die $!;
+  $sth->execute() or die $sth->errstr;
+  return $sth;
+}
+
 1;
