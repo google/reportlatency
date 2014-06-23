@@ -48,7 +48,6 @@ sub main() {
   }
 
   my $store = new ReportLatency::Store( dsn => latency_dsn('backup') );
-  my $dbh = $store->{dbh};
 
   my $view = new ReportLatency::StaticView($store);
 
@@ -58,9 +57,6 @@ sub main() {
   my $summary = new ReportLatency::Summary($store, $begin, $end);
 
   $view->realize($summary,"tags/summary");
-
-  $dbh->rollback() ||
-    die "Unable to rollback, but there should be no changes anyway";
 
   if ($options{'verbose'}) {
     benchmark_end();
