@@ -16,14 +16,9 @@
 
 
 use ReportLatency::utils;
-use ReportLatency::AtomicFile;
-use ReportLatency::Spectrum;
-use ReportLatency::StackedGraph;
 use ReportLatency::StaticView;
 use ReportLatency::Store;
 use ReportLatency::Summary;
-use DBI;
-use GD;
 use Getopt::Long;
 use Pod::Usage;
 use strict;

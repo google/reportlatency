@@ -17,6 +17,9 @@ package ReportLatency::StaticView;
 
 use strict;
 use vars qw($VERSION);
+use ReportLatency::AtomicFile;
+use ReportLatency::Spectrum;
+use ReportLatency::StackedGraph;
 use ReportLatency::utils;
 use IO::String;
 use URI::Escape;
