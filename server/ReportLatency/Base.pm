@@ -40,11 +40,14 @@ sub duration {
   return $store->db_to_unix($self->{end}) - $store->db_to_unix($self->{begin});
 }
 
-sub nav_latency_select {
+sub latency_select {
   return 'SELECT NULL AS timestamp, NULL AS count, NULL AS high, ' .
-    'NULL AS low, NULL AS total ' .
-    'FROM navigation n, current u ' .
-    'WHERE n.upload=u.id;';
+    'NULL AS low, NULL AS total;';
+}
+
+sub nav_latency_select {
+  my ($self) = @_;
+  return $self->latency_select('navigation');
 }
 
 sub nav_latencies {
@@ -56,10 +59,8 @@ sub nav_latencies {
 }
 
 sub nreq_latency_select {
-  return 'SELECT NULL AS timestamp, NULL AS count, NULL AS high, ' .
-    'NULL AS low, NULL AS total ' .
-    'FROM navigation_request r, current u ' .
-    'WHERE r.upload=u.id;';
+  my ($self) = @_;
+  return $self->latency_select('navigation_request');
 }
 
 sub nreq_latencies {
@@ -71,10 +72,8 @@ sub nreq_latencies {
 }
 
 sub ureq_latency_select {
-  return 'SELECT NULL AS timestamp, NULL AS count, NULL AS high, ' .
-    'NULL AS low, NULL AS total ' .
-    'FROM update_request r, current u ' .
-    'WHERE r.upload=u.id;';
+  my ($self) = @_;
+  return $self->latency_select('update_request');
 }
 
 sub ureq_latencies {
