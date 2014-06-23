@@ -33,10 +33,14 @@ sub main() {
   my $r = GetOptions(\%options,
 		     'help|?',
 		     'man',
+		     'days=i',
 		     'verbose')
     or pod2usage(2);
   pod2usage(-verbose => 2) if $options{'man'};
   pod2usage(1) if $options{'help'};
+
+  
+  $days = $options{'days'} if ($options{'days'});
 
   if ($options{'verbose'}) {
     benchmark_start();
