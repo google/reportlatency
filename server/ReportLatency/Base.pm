@@ -42,7 +42,7 @@ sub duration {
 
 sub latency_select {
   return 'SELECT NULL AS timestamp, NULL AS count, NULL AS high, ' .
-    'NULL AS low, NULL AS total;';
+    'NULL AS low, NULL AS total WHERE NULL!=NULL;';
 }
 
 sub nav_latency_select {
