@@ -37,12 +37,28 @@ sub DESTROY {
 sub duration {
   my $self = shift;
   my $store = $self->{store};
-  return $store->db_to_unix($self->{end}) - $store->db_to_unix($self->{begin});
+  return $self->end - $self->begin;
+}
+
+sub begin {
+  my $self = shift;
+  my $store = $self->{store};
+  return $store->db_to_unix($self->{begin});
+}
+
+sub end {
+  my $self = shift;
+  my $store = $self->{store};
+  return $store->db_to_unix($self->{end});
+}
+
+sub null_query {
+  return 'SELECT NULL AS timestamp WHERE NULL!=NULL;';
 }
 
 sub latency_select {
-  return 'SELECT NULL AS timestamp, NULL AS count, NULL AS high, ' .
-    'NULL AS low, NULL AS total WHERE NULL!=NULL;';
+  my $self = shift;
+  return $self->null_query;
 }
 
 sub nav_latency_select {
@@ -318,10 +334,6 @@ sub ureq_response_histogram {
       or die $!;
   $sth->execute() or die $sth->errstr;
   return $sth;
-}
-
-sub null_query {
-  return 'SELECT NULL AS timestamp WHERE NULL!=NULL;';
 }
 
 sub extension_version_histogram_select {
