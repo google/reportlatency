@@ -19,7 +19,7 @@
 use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
-use Test::More tests => 33;
+use Test::More tests => 37;
 use Data::Dumper;
 
 BEGIN { use lib '..'; }
@@ -123,3 +123,11 @@ $sth = $qobj->useragent_histogram();
 $row = $sth->fetchrow_hashref;
 is($row, undef, 'last user_agent row');
 
+$sth = $qobj->useragent_histogram();
+$row = $sth->fetchrow_hashref;
+is($row, undef, 'last user_agent row');
+
+$row = $qobj->meta();
+is($row->{nav_count}, 2, '2 meta nav_count');
+is($row->{nreq_count}, 3, '3 meta nreq_count');
+is($row->{ureq_count}, 10, '10 meta ureq_count');

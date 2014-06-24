@@ -47,17 +47,18 @@ sub meta_select {
   my ($self) = @_;
   my $store = $self->{store};
   my $fields = $store->common_aggregate_fields();
-  return <<EOS;
+  my $st = <<EOS;
 SELECT 'total' AS tag,
 min(min_timestamp) AS min_timestamp,
 max(max_timestamp) AS max_timestamp,
-count(distinct service) AS services,
+count(distinct r.service) AS services,
 $fields
 FROM service_report AS r
 LEFT OUTER JOIN tag t
-ON r.service = t.service
-AND t.tag IS NULL;
+ON t.service = r.service
+WHERE t.tag IS NULL;
 EOS
+  return $st;
 }
 
 1;

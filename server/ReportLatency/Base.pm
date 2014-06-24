@@ -121,10 +121,11 @@ sub meta {
   if (!defined $self->{meta}) {
     my $store = $self->{store};
     $store->create_service_report_temp_table();
+
+
     my $dbh = $store->{dbh};
 
-    my $rowref = $dbh->selectrow_hashref($self->meta_select) or die $!;
-    $self->{meta} = $rowref;
+    $self->{meta} = $dbh->selectrow_hashref($self->meta_select) or die $!;
   }
 
   return $self->{meta};

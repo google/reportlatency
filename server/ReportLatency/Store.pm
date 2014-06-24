@@ -901,7 +901,6 @@ sub create_current_temp_table {
 	$self->{begin} eq $begin && $self->{end} eq $end)) {
     my $sth = $self->{current};
     if (defined $self->{current_rows}) {
-      print STDERR "Dropping current\n";
       $dbh->do("DROP TABLE current;")
 	or die "unable to drop current temp table";
     }
@@ -917,8 +916,7 @@ sub create_service_report_temp_table {
   my $dbh = $self->{dbh};
 
   if (!defined $self->{service_report}) {
-    my $sth =
-      $dbh->prepare( <<EOS ) or die "prepare failed";
+  my $st = <<EOS;
 CREATE TEMP TABLE service_report AS
 SELECT service AS service,
        location AS location,
@@ -1005,7 +1003,9 @@ WHERE update_request.upload=current.id
 GROUP BY service,location
 ;
 EOS
+    my $sth = $dbh->prepare( $st ) or die "prepare failed";
     $self->{service_report} = $sth->execute() or die $sth->errstr;
+
     benchmark_point("CREATE TEMP TABLE service_report");
   }
 }
