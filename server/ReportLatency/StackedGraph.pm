@@ -152,17 +152,21 @@ sub img() {
 	     
   $self->_label_days();
 
-  my (@data);
+  my (@data,@order);
   push(@data,$self->{xlabel});
 
-  if (!defined $self->{order}) {
-    $self->{order} = [ sort keys %{$self->{data}} ];
+  if (defined $self->{order}) {
+    foreach my $measure (@{$self->{order}}) {
+      push(@data,$self->{data}{$measure});
+      push(@order,$measure);
+      delete $self->{data}{$measure};
+    }
   }
-
-  foreach my $measure (@{$self->{order}}) {
+  foreach my $measure (sort keys %{$self->{data}}) {
     push(@data,$self->{data}{$measure});
+    push(@order,$measure);
   }
-  $graph->set_legend(@{$self->{order}});
+  $graph->set_legend(@order);
   my $gd = $graph->plot(\@data) or die $graph->error;
   $self->{img} = $gd;
   $gd;

@@ -20,7 +20,7 @@ use strict;
 use CGI;
 use DBI;
 use File::Temp qw(tempfile tempdir);
-use Test::More tests => 9;
+use Test::More tests => 7;
 use HTML::Tidy;
 use Data::Dumper;
 
@@ -41,24 +41,19 @@ my $dbfile = "$dir/latency.sqlite3";
     while (my $line = $sql->getline) {
       print $sqlite3 $line;
     }
+    print $sqlite3 <<EOF;
+INSERT INTO upload(location) VALUES('office.google.com');
+INSERT INTO navigation(upload,name,service,count,total) VALUES(1,'google.com','google.com',2,1998);
+EOF
     close($sql);
   }
   ok(close($sqlite3),'latency schema');
 }
 
 my $store = new ReportLatency::Store(dsn => "dbi:SQLite:dbname=$dbfile");
-my $dbh = $store->{dbh};
 
 my $view = new ReportLatency::StaticView($store);
 
-
-ok($dbh->do(q{
-  INSERT INTO upload(location) VALUES('office.google.com');
-}), 'INSERT google.com upload');
-
-ok($dbh->do(q{
-  INSERT INTO navigation(upload,name,service,count,total) VALUES(1,'google.com','google.com',2,1998);
-}), 'INSERT google.com report');
 
 my $qobj = new ReportLatency::Summary($store,$store->db_timestamp(time-300),
 				      $store->db_timestamp(time));

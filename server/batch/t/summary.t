@@ -18,7 +18,7 @@
 
 use strict;
 use DBI;
-use Test::More tests => 15;
+use Test::More tests => 12;
 use File::Temp qw(tempfile tempdir);
 
 $ENV{'PATH'} = '/usr/bin';
@@ -40,12 +40,6 @@ my $dbfile="$dir/data/backup.sqlite3";
     }
     close($sql);
   }
-  ok(close($sqlite3),'latency schema');
-}
-
-{
-  open(my $sqlite3,"|-",'sqlite3',$dbfile)
-    or die $!;
   print $sqlite3 <<EOF;
 INSERT INTO upload(location,version,user_agent)
  VALUES('office.google.com.','1.5.4','Chrome 24');
@@ -61,10 +55,9 @@ INSERT INTO navigation(upload,service,count,total) VALUES(3,'service',3,666);
 INSERT INTO navigation(upload,service,count,total) VALUES(3,'slow',1,6666);
 INSERT INTO tag(service,tag) VALUES('service','Company');
 EOF
-
-  ok(close($sqlite3),"latency data added");
-  sleep(1);
+  ok(close($sqlite3),'latency schema');
 }
+
 
 chdir($dir);
 
@@ -84,10 +77,6 @@ ok(unlink("$dir/tags/summary/nav_latency.png"),
    "unlink summary/nav_latency.png");
 ok(unlink("$dir/tags/summary/nav_error.png"),
    "unlink summary/nav_error.png");
-ok(unlink("$dir/tags/summary/ureq_spectrum.png"),
-   "rm summary/ureq_spectrum.png");
-ok(unlink("$dir/tags/summary/nreq_spectrum.png"),
-   "rm summary/nreq_spectrum.png");
 ok(unlink("$dir/tags/summary/extensions.png"),"unlink summary/extensions.png");
 ok(unlink("$dir/tags/summary/useragents.png"),"unlink summary/useragents.png");
 ok(unlink("$dir/tags/summary/index.html"),"unlink summary/index.html");
