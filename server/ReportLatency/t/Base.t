@@ -19,7 +19,7 @@
 use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
-use Test::More tests => 19;
+use Test::More tests => 17;
 use Data::Dumper;
 
 BEGIN { use lib '..'; }
@@ -69,12 +69,9 @@ $row = $sth->fetchrow_hashref;
 is($row, undef, 'last nreq row');
 
 my $meta = $qobj->meta();
-ok($meta, '%meta');
+is($meta, undef, '%meta');
 
 $sth = $qobj->tag();
-$row = $sth->fetchrow_hashref;
-is($row->{tag}, 'untagged', 'tag untagged');
-is($row->{services}, 0, '0 services');
 $row = $sth->fetchrow_hashref;
 is($row, undef, 'last tag row');
 

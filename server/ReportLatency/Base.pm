@@ -103,16 +103,7 @@ sub ureq_latencies {
 
 sub meta_select {
   my ($self) = @_;
-  my $store = $self->{store};
-  my $fields = $store->common_aggregate_fields();
-  return <<EOS;
-SELECT 'total' AS tag,
-min(min_timestamp) AS min_timestamp,
-max(max_timestamp) AS max_timestamp,
-count(distinct service) AS services,
-$fields
-FROM service_report
-EOS
+  return $self->null_query;
 }
 
 sub meta {
@@ -121,11 +112,9 @@ sub meta {
   if (!defined $self->{meta}) {
     my $store = $self->{store};
     $store->create_service_report_temp_table();
-
-
     my $dbh = $store->{dbh};
-
-    $self->{meta} = $dbh->selectrow_hashref($self->meta_select) or die $!;
+    my $st = $self->meta_select;
+    $self->{meta} = $dbh->selectrow_hashref($st);
   }
 
   return $self->{meta};
@@ -134,26 +123,7 @@ sub meta {
 
 sub tag_select {
   my ($self) = @_;
-
-  my $store = $self->{store};
-  my $fields = $store->common_aggregate_fields();
-  return <<EOS;
-SELECT t.tag as tag,
-count(distinct r.service) AS services,
-$fields
-FROM service_report r, tag t
-WHERE r.service = t.service
-GROUP BY t.tag
-UNION
-SELECT 'untagged' AS tag,
-count(distinct r.service) AS services,
-$fields
-FROM service_report r
-LEFT OUTER JOIN tag t ON r.service = t.service
-WHERE t.tag is null
-ORDER BY tag
-;
-EOS
+  return $self->null_query;
 }
 
 sub tag {
