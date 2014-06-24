@@ -28,7 +28,8 @@ sub new {
 
   $p{width} = 500 unless exists $p{width};
   $p{height} = 250 unless exists $p{height};
-  $p{duration} = 14 * 24 * 3600 unless exists $p{duration};
+  $p{end} = time unless exists $p{end};
+  $p{begin} = $p{end} - 14 * 24 * 3600 unless exists $p{begin};
   $p{ceiling} = 30000 unless exists $p{ceiling};
   $p{floor} = 300 unless exists $p{floor};
   $p{logarithmic} = 1 unless exists $p{logarithmic};
@@ -36,7 +37,7 @@ sub new {
 
   my $self  = bless {}, $class;
 
-  foreach my $param (qw( width height border ceiling floor duration
+  foreach my $param (qw( width height border ceiling floor begin end
 			 logarithmic)) {
     $self->{$param} = $p{$param};
   }
@@ -62,7 +63,7 @@ sub height {
 
 sub duration {
   my ($self) = @_;
-  return $self->{duration};
+  return $self->{end} - $self->{begin};
 }
 
 sub ceiling {
@@ -76,12 +77,13 @@ sub maxval {
 }
 
 sub duration_end {
-  return time;
+  my ($self) = @_;
+  return $self->{end};
 }
 
 sub duration_begin {
   my ($self) = @_;
-  return time - $self->{duration};
+  return $self->{begin};
 }
 
 sub _x {

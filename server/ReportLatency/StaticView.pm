@@ -995,21 +995,24 @@ sub realize {
   my $end = $qobj->{end};
 
   my $sth = $qobj->nav_latencies();
-  my $spectrum = new ReportLatency::Spectrum( duration => $qobj->duration,
+  my $spectrum = new ReportLatency::Spectrum( begin => $qobj->begin,
+					      end => $qobj->end,
 					      ceiling => $self->nav_ceiling,
 					      border => 24 );
   $self->realize_graph($sth, $spectrum, $dir, 'nav_spectrum');
 
 
   $sth = $qobj->nreq_latencies();
-  $spectrum = new ReportLatency::Spectrum( duration => $qobj->duration,
+  $spectrum = new ReportLatency::Spectrum( begin => $qobj->begin,
+					   end => $qobj->end,
 					   ceiling => $self->nreq_ceiling,
 					   floor   => $self->req_floor,
 					   border => 24 );
   $self->realize_graph($sth, $spectrum, $dir, 'nreq_spectrum');
 
   $sth = $qobj->ureq_latencies();
-  $spectrum = new ReportLatency::Spectrum( duration => $qobj->duration,
+  $spectrum = new ReportLatency::Spectrum( begin => $qobj->begin,
+					   end => $qobj->end,
 					   ceiling => $self->ureq_ceiling,
 					   floor   => $self->req_floor,
 					   border => 24 );
