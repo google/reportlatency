@@ -36,17 +36,13 @@ sub latency_select {
      $self->{store}->is_positive('n.count') . ';';
 }
 
-sub extension_version {
-  my ($self) = @_;
-  my $dbh = $self->{store}->{dbh};
-  my $sth =
-    $dbh->prepare('SELECT version AS name,count(*) AS value' .
-                  ' FROM current ' .
-                  'GROUP BY version ' .
-		  'ORDER BY version;')
-      or die "prepare failed";
-  $sth->execute() or die $sth->errstr;
-  return $sth;
+sub extension_version_select {
+  return <<EOS;
+SELECT version AS name,count(*) AS value
+FROM current
+GROUP BY version
+ORDER BY version;
+EOS
 }
 
 sub extension_version_histogram_select {
@@ -58,17 +54,13 @@ SELECT $ts AS timestamp,version AS measure,1 AS amount FROM current;
 EOS
 }
 
-sub user_agent {
-  my ($self) = @_;
-  my $dbh = $self->{store}->{dbh};
-  my $sth =
-    $dbh->prepare('SELECT user_agent AS name,count(*) AS value' .
-                  ' FROM current ' .
-                  'GROUP BY user_agent ' .
-		  'ORDER BY user_agent;')
-      or die "prepare failed";
-  $sth->execute() or die $sth->errstr;
-  return $sth;
+sub user_agent_select {
+  return <<EOS;
+SELECT user_agent AS name,count(*) AS value
+FROM current
+GROUP BY user_agent
+ORDER BY user_agent;
+EOS
 }
 
 sub useragent_histogram_select {

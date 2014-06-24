@@ -16,124 +16,50 @@
 
 
 use ReportLatency::utils;
-use ReportLatency::AtomicFile;
-use ReportLatency::Spectrum;
 use ReportLatency::StaticView;
 use ReportLatency::Store;
-use DBI;
-use GD;
+use ReportLatency::Untagged;
 use Getopt::Long;
 use Pod::Usage;
 use strict;
 
 my $days=14;
-my $hours=0.5;
-my $width=$days*24/$hours;
-my $height=int($width/2);
 
-my $navwidth = $width;
-my $navheight = $height;
-
-my $reqwidth = 3*$width/4;
-my $reqheight = 3*$height/4;
-
-my $duration = $days * 86400;
-my $interval = $hours * 3600;
-my $border=24;
-
-my $nav_ceiling = 30000; # 30s max for navigation images
-my $nreq_ceiling = 30000; # 30s max for navigation request images
-my $ureq_ceiling = 500000; # 300s max for update request images
-my $req_floor = 10; # 30ms min for request images
-
-sub untagged_report {
-  my ($view,$options) = @_;
-
-  my $report = new ReportLatency::AtomicFile("tags/untagged/index.html");
-  print $report $view->untagged_html();
-  close($report);
-}
-
-sub untagged_graph {
-  my ($store,$options) = @_;
-
-  my $dbh = $store->{dbh};
-  my $sth = $store->untagged_nav_latencies_sth;
-  my $latency_rc = $sth->execute(-$duration . " seconds", '0 seconds');
-  my $spectrum = new ReportLatency::Spectrum( width => $navwidth,
-					      height => $navheight,
-					      duration => $duration,
-					      ceiling => $nav_ceiling,
-					      border => 24 );
-  while (my $row = $sth->fetchrow_hashref) {
-    $spectrum->add_row($row);
-  }
-
-  my $png = new ReportLatency::AtomicFile("tags/untagged/navigation.png");
-  print $png $spectrum->png();
-  close($png);
-
-
-  $sth = $store->untagged_nreq_latencies_sth();
-
-  $latency_rc = $sth->execute(-$duration . " seconds", '0 seconds');
-
-  $spectrum = new ReportLatency::Spectrum( width => $reqwidth,
-					   height => $reqheight,
-					   duration => $duration,
-					   ceiling => $nreq_ceiling,
-					   floor   => $req_floor,
-					   border => 24 );
-
-  while (my $row = $sth->fetchrow_hashref) {
-    $spectrum->add_row($row);
-  }
-
-  $png = new ReportLatency::AtomicFile("tags/untagged/nav_request.png");
-  print $png $spectrum->png();
-  close($png);
-
-
-  $sth = $store->untagged_ureq_latencies_sth();
-
-  $latency_rc = $sth->execute(-$duration . " seconds", '0 seconds');
-
-  $spectrum = new ReportLatency::Spectrum( width => $reqwidth,
-					   height => $reqheight,
-					   duration => $duration,
-					   ceiling => $ureq_ceiling,
-					   floor   => $req_floor,
-					   border => 24 );
-
-  while (my $row = $sth->fetchrow_hashref) {
-    $spectrum->add_row($row);
-  }
-
-  $png = new ReportLatency::AtomicFile("tags/untagged/update_request.png");
-  print $png $spectrum->png();
-  close($png);
-}
 
 
 sub main() {
+
   my %options;
   my $r = GetOptions(\%options,
 		     'help|?',
-		     'man')
+		     'man',
+		     'days=i',
+		     'verbose')
     or pod2usage(2);
   pod2usage(-verbose => 2) if $options{'man'};
   pod2usage(1) if $options{'help'};
 
+  
+  $days = $options{'days'} if ($options{'days'});
+
+  if ($options{'verbose'}) {
+    benchmark_start();
+  }
+
   my $store = new ReportLatency::Store( dsn => latency_dsn('backup') );
-  my $dbh = $store->{dbh};
 
   my $view = new ReportLatency::StaticView($store);
 
-  untagged_graph($store,\%options);
-  untagged_report($view,\%options);
+  my $t = time;
+  my $begin = $store->db_timestamp($t - $days * 24 * 3600);
+  my $end = $store->db_timestamp($t);
+  my $queries = new ReportLatency::Untagged($store, $begin, $end);
 
-  $dbh->rollback() ||
-    die "Unable to rollback, but there should be no changes anyway";
+  $view->realize($queries,"tags/untagged");
+
+  if ($options{'verbose'}) {
+    benchmark_end();
+  }
 }
 
 main() unless caller();
@@ -142,7 +68,7 @@ __END__
 
 =head1 NAME
 
-untagged.pl - generate the untagged latency report from a sqlite database
+summary.pl - generate summary total latency spectrum graphs and tables from a sqlite database
 
 =head1 SYNOPSIS
 
@@ -152,11 +78,12 @@ ls -l latency.sqlite3
 
 cd ../www
 
-untagged.pl
+summary.pl
 
  Options:
    -help      brief help message
    -man       full documentation
+   -verbose   steps and timings
 
 =head1 OPTIONS
 
@@ -169,6 +96,10 @@ Print a brief help message and exits.
 =item B<-man>
 
 Prints the manual page and exits.
+
+=item B<-verbose>
+
+Time taken for each step of the batch job
 
 =back
 

@@ -366,4 +366,31 @@ sub useragent_histogram {
   return $sth;
 }
 
+sub user_agent_select {
+  my ($self) = @_;
+  $self->null_query;
+}
+
+sub user_agent {
+  my ($self) = @_;
+  my $dbh = $self->{store}->{dbh};
+  my $sth =
+    $dbh->prepare($self->user_agent_select) or die $!;
+  $sth->execute() or die $sth->errstr;
+  return $sth;
+}
+
+sub extension_version_select {
+  my ($self) = @_;
+  $self->null_query;
+}
+
+sub extension_version {
+  my ($self) = @_;
+  my $dbh = $self->{store}->{dbh};
+  my $sth = $dbh->prepare($self->extension_version_select) or die $!;
+  $sth->execute() or die $sth->errstr;
+  return $sth;
+}
+
 1;
