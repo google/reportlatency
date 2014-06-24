@@ -969,8 +969,9 @@ sub realize_graph {
   
 sub realize_stacked_graph {
   my ($self, $sth, $qobj, $dir, $name) = @_;
-  my $graph = new ReportLatency::StackedGraph( duration => $qobj->duration,
-					      border => 24 );
+  my $graph = new ReportLatency::StackedGraph( begin => $qobj->begin,
+					       end => $qobj->end,
+					       border => 24 );
   my $count = 0;
   while (my $row = $sth->fetchrow_hashref) {
     $count += $graph->add_row($row);

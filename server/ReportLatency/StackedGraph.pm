@@ -28,13 +28,14 @@ sub new {
 
   $p{width} = 500 unless exists $p{width};
   $p{height} = 250 unless exists $p{height};
-  $p{duration} = 14 * 24 * 3600 unless exists $p{duration};
+  $p{end} = time unless exists $p{end};
+  $p{begin} = $p{end} - 14 * 24 * 3600 unless exists $p{begin};
   $p{border} = 0 unless exists $p{border};
   $p{smooth} = 4 unless exists $p{smooth};
 
   my $self  = bless {}, $class;
 
-  foreach my $param (qw( width height border duration smooth )) {
+  foreach my $param (qw( width height border begin end smooth )) {
     $self->{$param} = $p{$param};
   }
 
@@ -55,16 +56,17 @@ sub height {
 
 sub duration {
   my ($self) = @_;
-  return $self->{duration};
+  return $self->{end} - $self->{begin};
 }
 
 sub duration_end {
-  return time;
+  my ($self) = @_;
+  return $self->{end};
 }
 
 sub duration_begin {
   my ($self) = @_;
-  return time - $self->{duration};
+  return $self->{begin};
 }
 
 sub _x {
@@ -78,12 +80,7 @@ sub _x {
 
 sub reorder {
   my ($self,@neworder) = @_;
-  $self->{order} = [];
-  foreach my $measure (@neworder) {
-    if (defined $self->{data}{$measure}) {
-      push(@{$self->{order}}, $measure);
-    }
-  }
+  $self->{order} = \@neworder;
 }
 
 sub add {
@@ -157,9 +154,11 @@ sub img() {
 
   if (defined $self->{order}) {
     foreach my $measure (@{$self->{order}}) {
-      push(@data,$self->{data}{$measure});
-      push(@order,$measure);
-      delete $self->{data}{$measure};
+      if (defined $self->{data}{$measure}) {
+	push(@data,$self->{data}{$measure});
+	push(@order,$measure);
+	delete $self->{data}{$measure};
+      }
     }
   }
   foreach my $measure (sort keys %{$self->{data}}) {
