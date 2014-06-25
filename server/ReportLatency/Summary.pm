@@ -110,4 +110,19 @@ ORDER BY tag
 EOS
 }
 
+sub location_select {
+  my ($self) = @_;
+
+  my $store = $self->{store};
+  my $fields = $store->common_aggregate_fields();
+  return <<EOS;
+SELECT location,
+count(distinct service) AS services,
+$fields
+FROM service_report r
+GROUP BY location
+ORDER BY location;
+EOS
+}
+
 1;
