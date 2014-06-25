@@ -324,6 +324,8 @@ sub report_html {
   my $tag_sth = $qobj->tag();
   benchmark_point("tag_sth opened()");
   my $location_sth = $qobj->location();
+  my $tagtitle = $qobj->tagtitle;
+
   benchmark_point("location_sth opened()");
 
   my $image_prefix = $self->tag_img_prefix('summary');
@@ -341,7 +343,7 @@ sub report_html {
 
   my $tag_header = <<EOF;
 <tr>
- <th colspan=2> Tag </th>
+ <th colspan=2> $tagtitle </th>
 $header_1
 </tr>
 <tr>

@@ -21,6 +21,10 @@ use vars qw($VERSION);
 
 $VERSION     = 0.1;
 
+sub tagtitle {
+  return "Service";
+}
+
 sub latency_select {
   my ($self,$latency) = @_;
   my $store = $self->{store};

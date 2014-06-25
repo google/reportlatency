@@ -145,6 +145,10 @@ sub location_select {
   return $self->null_query;
 }
 
+sub tagtitle {
+  return "";
+}
+
 sub location {
   my ($self) = @_;
 
