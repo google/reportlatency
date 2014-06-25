@@ -65,4 +65,23 @@ EOS
   return $st;
 }
 
+sub tag_select {
+  my ($self) = @_;
+
+  my $store = $self->{store};
+  my $fields = $store->common_aggregate_fields();
+  return <<EOS;
+SELECT r.service as tag,
+count(distinct r.name) AS services,
+$fields
+FROM service_report r
+LEFT OUTER JOIN tag t
+ON r.service = t.service
+WHERE t.tag IS NULL
+GROUP BY r.service
+ORDER BY r.service
+;
+EOS
+}
+
 1;

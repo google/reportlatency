@@ -919,6 +919,7 @@ sub create_service_report_temp_table {
   my $st = <<EOS;
 CREATE TEMP TABLE service_report AS
 SELECT service AS service,
+       name AS name,
        location AS location,
        min(timestamp) AS min_timestamp,
        max(timestamp) AS max_timestamp,
@@ -944,9 +945,10 @@ SELECT service AS service,
        NULL AS ureq_500
 FROM navigation, current
 WHERE navigation.upload=current.id
-GROUP BY service,location
+GROUP BY service,name,location
 UNION
 SELECT service AS service,
+       name AS name,
        location AS location,
        min(timestamp) AS min_timestamp,
        max(timestamp) AS max_timestamp,
@@ -975,6 +977,7 @@ WHERE navigation_request.upload=current.id
 GROUP BY service,location
 UNION
 SELECT service AS service,
+       name AS name,
        location AS location,
         min(timestamp) AS min_timestamp,
         max(timestamp) AS max_timestamp,
@@ -1000,7 +1003,7 @@ SELECT service AS service,
 	sum(response500) AS ureq_500
 FROM update_request, current
 WHERE update_request.upload=current.id
-GROUP BY service,location
+GROUP BY service,name,location
 ;
 EOS
     my $sth = $dbh->prepare( $st ) or die "prepare failed";
