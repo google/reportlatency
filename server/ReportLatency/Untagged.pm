@@ -84,4 +84,22 @@ ORDER BY r.service
 EOS
 }
 
+sub location_select {
+  my ($self) = @_;
+
+  my $store = $self->{store};
+  my $fields = $store->common_aggregate_fields();
+  return <<EOS;
+SELECT location,
+count(distinct r.service) AS services,
+$fields
+FROM service_report r
+LEFT OUTER JOIN tag t
+ON r.service = t.service
+WHERE t.tag IS NULL
+GROUP BY location
+ORDER BY location;
+EOS
+}
+
 1;
