@@ -19,7 +19,7 @@
 use strict;
 use DBI;
 use File::Temp qw(tempfile tempdir);
-use Test::More tests => 37;
+use Test::More tests => 34;
 use Data::Dumper;
 
 BEGIN { use lib '..'; }
@@ -114,18 +114,6 @@ is($rows, 1, '1 total ureq latency rows');
 is($count, 10, '10 total ureq count');
 is($total, 2220, '2220 ms total ureq latency');
 
-$sth = $qobj->extension_version_histogram();
-$row = $sth->fetchrow_hashref;
-is($row, undef, 'last extension_version row');
-
-
-$sth = $qobj->useragent_histogram();
-$row = $sth->fetchrow_hashref;
-is($row, undef, 'last user_agent row');
-
-$sth = $qobj->useragent_histogram();
-$row = $sth->fetchrow_hashref;
-is($row, undef, 'last user_agent row');
 
 $row = $qobj->meta();
 is($row->{nav_count}, 2, '2 meta nav_count');

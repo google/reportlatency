@@ -436,7 +436,12 @@ EOF
   print $io <<EOF;
 </table>
 
+EOF
 
+  if ($qobj->can('user_agent') &&
+      $qobj->can('extension_version')) {
+
+    print $io <<EOF;
 <h2> Client Summary </h2>
     <div id="left_column">
 <img src="${image_prefix}useragents.png" alt="user_agent distribution over time"><br>
@@ -444,16 +449,16 @@ EOF
         <tr> <th>User Agent</th> <th>Uploads</th> </tr>
 EOF
 
-  benchmark_point("start user_agent_sth");
-  my $user_agent_sth = $qobj->user_agent;
-  while (my $ua = $user_agent_sth->fetchrow_hashref) {
-    print $io $self->name_value_row($ua);
-  }
-  $user_agent_sth->finish;
+    benchmark_point("start user_agent_sth");
+    my $user_agent_sth = $qobj->user_agent;
+    while (my $ua = $user_agent_sth->fetchrow_hashref) {
+      print $io $self->name_value_row($ua);
+    }
+    $user_agent_sth->finish;
 
-  benchmark_point("end user_agent_sth");
+    benchmark_point("end user_agent_sth");
 
-print $io <<EOF;
+    print $io <<EOF;
       </table>
     </div>
     <div id="right_column">
@@ -462,19 +467,20 @@ print $io <<EOF;
         <tr> <th>Extension Version</th> <th>Uploads</th> </tr>
 EOF
 
-  benchmark_point("start extension_version_sth");
-  my $extension_version_sth = $qobj->extension_version;
-  while (my $v = $extension_version_sth->fetchrow_hashref) {
-    print $io $self->name_value_row($v);
-  }
-  $extension_version_sth->finish;
+    benchmark_point("start extension_version_sth");
+    my $extension_version_sth = $qobj->extension_version;
+    while (my $v = $extension_version_sth->fetchrow_hashref) {
+      print $io $self->name_value_row($v);
+    }
+    $extension_version_sth->finish;
 
-  benchmark_point("end extension_version_sth");
+    benchmark_point("end extension_version_sth");
 
-print $io <<EOF;
+    print $io <<EOF;
       </table>
     </div>
 EOF
+  }
 
   print $io meta_timestamp_html($meta);
 
@@ -1051,11 +1057,15 @@ sub realize {
   $sth = $qobj->ureq_response_histogram();
   $self->realize_stacked_graph($sth, $qobj, $dir, 'ureq_error');
 
-  $sth = $qobj->useragent_histogram();
-  $self->realize_stacked_graph($sth, $qobj, $dir, 'useragents');
+  if ($qobj->can('useragent_histogram')) {
+    $sth = $qobj->useragent_histogram();
+    $self->realize_stacked_graph($sth, $qobj, $dir, 'useragents');
+  }
 
-  $sth = $qobj->extension_version_histogram();
-  $self->realize_stacked_graph($sth, $qobj, $dir, 'extensions');
+  if ($qobj->can('extension_version_histogram')) {
+    $sth = $qobj->extension_version_histogram();
+    $self->realize_stacked_graph($sth, $qobj, $dir, 'extensions');
+  }
 
   my $html = new ReportLatency::AtomicFile("$dir/index.html");
   print $html $self->report_html($qobj);

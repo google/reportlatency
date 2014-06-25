@@ -127,4 +127,40 @@ ORDER BY location;
 EOS
 }
 
+
+sub extension_version_histogram {
+  my ($self) = @_;
+  my $dbh = $self->{store}->{dbh};
+  my $sth =
+    $dbh->prepare($self->extension_version_histogram_select)
+      or die $!;
+  $sth->execute() or die $sth->errstr;
+  return $sth;
+}
+
+sub useragent_histogram {
+  my ($self) = @_;
+  my $dbh = $self->{store}->{dbh};
+  my $sth = $dbh->prepare($self->useragent_histogram_select) or die $!;
+  $sth->execute() or die $sth->errstr;
+  return $sth;
+}
+
+sub user_agent {
+  my ($self) = @_;
+  my $dbh = $self->{store}->{dbh};
+  my $sth =
+    $dbh->prepare($self->user_agent_select) or die $!;
+  $sth->execute() or die $sth->errstr;
+  return $sth;
+}
+
+sub extension_version {
+  my ($self) = @_;
+  my $dbh = $self->{store}->{dbh};
+  my $sth = $dbh->prepare($self->extension_version_select) or die $!;
+  $sth->execute() or die $sth->errstr;
+  return $sth;
+}
+
 1;
