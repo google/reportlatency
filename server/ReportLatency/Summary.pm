@@ -21,9 +21,8 @@ use vars qw($VERSION);
 
 $VERSION     = 0.1;
 
-sub tagtitle {
-  return "Tag";
-}
+sub name_title { return "Tag"; }
+sub count_title { return "Services"; }
 
 sub latency_select {
   my ($self,$latency) = @_;

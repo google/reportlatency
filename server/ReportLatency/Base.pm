@@ -34,6 +34,10 @@ sub DESTROY {
   my $self = shift;
 }
 
+sub name_title { return "Name"; }
+sub count_title { return "Count"; }
+sub meta_count_title { return "Count"; }
+
 sub duration {
   my $self = shift;
   my $store = $self->{store};
@@ -143,10 +147,6 @@ sub tag {
 sub location_select {
   my ($self) = @_;
   return $self->null_query;
-}
-
-sub tagtitle {
-  return "";
 }
 
 sub location {

@@ -324,7 +324,9 @@ sub report_html {
   my $tag_sth = $qobj->tag();
   benchmark_point("tag_sth opened()");
   my $location_sth = $qobj->location();
-  my $tagtitle = $qobj->tagtitle;
+  my $name_title = $qobj->name_title;
+  my $count_title = $qobj->count_title;
+  my $meta_count_title = $qobj->meta_count_title;
 
   benchmark_point("location_sth opened()");
 
@@ -343,11 +345,22 @@ sub report_html {
 
   my $tag_header = <<EOF;
 <tr>
- <th colspan=2> $tagtitle </th>
+ <th colspan=2> $name_title </th>
 $header_1
 </tr>
 <tr>
- <th>Name</th> <th>Services</th>
+ <th>Name</th> <th> $count_title</th>
+$header_2
+</tr>
+EOF
+
+  my $meta_header = <<EOF;
+<tr>
+ <th colspan=2> $name_title </th>
+$header_1
+</tr>
+<tr>
+ <th>Name</th> <th> $meta_count_title</th>
 $header_2
 </tr>
 EOF
@@ -381,7 +394,7 @@ EOF
   $tag_sth->finish;
   benchmark_point("end tag_sth");
 
-  print $io $tag_header;
+  print $io $meta_header;
 
   print $io $self->latency_summary_row('total', '',
 				       $meta->{'services'}, $meta);
@@ -397,7 +410,7 @@ EOF
 $header_1
 </tr>
 <tr>
- <th>Name</th> <th>Services</th>
+ <th>Name</th> <th>$meta_count_title</th>
 $header_2
 </tr>
 EOF
