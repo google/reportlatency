@@ -190,7 +190,7 @@ FROM current AS u, $latency AS n
 WHERE n.upload=u.id AND m2000>0
 UNION
 SELECT utimestamp AS timestamp,'4s' AS measure,m4000 AS amount 
-FROM current AS u, navigation AS n
+FROM current AS u, $latency AS n
 WHERE n.upload=u.id AND m4000>0
 UNION
 SELECT utimestamp AS timestamp, '10s' AS measure,m10000 AS amount 
