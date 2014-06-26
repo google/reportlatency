@@ -357,24 +357,6 @@ sub post {
   }
 }
 
-sub untagged_meta_sth {
-  my ($self,$start,$end) = @_;
-  my $dbh = $self->{dbh};
-  my $sth =
-    $dbh->prepare('SELECT count(distinct r.service) AS services,' .
-		  'min(r.timestamp) AS min_timestamp,' .
-                  'max(r.timestamp) AS max_timestamp,' .
-		  $self->common_aggregate_fields() .
-                  ' FROM report AS r ' .
-                  'LEFT OUTER JOIN tag ' .
-                  'ON r.service = tag.service ' .
-                  "WHERE r.timestamp >= datetime('now','-14 days') " .
-		  'AND tag.tag IS NULL;')
-      or die "prepare failed";
-
-  return $sth;
-}
-
 sub service_nreq_latencies_sth {
   my ($self) = @_;
 
@@ -625,87 +607,6 @@ sub is_positive {
   return $expression;
 }
 
-sub untagged_nav_latencies_sth {
-  my ($self) = @_;
-
-  my $sth = $self->{untagged_nav_latencies_sth};
-  if (! defined $sth) {
-    my $dbh = $self->{dbh};
-    my $statement='SELECT ' .
-      $self->unix_timestamp('u.timestamp') . ' AS timestamp,' .
-      'n.count AS count,' .
-      'n.high AS high,' .
-      'n.low AS low,' .
-      'n.total AS total ' .
-      'FROM navigation n ' .
-      'INNER JOIN upload u ON u.id=n.upload ' .
-      'LEFT OUTER JOIN tag t ON n.service=t.service ' .
-       "WHERE u.timestamp > datetime('now',?) AND " .
-       "u.timestamp <= datetime('now',?) AND " .
-       "t.tag IS NULL AND " .
-       "n.count IS NOT NULL AND n.count != '' AND " .
-       "n.count>0;";
-    $sth = $dbh->prepare($statement) or die $!;
-    $self->{untagged_nav_latencies_sth} = $sth;
-  }
-
-  return $sth;
-}
-
-sub untagged_nreq_latencies_sth {
-  my ($self) = @_;
-
-  my $sth = $self->{untagged_nreq_latencies_sth};
-  if (! defined $sth) {
-    my $dbh = $self->{dbh};
-    my $statement='SELECT ' .
-      $self->unix_timestamp('u.timestamp') . ' AS timestamp,' .
-      'nr.count AS count,' .
-      'nr.high AS high,' .
-      'nr.low AS low,' .
-      'nr.total AS total ' .
-      'FROM navigation_request nr ' .
-      'INNER JOIN upload u ON u.id=nr.upload ' .
-      'LEFT OUTER JOIN tag t ON nr.service=t.service ' .
-       "WHERE u.timestamp > datetime('now',?) AND " .
-       "u.timestamp <= datetime('now',?) AND " .
-       "t.tag IS NULL AND " .
-       "nr.count IS NOT NULL AND nr.count != '' AND " .
-       "nr.count>0;";
-    $sth = $dbh->prepare($statement) or die $!;
-    $self->{untagged_nreq_latencies_sth} = $sth;
-  }
-
-  return $sth;
-}
-
-sub untagged_ureq_latencies_sth {
-  my ($self) = @_;
-
-  my $sth = $self->{untagged_ureq_latencies_sth};
-  if (! defined $sth) {
-    my $dbh = $self->{dbh};
-    my $statement='SELECT ' .
-      $self->unix_timestamp('u.timestamp') . ' AS timestamp,' .
-      'ur.count AS count,' .
-      'ur.high AS high,' .
-      'ur.low AS low,' .
-      'ur.total AS total ' .
-      'FROM update_request ur ' .
-      'INNER JOIN upload u ON u.id=ur.upload ' .
-      'LEFT OUTER JOIN tag t ON ur.service=t.service ' .
-       "WHERE u.timestamp > datetime('now',?) AND " .
-       "u.timestamp <= datetime('now',?) AND " .
-       "t.tag IS NULL AND " .
-       "ur.count IS NOT NULL AND ur.count != '' AND " .
-       "ur.count>0;";
-    $sth = $dbh->prepare($statement) or die $!;
-    $self->{untagged_ureq_latencies_sth} = $sth;
-  }
-
-  return $sth;
-}
-
 sub tag_meta_sth {
   my ($self) = @_;
   my $dbh = $self->{dbh};
@@ -740,26 +641,6 @@ sub tag_service_sth {
       or die "prepare failed";
   return $sth;
 }
-
-sub untagged_service_sth {
-  my ($self) = @_;
-  my $dbh = $self->{dbh};
-  my $sth =
-    $dbh->prepare('SELECT r.service AS service,' .
-                  'count(distinct r.name) AS dependencies,' .
-		  $self->common_aggregate_fields() .
-                  ' FROM report AS r ' .
-		  'LEFT OUTER JOIN tag ' .
-		  'ON r.service = tag.service ' .
-                  'WHERE r.timestamp > ? AND r.timestamp <= ? ' .
-		  'AND tag.tag IS NULL ' .
-                  'GROUP BY r.service ' .
-		  'ORDER BY r.service;')
-      or die "prepare failed";
-  return $sth;
-}
-
-
 
 sub common_aggregate_fields {
   my ($self) = @_;
