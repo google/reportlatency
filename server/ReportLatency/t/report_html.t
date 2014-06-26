@@ -70,5 +70,5 @@ $tidy->clear_messages();
 my ($untagged) = ($summary_html =~ /^(.*untagged.*)$/m);
 like($untagged, qr/999/, '999ms avg untagged nav latency');
 
-my ($total) = ($summary_html =~ /^(.*total.*)$/m);
-like($total, qr/total.*999/, '999ms avg total nav latency');
+my ($total) = ($summary_html =~ /^(.*<td.*Summary.*)$/m);
+like($total, qr/999/, '999ms avg total nav latency');

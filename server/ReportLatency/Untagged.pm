@@ -21,8 +21,10 @@ use vars qw($VERSION);
 
 $VERSION     = 0.1;
 
+sub title { return "untagged"; }
 sub name_title {  return "Service"; }
 sub count_title { return "Depend"; }
+sub meta_count_title { return "Services"; }
 
 
 sub latency_select {

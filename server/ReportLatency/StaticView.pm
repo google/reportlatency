@@ -324,6 +324,7 @@ sub report_html {
   my $tag_sth = $qobj->tag();
   benchmark_point("tag_sth opened()");
   my $location_sth = $qobj->location();
+  my $title = $qobj->title;
   my $name_title = $qobj->name_title;
   my $count_title = $qobj->count_title;
   my $meta_count_title = $qobj->meta_count_title;
@@ -369,7 +370,7 @@ EOF
 <!DOCTYPE html>
 <html>
 <head>
-  <title>ReportLatency summary</title>
+  <title>ReportLatency $title </title>
   <style type="text/css">
 $altstyle
 $twostyle
@@ -377,7 +378,7 @@ $twostyle
 </head>
 <body>
 
-<h1> ReportLatency Summary </h1>
+<h1> ReportLatency $title </h1>
 $image_banner
 
 <table class="alternate" summary="Latency report for all services by tag">
@@ -396,7 +397,7 @@ EOF
 
   print $io $meta_header;
 
-  print $io $self->latency_summary_row('total', '',
+  print $io $self->latency_summary_row($title, '',
 				       $meta->{'services'}, $meta);
 
   print $io <<EOF;

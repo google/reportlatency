@@ -34,6 +34,7 @@ sub DESTROY {
   my $self = shift;
 }
 
+sub title { return "Title"; }
 sub name_title { return "Name"; }
 sub count_title { return "Count"; }
 sub meta_count_title { return "Count"; }
