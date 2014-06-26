@@ -105,4 +105,67 @@ ORDER BY location;
 EOS
 }
 
+sub response_histogram {
+  my ($self,$reqtype) = @_;
+  return <<EOS;
+SELECT utimestamp AS timestamp,
+'closed' AS measure,tabclosed AS amount 
+FROM current AS u
+INNER JOIN $reqtype AS r
+ON r.upload=u.id
+LEFT OUTER JOIN tag t
+ON t.service=r.service
+WHERE tabclosed>0 AND t.tag IS NULL
+UNION
+SELECT utimestamp AS timestamp, '500' AS measure,response500 AS amount 
+FROM current AS u
+INNER JOIN $reqtype AS r ON r.upload=u.id
+LEFT OUTER JOIN tag t ON t.service=r.service
+WHERE response500>0 AND t.tag IS NULL
+UNION
+SELECT utimestamp AS timestamp, '400' AS measure,response400 AS amount 
+FROM current AS u
+INNER JOIN $reqtype AS r ON r.upload=u.id
+LEFT OUTER JOIN tag t ON t.service=r.service
+WHERE response400>0 AND t.tag IS NULL;
+EOS
+}
+
+sub nav_response {
+  return <<EOS;
+SELECT utimestamp AS timestamp,
+'closed' AS measure,tabclosed AS amount 
+FROM current AS u
+INNER JOIN navigation AS r
+ON r.upload=u.id
+LEFT OUTER JOIN tag t
+ON t.service=r.service
+WHERE tabclosed>0 AND t.tag IS NULL
+UNION
+SELECT utimestamp AS timestamp, '500' AS measure,response500 AS amount 
+FROM current AS u
+INNER JOIN navigation AS r
+ON r.upload=u.id
+LEFT OUTER JOIN tag t
+ON t.service=r.service
+WHERE response500>0 AND t.tag IS NULL
+UNION
+SELECT utimestamp AS timestamp, '400' AS measure,response400 AS amount 
+FROM current AS u
+INNER JOIN navigation AS r
+ON r.upload=u.id
+LEFT OUTER JOIN tag t
+ON t.service=r.service
+WHERE response400>0 AND t.tag IS NULL
+UNION
+SELECT utimestamp AS timestamp, '300' AS measure,response300 AS amount 
+FROM current AS u
+INNER JOIN navigation AS r
+ON r.upload=u.id
+LEFT OUTER JOIN tag t
+ON t.service=r.service
+WHERE response300>0 AND t.tag IS NULL;
+EOS
+}
+
 1;
