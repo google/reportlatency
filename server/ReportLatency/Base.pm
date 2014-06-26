@@ -57,6 +57,11 @@ sub end {
   return $store->db_to_unix($self->{end});
 }
 
+sub execute {
+  my ($self,$sth) = @_;
+  return $sth->execute() or die $sth->errstr;
+}
+
 sub null_query {
   return 'SELECT NULL AS timestamp WHERE NULL!=NULL;';
 }
@@ -75,7 +80,7 @@ sub nav_latencies {
   my $self = shift;
   my $dbh = $self->{store}->{dbh};
   my $sth = $dbh->prepare($self->nav_latency_select) or die $!;
-  $sth->execute() or die $sth->errstr;
+  $self->execute($sth);
   return $sth;
 }
 
@@ -88,7 +93,7 @@ sub nreq_latencies {
   my ($self) = @_;
   my $dbh = $self->{store}->{dbh};
   my $sth = $dbh->prepare($self->nreq_latency_select) or die $!;
-  $sth->execute() or die $sth->errstr;
+  $self->execute($sth);
   return $sth;
 }
 
@@ -101,7 +106,7 @@ sub ureq_latencies {
   my ($self) = @_;
   my $dbh = $self->{store}->{dbh};
   my $sth = $dbh->prepare($self->ureq_latency_select) or die $!;
-  $sth->execute() or die $sth->errstr;
+  $self->execute($sth);
   return $sth;
 }
 
@@ -118,8 +123,9 @@ sub meta {
     my $store = $self->{store};
     $store->create_service_report_temp_table();
     my $dbh = $store->{dbh};
-    my $st = $self->meta_select;
-    $self->{meta} = $dbh->selectrow_hashref($st);
+    my $sth = $dbh->prepare($self->meta_select);
+    $self->execute($sth);
+    $self->{meta} = $sth->fetchrow_hashref;
   }
 
   return $self->{meta};
@@ -141,7 +147,7 @@ sub tag {
   my $dbh = $store->{dbh};
   my $fields = $store->common_aggregate_fields();
   my $sth = $dbh->prepare($self->tag_select ) or die $!;
-  $sth->execute() or die $sth->errstr;
+  $self->execute($sth);
   return $sth;
 }
 
@@ -156,7 +162,7 @@ sub location {
   my $store = $self->{store};
   my $dbh = $store->{dbh};
   my $sth = $dbh->prepare( $self->location_select ) or die $!;
-  $sth->execute();
+  $self->execute($sth);
   return $sth;
 }
 
@@ -204,8 +210,7 @@ sub nav_latency_histogram {
   my $dbh = $self->{store}->{dbh};
   my $sth = $dbh->prepare( $self->latency_histogram('navigation'))
    or die $!;
-  my $rc = $sth->execute() or die $sth->errstr;
-
+  $self->execute($sth);
   return $sth;
 }
 
@@ -235,7 +240,7 @@ sub nav_response_histogram {
   my $dbh = $self->{store}->{dbh};
   my $sth =
     $dbh->prepare( $self->nav_response ) or die $!;
-  $sth->execute();
+  $self->execute($sth);
   return $sth;
 }
 
@@ -246,7 +251,7 @@ sub nreq_latency_histogram {
   my $dbh = $self->{store}->{dbh};
   my $sth = $dbh->prepare( $self->latency_histogram('navigation_request') )
     or die $!;
-  $sth->execute() or die $sth->errstr;
+  $self->execute($sth);
   return $sth;
 }
 
@@ -276,7 +281,7 @@ sub nreq_response_histogram {
     $dbh->prepare($self->response_histogram("navigation_request") )
       or die $!;
 
-  $sth->execute() or die $sth->errstr;
+  $self->execute($sth);
   return $sth;
 }
 
@@ -286,7 +291,7 @@ sub ureq_latency_histogram {
   my $dbh = $self->{store}->{dbh};
   my $sth = $dbh->prepare( $self->latency_histogram('update_request') )
     or die $!;
-  $sth->execute() or die $sth->errstr;
+  $self->execute($sth);
   return $sth;
 }
 
@@ -297,7 +302,7 @@ sub ureq_response_histogram {
   my $sth =
     $dbh->prepare($self->response_histogram("update_request"))
       or die $!;
-  $sth->execute() or die $sth->errstr;
+  $self->execute($sth);
   return $sth;
 }
 
