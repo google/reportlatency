@@ -244,4 +244,53 @@ sub nav_response_histogram {
   return $sth;
 }
 
+sub response_histogram {
+  my ($self,$reqtype) = @_;
+  return <<EOS;
+SELECT utimestamp AS timestamp,
+'closed' AS measure,tabclosed AS amount 
+FROM current AS u
+INNER JOIN $reqtype AS n ON n.upload=u.id
+LEFT OUTER JOIN tag AS t ON t.service=n.service
+WHERE t.tag=? AND tabclosed>0
+UNION
+SELECT utimestamp AS timestamp, '500' AS measure,response500 AS amount 
+FROM current AS u
+INNER JOIN $reqtype AS n ON n.upload=u.id
+LEFT OUTER JOIN tag AS t ON t.service=n.service
+WHERE t.tag=? AND response500>0
+UNION
+SELECT utimestamp AS timestamp, '400' AS measure,response400 AS amount 
+FROM current AS u
+INNER JOIN $reqtype AS n ON n.upload=u.id
+LEFT OUTER JOIN tag AS t ON t.service=n.service
+WHERE t.tag=? AND response400>0
+;
+EOS
+}
+
+sub nreq_response_histogram {
+  my ($self) = @_;
+
+  my $dbh = $self->{store}->{dbh};
+  my $tag = $self->{tag};
+  my $sth =
+    $dbh->prepare($self->response_histogram("update_request"))
+      or die $!;
+  $sth->execute($tag,$tag,$tag);
+  return $sth;
+}
+
+sub ureq_response_histogram {
+  my ($self) = @_;
+
+  my $dbh = $self->{store}->{dbh};
+  my $tag = $self->{tag};
+  my $sth =
+    $dbh->prepare($self->response_histogram("update_request"))
+      or die $!;
+  $sth->execute($tag,$tag,$tag);
+  return $sth;
+}
+
 1;
