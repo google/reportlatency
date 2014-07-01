@@ -210,26 +210,6 @@ sub recent_services {
   @services;
 }
 
-sub recent_tags {
-  my ($dbh) = @_;
-
-  my $tags_sth =
-      $dbh->prepare('SELECT DISTINCT tag.tag AS tag ' .
-                    'FROM report ' .
-		    'INNER JOIN tag ON tag.service=report.service ' .
-                    "WHERE timestamp >= datetime('now',?);")
-        or die "prepare failed";
-
-  my $tags_rc = $tags_sth->execute("-$interval seconds");
-
-  my @tags;
-  while (my $row = $tags_sth->fetchrow_hashref) {
-    my $name = $row->{'tag'};
-    push(@tags,$name);
-  }
-  $tags_sth->finish;
-  @tags;
-}
 
 sub recent_locations {
   my ($dbh) = @_;
@@ -268,25 +248,6 @@ sub all_services {
     push(@services,$name);
   }
   @services;
-}
-
-sub all_tags {
-  my ($dbh) = @_;
-
-  my $tags_sth =
-      $dbh->prepare('SELECT DISTINCT tag FROM tag')
-        or die "prepare failed";
-
-  my $tags_rc = $tags_sth->execute();
-
-  my @tags;
-  while (my $row = $tags_sth->fetchrow_hashref) {
-    my $tag = $row->{'tag'};
-    push(@tags,$tag);
-  }
-  $tags_sth->finish;
-
-  @tags;
 }
 
 sub all_locations {
@@ -383,21 +344,13 @@ sub main() {
 
   my $view = new ReportLatency::StaticView($store);
 
-  my (@services,@tags,@locations);
+  my (@services,@locations);
   if ($options{'all'}) {
     @services = all_services($dbh);
-    @tags = all_tags($dbh);
     @locations = all_locations($dbh);
   } else {
     @services = recent_services($dbh);
-    @tags = recent_tags($dbh);
     @locations = recent_locations($dbh);
-  }
-
-  foreach my $tag (@tags) {
-    print "tag $tag\n";
-    tag_graph($store,$tag,\%options);
-    tag_report($view,$tag,\%options);
   }
 
   foreach my $location (@locations) {
