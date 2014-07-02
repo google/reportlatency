@@ -96,6 +96,7 @@ sub main() {
   my $end = $store->db_timestamp($t);
 
   foreach my $tag (all_tags($store->{dbh})) {
+    benchmark_point($tag);
     my $queries = new ReportLatency::Tag($store, $begin, $end, $tag);
     $view->realize($queries,"tags/$tag");
   }

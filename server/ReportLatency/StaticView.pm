@@ -914,7 +914,7 @@ sub realize_stacked_graph {
 sub realize {
   my ($self,$qobj,$dir) = @_;
 
-  benchmark_point("start total_graph()");
+  benchmark_point("realize()");
   my $begin = $qobj->{begin};
   my $end = $qobj->{end};
 

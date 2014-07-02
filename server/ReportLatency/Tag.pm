@@ -37,7 +37,7 @@ sub new {
 
 sub title {
   my $self=shift;
-  return $self->tag;
+  return $self->{tag};
 }
 
 sub name_title {  return "Service"; }
