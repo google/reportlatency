@@ -68,55 +68,36 @@ EOS
 
 sub latency_histogram {
   my ($self,$latency) = @_;
+  my $selector = <<EOS;
+FROM tag AS t, current AS u, $latency AS n
+WHERE t.tag=? AND n.upload=u.id AND t.service=n.service AND amount>0
+EOS
   return <<EOS;
 SELECT utimestamp AS timestamp,'closed' AS measure,tabclosed AS amount 
-FROM current AS u
-INNER JOIN $latency AS n ON n.upload=u.id
-INNER JOIN tag AS t ON t.service=n.service
-WHERE t.tag=? AND tabclosed>0
+$selector
 UNION
 SELECT utimestamp AS timestamp,'100ms' AS measure,m100 AS amount 
-FROM current AS u
-INNER JOIN $latency AS n ON n.upload=u.id
-INNER JOIN tag AS t ON t.service=n.service
-WHERE t.tag=? AND m100>0
+$selector
 UNION
 SELECT utimestamp AS timestamp,'500ms' AS measure,m500 AS amount 
-FROM current AS u
-INNER JOIN $latency AS n ON n.upload=u.id
-INNER JOIN tag AS t ON t.service=n.service
-WHERE t.tag=? AND m500>0
+$selector
 UNION
 SELECT utimestamp AS timestamp,'1s' AS measure,m1000 AS amount 
-FROM current AS u
-INNER JOIN $latency AS n ON n.upload=u.id
-INNER JOIN tag AS t ON t.service=n.service
-WHERE t.tag=? AND m1000>0
+$selector
 UNION
 SELECT utimestamp AS timestamp,'2s' AS measure,m2000 AS amount 
-FROM current AS u
-INNER JOIN $latency AS n ON n.upload=u.id
-INNER JOIN tag AS t ON t.service=n.service
-WHERE t.tag=? AND m2000>0
+$selector
 UNION
 SELECT utimestamp AS timestamp,'4s' AS measure,m4000 AS amount 
-FROM current AS u
-INNER JOIN $latency AS n ON n.upload=u.id
-INNER JOIN tag AS t ON t.service=n.service
-WHERE t.tag=? AND m4000>0
+$selector
 UNION
 SELECT utimestamp AS timestamp, '10s' AS measure,m10000 AS amount 
-FROM current AS u
-INNER JOIN $latency AS n ON n.upload=u.id
-INNER JOIN tag AS t ON t.service=n.service
-WHERE t.tag=? AND m10000>0
+$selector
 UNION
 SELECT utimestamp AS timestamp,'long' AS measure,
 COALESCE(count,0)-COALESCE(m100,0)-COALESCE(m500,0)-COALESCE(m1000,0)-COALESCE(m2000,0)-COALESCE(m4000,0)-COALESCE(m10000,0)-COALESCE(tabclosed,0) AS amount 
-FROM current AS u
-INNER JOIN $latency AS n ON n.upload=u.id
-INNER JOIN tag AS t ON t.service=n.service
-WHERE t.tag=? AND amount>0
+$selector
+;
 EOS
 }
 
