@@ -62,16 +62,21 @@ SELECT
   n.low AS low,
   n.total AS total 
 FROM current u, $latency n, tag t
-WHERE t.tag=? AND t.service=n.service AND n.upload=u.id AND $positive;
+WHERE t.tag=? AND n.service=t.service AND n.upload=u.id AND $positive;
+EOS
+}
+
+sub selector {
+  my ($self,$latency) = @_;
+  return <<EOS;
+FROM tag AS t, current AS u, $latency AS n
+WHERE t.tag=? AND t.service=n.service AND n.upload=u.id
 EOS
 }
 
 sub latency_histogram {
   my ($self,$latency) = @_;
-  my $selector = <<EOS;
-FROM tag AS t, current AS u, $latency AS n
-WHERE t.tag=? AND n.upload=u.id AND t.service=n.service AND amount>0
-EOS
+  my $selector = $self->selector($latency) . ' AND amount>0';
   return <<EOS;
 SELECT utimestamp AS timestamp,'closed' AS measure,tabclosed AS amount 
 $selector

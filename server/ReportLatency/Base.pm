@@ -151,6 +151,7 @@ sub tag {
   return $sth;
 }
 
+
 sub location_select {
   my ($self) = @_;
   return $self->null_query;
