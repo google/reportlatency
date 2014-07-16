@@ -764,7 +764,7 @@ sub location_service_sth {
 }
 
 sub create_current_temp_table {
-  my ($self,$begin,$end) = @_;
+  my ($self,$begin,$end,$arg) = @_;
 
   my $dbh = $self->{dbh};
 
@@ -778,6 +778,7 @@ sub create_current_temp_table {
     $self->{current} = $sth;
     benchmark_point("prepare CREATE TEMP TABLE current");
   }
+
   if (!(defined $self->{begin} && defined $self->{end} &&
 	$self->{begin} eq $begin && $self->{end} eq $end)) {
     my $sth = $self->{current};

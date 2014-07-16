@@ -13,6 +13,7 @@
 # limitations under the License.
 
 package ReportLatency::Tag;
+use ReportLatency::utils;
 use ReportLatency::Base;
 use Carp qw( croak confess );
 @ISA = ("ReportLatency::Base");
@@ -31,6 +32,7 @@ sub new {
   $self->{tag} = shift;
 
   $self->{store}->create_current_temp_table($begin,$end);
+  $self->create_temp_tables();
 
   return $self;
 }
@@ -47,6 +49,28 @@ sub meta_count_title { return "Services"; }
 sub execute {
   my ($self,$sth) = @_;
   return $sth->execute($self->{tag}) or cluck $sth->errstr;
+}
+
+sub create_temp_tables {
+  my ($self) = @_;
+  my $store = $self->{store};
+  my $dbh = $store->{dbh};
+
+  foreach my $type (qw(navigation navigation_request update_request)) {
+    my $current = "current_$type";
+    if (!defined $self->{$current}) {
+      my $sth =
+	$dbh->prepare( <<EOS ) or die $!;
+CREATE TEMP TABLE $current AS
+SELECT n.*
+FROM current u, tag t, $type n
+WHERE t.tag=? AND n.service=t.service AND n.upload=u.id;
+EOS
+
+      $self->{$current} = $sth->execute($self->{tag}) or die $sth->errstr;
+      benchmark_point("CREATE TEMP TABLE $current");
+    }
+  }
 }
 
 sub latency_select {
