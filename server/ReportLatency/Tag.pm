@@ -37,6 +37,12 @@ sub new {
   return $self;
 }
 
+sub DESTROY {
+  my $self = shift;
+  $self->destroy_temp_tables();
+}
+
+
 sub title {
   my $self=shift;
   return $self->{tag};
@@ -63,12 +69,26 @@ sub create_temp_tables {
 	$dbh->prepare( <<EOS ) or die $!;
 CREATE TEMP TABLE $current AS
 SELECT n.*
-FROM current u, tag t, $type n
-WHERE t.tag=? AND n.service=t.service AND n.upload=u.id;
+FROM tag t, current u, $type n
+WHERE t.tag=? AND n.upload=u.id AND n.service=t.service;
 EOS
 
       $self->{$current} = $sth->execute($self->{tag}) or die $sth->errstr;
       benchmark_point("CREATE TEMP TABLE $current");
+    }
+  }
+}
+
+sub destroy_temp_tables {
+  my ($self) = @_;
+  my $store = $self->{store};
+  my $dbh = $store->{dbh};
+
+  foreach my $type (qw(navigation navigation_request update_request)) {
+    my $current = "current_$type";
+    if (defined $self->{$current}) {
+      $dbh->do("DROP TABLE $current;");
+      delete $self->{$current};
     }
   }
 }
