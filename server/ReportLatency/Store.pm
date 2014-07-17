@@ -790,6 +790,8 @@ sub create_current_temp_table {
     $self->{begin} = $begin;
     $self->{end} = $end;
     benchmark_point("CREATE TEMP TABLE current");
+    $dbh->do('CREATE INDEX current_id ON current(id);');
+    benchmark_point("CREATE INDEX current_id");
   }
 }
 
