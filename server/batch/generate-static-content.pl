@@ -189,27 +189,6 @@ sub location_report {
   close($report);
 }
 
-sub recent_services {
-  my ($dbh) = @_;
-
-  my $services_sth =
-      $dbh->prepare('SELECT DISTINCT service ' .
-                    'FROM report ' .
-                    "WHERE timestamp >= datetime('now',?) " .
-		    "AND service IS NOT NULL " .
-		    "ORDER BY service;")
-        or die "prepare failed";
-
-  my $services_rc = $services_sth->execute("-$interval seconds");
-
-  my @services;
-  while (my $row = $services_sth->fetchrow_hashref) {
-    my $name = $row->{'service'};
-    push(@services,$name);
-  }
-  @services;
-}
-
 
 sub recent_locations {
   my ($dbh) = @_;
@@ -228,26 +207,6 @@ sub recent_locations {
   }
   $locations_sth->finish;
   @locations;
-}
-
-sub all_services {
-  my ($dbh) = @_;
-
-  my $services_sth =
-      $dbh->prepare('SELECT DISTINCT service ' .
-                    'FROM report ' .
-                    "WHERE service IS NOT NULL " .
-		    "ORDER BY service;")
-        or die "prepare failed";
-
-  my $services_rc = $services_sth->execute();
-
-  my @services;
-  while (my $row = $services_sth->fetchrow_hashref) {
-    my $name = $row->{'service'};
-    push(@services,$name);
-  }
-  @services;
 }
 
 sub all_locations {
