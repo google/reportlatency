@@ -112,8 +112,8 @@ sub nav_latency_histogram {
   my ($self) = @_;
 
   my $dbh = $self->{store}->{dbh};
-  my $sth = $dbh->prepare( $self->latency_histogram('navigation'))
-   or die $!;
+  my $statement = $self->latency_histogram('navigation');
+  my $sth = $dbh->prepare( $statement ) or die $!;
   my $service = $self->{service};
   $sth->execute($service,$service,$service,$service,$service,$service,$service,$service);
   return $sth;

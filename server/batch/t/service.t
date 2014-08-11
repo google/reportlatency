@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 #
-# Test generate-static-content.pl
+# Test service.pl
 #
 # Copyright 2013,2014 Google Inc. All Rights Reserved.
 #
@@ -18,14 +18,14 @@
 
 use strict;
 use DBI;
-use Test::More tests => 10;
+use Test::More tests => 11;
 use File::Temp qw(tempfile tempdir);
 
 $ENV{'PATH'} = '/usr/bin';
 
 BEGIN { use lib ".."; }
 
-require_ok('./generate-static-content.pl');
+require_ok('./service.pl');
 
 my $dir = tempdir(CLEANUP => 1);
 mkdir("$dir/data");
@@ -73,16 +73,26 @@ main();
 
 unlink($dbfile);
 rmdir("$dir/data");
-ok(unlink("$dir/locations/office.google.com./navigation.png"),
-   "unlink location png");
-ok(unlink("$dir/locations/office.google.com./update_request.png"),
-   "rm locations/office.google.com./update_request.png");
-ok(unlink("$dir/locations/office.google.com./nav_request.png"),
-   "rm locations/office.google.com./nav_request.png");
-ok(unlink("$dir/locations/office.google.com./index.html"),
-   "unlink location html");
-ok(rmdir("$dir/locations/office.google.com."),"rmdir office.google.com.");
-ok(rmdir("$dir/locations"),"rmdir locations/");
+if (0) {
+ok(unlink("$dir/services/service/nav_request.png"),
+   "rm services/service/nav_request.png");
+ok(unlink("$dir/services/service/update_request.png"),
+   "rm services/service/update_request.png");
+ok(unlink("$dir/services/slow/nav_request.png"),
+   "rm services/slow/nav_request.png");
+ok(unlink("$dir/services/slow/update_request.png"),
+   "rm services/slow/update_request.png");
+}
+ok(unlink("$dir/services/service/index.html"),
+   "unlink services/index.html");
+ok(unlink("$dir/services/service/nav_spectrum.png"),
+   "rm services/service/nav_spectrum.png");
+ok(unlink("$dir/services/slow/nav_spectrum.png"),
+   "rm services/slow/nav_spectrum.png");
+ok(unlink("$dir/services/slow/index.html"),"unlink slow/index.html");
+ok(rmdir("$dir/services/service"),"unlink service/");
+ok(rmdir("$dir/services/slow"),"unlink slow/");
+ok(rmdir("$dir/services"),"unlink services/");
 ok(rmdir($dir),"rmdir tmpdir");
 
 

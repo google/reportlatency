@@ -305,10 +305,8 @@ sub main() {
 
   my (@services,@locations);
   if ($options{'all'}) {
-    @services = all_services($dbh);
     @locations = all_locations($dbh);
   } else {
-    @services = recent_services($dbh);
     @locations = recent_locations($dbh);
   }
 
@@ -316,12 +314,6 @@ sub main() {
     print "location " . ($location||'') . "\n";
     location_graph($store,$location,\%options);
     location_report($view,$location,\%options);
-  }
-
-  foreach my $service (@services) {
-    print "service $service\n";
-    service_graph($store,$service,\%options);
-    service_report($view,$service,\%options);
   }
 
   $dbh->rollback() ||

@@ -41,7 +41,7 @@ sub recent_services {
 		    "ORDER BY service;")
         or die "prepare failed";
 
-  my $services_rc = $services_sth->execute("-$interval seconds");
+  my $services_rc = $services_sth->execute("-$days days");
 
   my @services;
   while (my $row = $services_sth->fetchrow_hashref) {
@@ -96,8 +96,9 @@ sub main() {
   my $end = $store->db_timestamp($t);
 
   foreach my $service (all_services($store->{dbh})) {
+    print STDERR "$service\n";
     my $queries = new ReportLatency::Service($store, $begin, $end, $service);
-    $view->realize($queries,"tags/$s");
+    $view->realize($queries,"services/$service");
   }
 
   if ($options{'verbose'}) {
