@@ -48,6 +48,7 @@ sub meta_count_title { return "Services"; }
 
 sub execute {
   my ($self,$sth) = @_;
+
   return $sth->execute($self->{location}) or cluck $sth->errstr;
 }
 
@@ -256,6 +257,10 @@ sub ureq_response_histogram {
       or die $!;
   $sth->execute($tag,$tag,$tag);
   return $sth;
+}
+
+sub location {
+  undef;
 }
 
 1;

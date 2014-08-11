@@ -416,28 +416,29 @@ $header_2
 </tr>
 EOF
 
-  print $io <<EOF;
+  if (defined $location_sth) {
+    print $io <<EOF;
 <h2> Latency By Location </h2>
 
 <table class="alternate" summary="Latency report for all services by location">
 $location_header
 EOF
 
-  benchmark_point("start location_sth");
-  while (my $location = $location_sth->fetchrow_hashref) {
-    my $name = $location->{location};
-    my $url = $self->location_url_from_tag(uri_escape($name));
-    my $count = $location->{'services'};
-    print $io $self->latency_summary_row(sanitize_location($name),$url,
-					 $count,$location);
-  }
-  $location_sth->finish;
-  benchmark_point("end location_sth");
-
-  print $io <<EOF;
+    benchmark_point("start location_sth");
+    while (my $location = $location_sth->fetchrow_hashref) {
+      my $name = $location->{location};
+      my $url = $self->location_url_from_tag(uri_escape($name));
+      my $count = $location->{'services'};
+      print $io $self->latency_summary_row(sanitize_location($name),$url,
+					   $count,$location);
+    }
+    $location_sth->finish;
+    benchmark_point("end location_sth");
+    print $io <<EOF;
 </table>
 
 EOF
+  }
 
   if ($qobj->can('user_agent') &&
       $qobj->can('extension_version')) {
