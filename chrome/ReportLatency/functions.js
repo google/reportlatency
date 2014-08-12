@@ -228,7 +228,8 @@ function isWebUrl(url) {
  * @param {string} url is the URL to turn into a service name.
  * @return {string} is the service name to account traffic to.
  **/
-function aggregateName(url) {
+function aggregateName(encUrl) {
+  var url = decodeURIComponent(encUrl);
   var hostIndex = url.indexOf('://') + 3;
   var pathIndex = url.substr(hostIndex).indexOf('/');
   var host = url.substr(hostIndex, pathIndex);

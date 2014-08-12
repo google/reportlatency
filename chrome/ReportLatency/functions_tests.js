@@ -29,3 +29,10 @@ test('statusCodeFamily', function() {
        equal(statusCodeFamily('600'), null, '600');
 });
 
+
+test('aggregateName', function() {
+  equal(aggregateName
+      ('http://www.google.com/aclk%3Fsa%3D'),
+      'www.google.com/aclk',
+      'www.google.com/aclk');
+     });
