@@ -232,7 +232,10 @@ function aggregateName(encUrl) {
   var url = decodeURIComponent(encUrl);
   var hostIndex = url.indexOf('://') + 3;
   var pathIndex = url.substr(hostIndex).indexOf('/');
-  var host = url.substr(hostIndex, pathIndex);
+  var hostPort = url.substr(hostIndex, pathIndex);
+  var portIndex = hostPort.indexOf(':');
+
+  var host = (portIndex>=0 ? hostPort.substr(0,portIndex) : hostPort);
   var path = url.substr(pathIndex + hostIndex + 1);
 
   for (var id in serviceGroup) {

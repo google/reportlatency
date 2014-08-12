@@ -32,7 +32,15 @@ test('statusCodeFamily', function() {
 
 test('aggregateName', function() {
   equal(aggregateName
+      ('http://www.google.com/'),
+      'www.google.com',
+      'www.google.com');
+  equal(aggregateName
       ('http://www.google.com/aclk%3Fsa%3D'),
       'www.google.com/aclk',
       'www.google.com/aclk');
+  equal(aggregateName
+      ('http://www.google.com:12345/'),
+      'www.google.com',
+      'www.google.com:12345');
      });
