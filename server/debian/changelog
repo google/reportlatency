@@ -1,3 +1,9 @@
+reportlatency (1.6.4) precise; urgency=low
+
+  * Move to general report_html() and report-specific query objects
+
+ -- Drake Diedrich <dld@google.com>  Mon, 11 Aug 2014 14:00:03 -0700
+
 reportlatency (1.6.3) precise; urgency=low
 
   * Correct calculation of long histogram bins
