@@ -42,7 +42,7 @@ sub title {
   return $self->{location};
 }
 
-sub name_title {  return "Location"; }
+sub name_title {  return "Service"; }
 sub count_title { return "Depend"; }
 sub meta_count_title { return "Services"; }
 
@@ -164,7 +164,7 @@ sub tag_select {
   my $store = $self->{store};
   my $fields = $store->common_aggregate_fields();
   return <<EOS;
-SELECT r.location as tag,
+SELECT r.service as tag,
 count(distinct r.name) AS services,
 $fields
 FROM service_report r
@@ -198,7 +198,7 @@ UNION
 SELECT utimestamp AS timestamp, '300' AS measure,response300 AS amount 
 FROM current AS u
 INNER JOIN navigation AS n ON n.upload=u.id
-WHERE u.location=? AND response300>0
+WHERE u.location=? AND response300>0;
 EOS
 }
 
