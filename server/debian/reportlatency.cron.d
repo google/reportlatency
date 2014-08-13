@@ -20,7 +20,9 @@
 PATH=/usr/local/scripts:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin
 MAILTO=""
 1,31 * * * * www-data [ -x /usr/share/reportlatency/location.pl ] && cd /var/lib/reportlatency/www && /usr/share/reportlatency/location.pl >/dev/null 2>&1
+6,36 * * * * www-data [ -x /usr/share/reportlatency/service.pl ] && cd /var/lib/reportlatency/www && /usr/share/reportlatency/service.pl >/dev/null 2>&1
 11,41 * * * * www-data [ -x /usr/share/reportlatency/untagged.pl ] && cd /var/lib/reportlatency/www && /usr/share/reportlatency/untagged.pl >/dev/null 2>&1
 21,51 * * * * www-data [ -x /usr/share/reportlatency/summary.pl ] && cd /var/lib/reportlatency/www && /usr/share/reportlatency/summary.pl >/dev/null 2>&1
+26,56 * * * * www-data [ -x /usr/share/reportlatency/tag.pl ] && cd /var/lib/reportlatency/www && /usr/share/reportlatency/tag.pl >/dev/null 2>&1
 01 4 * * * www-data cat /etc/reportlatency/tag.d/*.sql /var/lib/reportlatency/tag.d/*.sql > /var/lib/reportlatency/data/tag.sql ; /usr/bin/sqlite3 /var/lib/reportlatency/data/latency.sqlite3 </usr/share/reportlatency/update-tag.sql >/dev/null 2>&1
 */2 * * * * www-data /usr/bin/sqlite3 /var/lib/reportlatency/data/latency.sqlite3 '.backup /var/lib/reportlatency/data/tmp.sqlite3' && mv /var/lib/reportlatency/data/tmp.sqlite3 /var/lib/reportlatency/data/backup.sqlite3
