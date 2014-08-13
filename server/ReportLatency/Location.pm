@@ -208,7 +208,7 @@ sub nav_response_histogram {
   my $dbh = $self->{store}->{dbh};
   my $sth = $dbh->prepare( $self->nav_response)
    or die $!;
-  my $tag = $self->{tag};
+  my $tag = $self->{location};
   $sth->execute($tag,$tag,$tag,$tag);
   return $sth;
 }
