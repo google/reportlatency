@@ -26,6 +26,11 @@ sub name_title { return "Tag"; }
 sub count_title { return "Services"; }
 sub meta_count_title { return "Services"; }
 
+sub tag_url {
+  my ($self, $view, $name) = @_;
+  return $view->tag_url($name);
+}
+
 sub latency_select {
   my ($self,$latency) = @_;
   my $store = $self->{store};

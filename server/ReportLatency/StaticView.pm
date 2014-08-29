@@ -388,7 +388,7 @@ EOF
   benchmark_point("start tag_sth");
   while (my $tag = $tag_sth->fetchrow_hashref) {
     my $name = $tag->{tag};
-    my $url = $self->tag_url($name);
+    my $url = $qobj->tag_url($self,$name);
     my $count = $tag->{'services'};
     print $io $self->latency_summary_row($name,$url,$count,$tag);
   }

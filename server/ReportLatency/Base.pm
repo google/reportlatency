@@ -131,6 +131,9 @@ sub meta {
   return $self->{meta};
 }
 
+sub tag_url {
+  return undef;
+}
 
 sub tag_select {
   my ($self) = @_;

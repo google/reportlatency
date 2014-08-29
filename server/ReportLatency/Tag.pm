@@ -36,6 +36,10 @@ sub new {
   return $self;
 }
 
+sub tag_url {
+  my ($self, $view, $name) = @_;
+  return $view->service_url_from_tag($name);
+}
 
 sub title {
   my $self=shift;

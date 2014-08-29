@@ -46,6 +46,12 @@ sub name_title {  return "Service"; }
 sub count_title { return "Depend"; }
 sub meta_count_title { return "Services"; }
 
+sub tag_url {
+  my ($self, $view, $name) = @_;
+  return $view->service_url_from_location($name);
+}
+
+
 sub execute {
   my ($self,$sth) = @_;
 

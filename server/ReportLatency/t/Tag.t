@@ -119,3 +119,4 @@ $row = $qobj->meta();
 is($row->{nav_count}, 2, '2 meta nav_count');
 is($row->{nreq_count}, 3, '3 meta nreq_count');
 is($row->{ureq_count}, 10, '10 meta ureq_count');
+

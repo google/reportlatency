@@ -37,6 +37,11 @@ sub new {
 }
 
 
+sub tag_url {
+  my ($self, $view, $name) = @_;
+  return undef;
+}
+
 sub title {
   my $self=shift;
   return $self->{name};
