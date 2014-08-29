@@ -169,11 +169,13 @@ sub tag_select {
   my $fields = $store->common_aggregate_fields();
   return <<EOS;
 SELECT
+r.name AS tag,
+NULL AS services,
 $fields
-FROM service_report r, tag t
-WHERE t.tag=? AND r.service = t.service
-GROUP BY r.service
-ORDER BY r.service
+FROM service_report r
+WHERE r.service = ?
+GROUP BY tag
+ORDER BY tag
 ;
 EOS
 }
