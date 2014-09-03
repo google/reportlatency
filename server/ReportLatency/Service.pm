@@ -173,7 +173,7 @@ r.name AS tag,
 NULL AS services,
 $fields
 FROM service_report r
-WHERE r.service = ?
+WHERE r.service=?
 GROUP BY tag
 ORDER BY tag
 ;
@@ -190,8 +190,8 @@ sub location_select {
 SELECT location,
 count(distinct r.service) AS services,
 $fields
-FROM service_report r, tag t
-WHERE t.tag=? AND r.service = t.service
+FROM service_report r
+WHERE r.service = ?
 GROUP BY location
 ORDER BY location;
 EOS
@@ -204,26 +204,22 @@ SELECT utimestamp AS timestamp,
 'closed' AS measure,tabclosed AS amount 
 FROM current AS u
 INNER JOIN navigation AS n ON n.upload=u.id
-INNER JOIN tag AS t ON t.service=n.service
-WHERE t.tag=? AND tabclosed>0
+WHERE n.service=? AND tabclosed>0
 UNION
 SELECT utimestamp AS timestamp, '500' AS measure,response500 AS amount 
 FROM current AS u
 INNER JOIN navigation AS n ON n.upload=u.id
-INNER JOIN tag AS t ON t.service=n.service
-WHERE t.tag=? AND response500>0
+WHERE n.service=? AND response500>0
 UNION
 SELECT utimestamp AS timestamp, '400' AS measure,response400 AS amount 
 FROM current AS u
 INNER JOIN navigation AS n ON n.upload=u.id
-INNER JOIN tag AS t ON t.service=n.service
-WHERE t.tag=? AND response400>0
+WHERE n.service=? AND response400>0
 UNION
 SELECT utimestamp AS timestamp, '300' AS measure,response300 AS amount 
 FROM current AS u
 INNER JOIN navigation AS n ON n.upload=u.id
-INNER JOIN tag AS t ON t.service=n.service
-WHERE t.tag=? AND response300>0
+WHERE n.service=? AND response300>0
 EOS
 }
 
@@ -245,20 +241,17 @@ SELECT utimestamp AS timestamp,
 'closed' AS measure,tabclosed AS amount 
 FROM current AS u
 INNER JOIN $reqtype AS n ON n.upload=u.id
-INNER JOIN tag AS t ON t.service=n.service
-WHERE t.tag=? AND tabclosed>0
+WHERE n.service=? AND tabclosed>0
 UNION
 SELECT utimestamp AS timestamp, '500' AS measure,response500 AS amount 
 FROM current AS u
 INNER JOIN $reqtype AS n ON n.upload=u.id
-INNER JOIN tag AS t ON t.service=n.service
-WHERE t.tag=? AND response500>0
+WHERE n.service=? AND response500>0
 UNION
 SELECT utimestamp AS timestamp, '400' AS measure,response400 AS amount 
 FROM current AS u
 INNER JOIN $reqtype AS n ON n.upload=u.id
-INNER JOIN tag AS t ON t.service=n.service
-WHERE t.tag=? AND response400>0
+WHERE n.service=? AND response400>0
 ;
 EOS
 }

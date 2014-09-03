@@ -48,6 +48,7 @@ sub recent_services {
     my $name = $row->{'service'};
     push(@services,$name);
   }
+  benchmark_point('recent_services()');
   @services;
 }
 
@@ -68,6 +69,9 @@ sub all_services {
     my $name = $row->{'service'};
     push(@services,$name);
   }
+
+  benchmark_point('all_services()');
+
   @services;
 }
 
