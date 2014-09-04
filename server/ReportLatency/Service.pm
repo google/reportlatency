@@ -29,7 +29,7 @@ sub new {
   $self->{store} = shift;
   my $begin = $self->{begin} = shift;
   my $end = $self->{end} = shift;
-  $self->{name} = shift;
+  $self->{service} = shift;
 
   $self->{store}->create_current_temp_table($begin,$end);
 
@@ -44,7 +44,7 @@ sub tag_url {
 
 sub title {
   my $self=shift;
-  return $self->{name};
+  return $self->{service};
 }
 
 sub name_title {  return "Server"; }
@@ -53,7 +53,7 @@ sub meta_count_title { return "Servers"; }
 
 sub execute {
   my ($self,$sth) = @_;
-  return $sth->execute($self->{name}) or cluck $sth->errstr;
+  return $sth->execute($self->{service}) or cluck $sth->errstr;
 }
 
 sub latency_select {
