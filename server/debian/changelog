@@ -1,3 +1,9 @@
+reportlatency (1.6.5) precise; urgency=low
+
+  * Generalize all report generation, fix links and graphs
+
+ -- Drake Diedrich <dld@google.com>  Thu, 04 Sep 2014 13:40:05 -0700
+
 reportlatency (1.6.4) precise; urgency=low
 
   * Move to general report_html() and report-specific query objects
