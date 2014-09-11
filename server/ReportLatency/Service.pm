@@ -48,8 +48,8 @@ sub title {
 }
 
 sub name_title {  return "Server"; }
-sub count_title { return "Depend"; }
-sub meta_count_title { return "Servers"; }
+sub count_title { return "Count"; }
+sub meta_count_title { return "Count"; }
 
 sub execute {
   my ($self,$sth) = @_;
@@ -154,7 +154,7 @@ sub meta_select {
 SELECT r.name AS tag,
 min(min_timestamp) AS min_timestamp,
 max(max_timestamp) AS max_timestamp,
-count(distinct r.service) AS services,
+count(distinct r.name) AS services,
 $fields
 FROM service_report AS r
 WHERE r.service=?
@@ -188,7 +188,7 @@ sub location_select {
   my $fields = $store->common_aggregate_fields();
   return <<EOS;
 SELECT location,
-count(distinct r.service) AS services,
+NULL AS services,
 $fields
 FROM service_report r
 WHERE r.service = ?
